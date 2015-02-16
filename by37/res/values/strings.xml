@@ -3,6 +3,16 @@
 
     <string name="app_name">By37</string>
     <string name="action_settings">Settings</string>
+    <string name="action_person">Person</string>
+    <string name="action_search">Search</string>
     <string name="hello_world">Hello world!</string>
+    <!-- Facebook App Id -->
+    <string name="app_id">1435759036715618</string>
+    <string name="fragment_member_login">Fragement Member Login</string>
+    <string name="fragment_search">Fragement Search</string>
+
+    <!-- Title Text -->
+    <string name="fragment_title_member_login">會員登入</string>
+    <string name="fragment_title_search">搜尋</string>
 
 </resources>
