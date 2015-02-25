@@ -1,19 +1,32 @@
 package tw.org.by37;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 public class SlidingMenuFragment extends Fragment {
 
         private final static String TAG = "SlidingMenuFragment";
 
         private Context mContext;
+
+        private Handler mHandler;
+
+        private ListView mListView;
+
+        private SlidingMenuAdapter mListViewAdapter;
 
         public SlidingMenuFragment() {
                 super();
@@ -37,6 +50,56 @@ public class SlidingMenuFragment extends Fragment {
         }
 
         public void findView(View view) {
+                mHandler = new Handler();
+
+                mListView = (ListView) view.findViewById(android.R.id.list);
+
+                mListViewAdapter = new SlidingMenuAdapter(mContext);
+
+                mListView.setAdapter(mListViewAdapter);
+
+                new Thread() {
+                        @Override
+                        public void run() {
+                                Looper.prepare();
+                                mHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                                mListViewAdapter.addAllDatas(createMenuList());
+                                        }
+                                });
+                                Looper.loop();
+                        };
+                }.start();
+        }
+
+        private ArrayList<SlidingMenuDetail> createMenuList() {
+
+                // 設定給ListViewAdapter的資料
+                ArrayList<SlidingMenuDetail> mData = new ArrayList<SlidingMenuDetail>();
+
+                // Menu項目的名稱
+                Resources res = mContext.getResources();
+                String[] mShareName = res.getStringArray(R.array.sliding_menu_item);
+
+                // 設定ListView的資料
+                for (int i = 0; i < mShareName.length; i++) {
+                        SlidingMenuDetail item = new SlidingMenuDetail();
+                        item.name = mShareName[i];
+                        if (i == 1 || i == 2) {
+                                item.isHint = true;
+                        }
+                        mData.add(item);
+                }
+
+                return mData;
+        }
+
+        public ListView getListView() {
+                if (mListView != null)
+                        return mListView;
+                else
+                        return null;
         }
 
         @Override

@@ -4,22 +4,11 @@ import static tw.org.by37.data.RequestCode.FBLOGIN_REQUEST_CODE;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
 
 import tw.org.by37.config.SysConfig;
 import tw.org.by37.fragment.member.MemberLoginFragment;
 import tw.org.by37.fragment.search.SearchFragment;
+import tw.org.by37.fragment.test.TestFragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -27,7 +16,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -36,6 +24,9 @@ import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -62,11 +53,17 @@ public class MainActivity extends SlidingFragmentActivity {
 
         private boolean mSlidingMenuShow = false;
 
+        private SlidingMenuFragment mSlidingMenuFragment;
+
         /** MemberLogin Fragment **/
         private MemberLoginFragment mMemberLoginFragment;
 
         /** Search Fragment **/
         private SearchFragment mSearchFragment;
+
+        private TestFragment mTestFragment;
+
+        private ListView mListView;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -83,7 +80,22 @@ public class MainActivity extends SlidingFragmentActivity {
                 initActionBar();
 
                 getFacebookKeyHash();
+
+                switchTestFragment();
+
         }
+
+        AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> l, View v, int position, long id) {
+                        Log.i(TAG, "Click Position : " + position);
+                        mSlidingMenu.toggle();
+
+                        if (position == 0) {
+                                switchTestFragment();
+                        }
+                }
+        };
 
         public boolean onKeyDown(int keyCode, KeyEvent event) {
                 return super.onKeyDown(keyCode, event);
@@ -95,7 +107,8 @@ public class MainActivity extends SlidingFragmentActivity {
         private void initActionBar() {
 
                 // 設定ActionBar左上角的圖示
-                // getSupportActionBar().setIcon(R.drawable.ic_action_person);
+                getSupportActionBar().setIcon(R.drawable.ic_launcher);
+                // getSupportActionBar().setCustomView(R.layout.titlebar_main);
 
                 // 設定ActionBar左上角圖示顯示狀態
                 getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -114,6 +127,8 @@ public class MainActivity extends SlidingFragmentActivity {
         public void initSlidingMenu() {
                 setBehindContentView(R.layout.fragment_menu);
 
+                switchMenuFragment();
+
                 // customize the SlidingMenu
                 mSlidingMenu = getSlidingMenu();
                 mSlidingMenu.setMode(SlidingMenu.LEFT);// 設置是左滑還是右滑，還是左右都可以滑，我這裡只做了左滑
@@ -128,6 +143,14 @@ public class MainActivity extends SlidingFragmentActivity {
                         public void onOpen() {
                                 // TODO Auto-generated method stub
                                 mSlidingMenuShow = true;
+                                if (mSlidingMenuFragment != null) {
+                                        mListView = mSlidingMenuFragment.getListView();
+                                        if (mListView != null) {
+                                                mListView.setOnItemClickListener(mItemClickListener);
+                                        } else {
+                                                Log.e(TAG, "mListView == null");
+                                        }
+                                }
                         }
                 });
                 mSlidingMenu.setOnCloseListener(new OnCloseListener() {
@@ -196,6 +219,26 @@ public class MainActivity extends SlidingFragmentActivity {
         }
 
         /**
+         * switchMenuFragment 介面
+         */
+        public void switchMenuFragment() {
+                FragmentManager manager = getSupportFragmentManager();
+                Fragment fragment = manager.findFragmentById(R.id.fragment_menu_content);
+
+                FragmentTransaction ft = manager.beginTransaction();
+
+                if (mSlidingMenuFragment == null)
+                        mSlidingMenuFragment = new SlidingMenuFragment();
+
+                if (fragment == null) {
+                        ft.add(R.id.fragment_menu_content, mSlidingMenuFragment);
+                } else {
+                        ft.replace(R.id.fragment_menu_content, mSlidingMenuFragment);
+                }
+                ft.commit();
+        }
+
+        /**
          * switchMemberLoginFragment 介面
          */
         public void switchMemberLoginFragment() {
@@ -236,6 +279,28 @@ public class MainActivity extends SlidingFragmentActivity {
                 ft.commit();
 
                 setTitle(getString(R.string.fragment_title_search));
+        }
+
+        /**
+         * switchTestFragment 介面
+         */
+        public void switchTestFragment() {
+                FragmentManager manager = getSupportFragmentManager();
+                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
+
+                FragmentTransaction ft = manager.beginTransaction();
+
+                if (mTestFragment == null)
+                        mTestFragment = new TestFragment();
+
+                if (fragment == null) {
+                        ft.add(R.id.fragment_content, mTestFragment);
+                } else {
+                        ft.replace(R.id.fragment_content, mTestFragment);
+                }
+                ft.commit();
+
+                setTitle(getString(R.string.fragment_title_test));
         }
 
         @Override

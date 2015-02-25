@@ -6,6 +6,7 @@
     <string name="action_person">Person</string>
     <string name="action_search">Search</string>
     <string name="hello_world">Hello world!</string>
+    <string name="map_api_key">AIzaSyBCpbIzDF7bEd09CLdSj2HxVoiuPOu5ifY</string>
     <!-- Facebook App Id -->
     <string name="app_id">1435759036715618</string>
     <string name="fragment_member_login">Fragement Member Login</string>
@@ -14,5 +15,19 @@
     <!-- Title Text -->
     <string name="fragment_title_member_login">會員登入</string>
     <string name="fragment_title_search">搜尋</string>
+    <string name="fragment_title_test">測試</string>
+
+    <!-- Sliding Menu Item -->
+    <string-array name="sliding_menu_item">
+        <item>主選單</item>
+        <item>義賣商品分類</item>
+        <item>慈善機構分類</item>
+        <item>設定</item>
+        <item>加入by37粉絲團</item>
+        <item>常見問題(FAQ)</item>
+        <item>聯絡建議</item>
+        <item>分享APP</item>
+        <item>使用條款</item>
+    </string-array>
 
 </resources>
