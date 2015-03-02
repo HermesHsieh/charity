@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import static tw.org.by37.config.SysConfig.*;
 
+/** 全域靜態使用者帳號資料的類別 **/
 public class UserData {
 
         private final static String TAG = "UserData";
@@ -185,6 +187,7 @@ public class UserData {
                 return phone;
         }
 
+        /** log 使用者帳號資料訊息 **/
         public static void showUserData() {
                 StringBuffer sb = new StringBuffer();
                 // sb.append("{");
@@ -222,7 +225,7 @@ public class UserData {
                 Log.i(TAG, sb.toString());
         }
 
-        /** 登出, 清除使用者資料 **/
+        /** 登出, 清除使用者帳號資料 **/
         public static void clearUserData() {
                 userStatus = false;
                 id = "";
@@ -240,6 +243,7 @@ public class UserData {
                 phone = "";
         }
 
+        /** 設定伺服器回傳的使用者帳號資料(json格式) **/
         public static boolean setUserData(Context context, String result) {
 
                 String status = "";
@@ -280,18 +284,20 @@ public class UserData {
                 return false;
         }
 
+        /** 將伺服器回傳的使用者帳號資料儲存於手機內存Preferences **/
         public static void saveUserResultPreferences(Context context, String result) {
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
                 SharedPreferences.Editor editor = sp.edit();
-                editor.putString("UserResult", result);
+                editor.putString(k_UserData_1, result);
                 editor.commit();
         }
 
+        /** 獲取儲存於手機內存Preferences的使用者帳號資料 **/
         public static String getUserResultPreferences(Context context) {
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
                 String result = "";
                 try {
-                        result = sp.getString("UserResult", null);
+                        result = sp.getString(k_UserData_1, null);
                 } catch (Exception e) {
                         result = null;
                         Log.e(TAG, "getUserResultPerferences Exception");
@@ -299,10 +305,11 @@ public class UserData {
                 return result;
         }
 
+        /** 清除儲存於手機內存Preferences的使用者帳號資料 **/
         public static void clearUserResultPreferences(Context context) {
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
                 SharedPreferences.Editor editor = sp.edit();
-                editor.remove("UserResult");
+                editor.remove(k_UserData_1);
                 editor.commit();
         }
 

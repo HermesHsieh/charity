@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="物資需求" />
+
+    <Spinner
+        android:id="@+id/spinner_order"
+        android:layout_width="120dp"
+        android:layout_height="45dp"
+        android:layout_centerHorizontal="true" />
+
+    <Spinner
+        android:id="@+id/spinner_category"
+        android:layout_width="120dp"
+        android:layout_height="45dp"
+        android:layout_centerHorizontal="true"
+        android:layout_toRightOf="@+id/spinner_order" />
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/spinner_category" />
+
+</RelativeLayout>

@@ -5,12 +5,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
 import tw.org.by37.R;
@@ -40,6 +46,8 @@ public class TestFragment extends Fragment {
         private String url = "http://charity.gopagoda.io/organizationsType";
         private String url_1 = "http://data.ntpc.gov.tw/NTPC/od/data/api/2120500427/?$format=json";
         private String url_2 = "http://opendata.dot.taipei.gov.tw/opendata/gwjs_cityhall.json";
+        
+        private String urlPostUser = "http://charity.gopagoda.io/users";
 
         private EditText edt_url;
         private Button btn_url;
@@ -104,6 +112,7 @@ public class TestFragment extends Fragment {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
                         }
+//                        postUsers();
                         Log.i(TAG, "Result : " + result);
                         return getUrlResult(param[0]);
                 }
@@ -167,6 +176,46 @@ public class TestFragment extends Fragment {
                 String jsonString = reader.readLine();
                 reader.close();
                 return jsonString;
+        }
+        
+        /* Post User To Server */
+        public String postUsers() {
+                  Log.i(TAG, "postUsers");
+
+                  /* 建立HTTP Post連線 */
+                  HttpPost httpRequest = new HttpPost(urlPostUser);
+
+                  /*
+                   * Post運作傳送變數必須用NameValuePair[]陣列儲存
+                   */
+                  List<NameValuePair> params = new ArrayList<NameValuePair>();
+                  params.add(new BasicNameValuePair("name", "test1"));
+                  params.add(new BasicNameValuePair("password", "test1"));
+                  params.add(new BasicNameValuePair("source", "FB"));
+                  params.add(new BasicNameValuePair("email", "test1@yahoo.com.tw"));
+                  params.add(new BasicNameValuePair("enable", "true"));
+
+                  try {
+
+                            /* 發出HTTP request */
+                            httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+                            /* 取得HTTP response */
+                            HttpResponse httpResponse = new DefaultHttpClient().execute(httpRequest);
+                            /* 若狀態碼為200 ok */
+                            if (httpResponse.getStatusLine().getStatusCode() == 200) {
+
+                                      /* 取出回應字串 */
+                                      String strResult = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+
+                                      Log.i(TAG, "Data : " + strResult);
+
+                                      return strResult;
+                            } else {
+                            }
+                  } catch (Exception e) {
+                            e.printStackTrace();
+                  }
+                  return "postUsers ConnectFail";
         }
 
         /** 判斷 Preferences 內是否有儲存的資料,若有即上次使用者有登入過,則設定使用者資料 **/

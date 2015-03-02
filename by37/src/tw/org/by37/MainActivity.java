@@ -53,7 +53,11 @@ public class MainActivity extends SlidingFragmentActivity {
 
         private boolean mSlidingMenuShow = false;
 
+        /** Sliding Menu Fragment **/
         private SlidingMenuFragment mSlidingMenuFragment;
+
+        /** Bottom Menu Fragment **/
+        private BottomMenuFragment mBottomMenuFragment;
 
         /** MemberLogin Fragment **/
         private MemberLoginFragment mMemberLoginFragment;
@@ -82,6 +86,8 @@ public class MainActivity extends SlidingFragmentActivity {
                 getFacebookKeyHash();
 
                 switchTestFragment();
+
+                switchBottomMenuFragment();
 
         }
 
@@ -234,6 +240,32 @@ public class MainActivity extends SlidingFragmentActivity {
                         ft.add(R.id.fragment_menu_content, mSlidingMenuFragment);
                 } else {
                         ft.replace(R.id.fragment_menu_content, mSlidingMenuFragment);
+                }
+                ft.commit();
+        }
+
+        /**
+         * switchBottomMenuFragment 介面
+         */
+        public void switchBottomMenuFragment() {
+                FragmentManager manager = getSupportFragmentManager();
+                Fragment fragment = manager.findFragmentById(R.id.fragment_bottom);
+
+                FragmentTransaction ft = manager.beginTransaction();
+
+                if (mBottomMenuFragment == null)
+                        mBottomMenuFragment = new BottomMenuFragment();
+
+                /** 設定Button數量 **/
+                mBottomMenuFragment.setButtonCounter(2);
+
+                /** 設定Button iCon (-1:未設定) **/
+                mBottomMenuFragment.setButtonResource(R.drawable.ic_action_person, R.drawable.ic_action_search, -1);
+
+                if (fragment == null) {
+                        ft.add(R.id.fragment_bottom, mBottomMenuFragment);
+                } else {
+                        ft.replace(R.id.fragment_bottom, mBottomMenuFragment);
                 }
                 ft.commit();
         }
