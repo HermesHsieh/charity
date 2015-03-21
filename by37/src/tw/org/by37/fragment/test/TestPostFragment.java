@@ -37,15 +37,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class TestFragment extends Fragment {
+public class TestPostFragment extends Fragment {
 
         private final static String TAG = "TestFragment";
 
         private Context mContext;
 
         private String url = "http://charity.gopagoda.io/organizationsType";
-        private String url_1 = "http://data.ntpc.gov.tw/NTPC/od/data/api/2120500427/?$format=json";
-        private String url_2 = "http://opendata.dot.taipei.gov.tw/opendata/gwjs_cityhall.json";
 
         private String urlPostUser = "http://charity.gopagoda.io/users";
 
@@ -56,7 +54,7 @@ public class TestFragment extends Fragment {
 
         private ProgressDialog psDialog;
 
-        public TestFragment() {
+        public TestPostFragment() {
                 super();
         }
 
@@ -65,11 +63,11 @@ public class TestFragment extends Fragment {
 
                 mContext = getActivity();
 
-                View view = inflater.inflate(R.layout.fragment_test_get, container, false);
+                View view = inflater.inflate(R.layout.fragment_test_post, container, false);
 
                 findView(view);
-                
-                getActivity().setTitle(R.string.fragment_title_test_get);
+
+                getActivity().setTitle(R.string.fragment_title_test_post);
 
                 return view;
         }
@@ -99,7 +97,7 @@ public class TestFragment extends Fragment {
                 btn_url.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                                edt_url.setText(url);
+                                edt_url.setText(urlPostUser);
                         }
                 });
         }

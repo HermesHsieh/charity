@@ -1,39 +1,26 @@
 package tw.org.by37;
 
 import static tw.org.by37.data.RequestCode.FBLOGIN_REQUEST_CODE;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import tw.org.by37.config.SysConfig;
-import tw.org.by37.fragment.main.MainFragment;
+import tw.org.by37.data.SelectingData;
+import tw.org.by37.data.SupplyData;
 import tw.org.by37.fragment.member.MemberLoginFragment;
 import tw.org.by37.fragment.menu.BottomMenuFragment;
 import tw.org.by37.fragment.menu.RightMenuFragment;
 import tw.org.by37.fragment.menu.SlidingMenuFragment;
 import tw.org.by37.fragment.organization.OrganizationFragment;
 import tw.org.by37.fragment.search.SearchFragment;
-import tw.org.by37.fragment.supplieshelp.SuppliesHelpFragment;
-import tw.org.by37.fragment.test.TestFragment;
-import tw.org.by37.fragment.test.TestPostFragment;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.Signature;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Base64;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -42,26 +29,16 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnCloseListener;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenListener;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
-public class MainActivity extends SlidingFragmentActivity {
-
-        private final static String TAG = "MainActivity";
+public class SecondActivity extends SlidingFragmentActivity {
 
         private Context mContext;
 
-        /** Screen Param **/
-        public static int myScreenWidth = 0;
-        public static int myScreenHeight = 0;
-        public static float myScreenDensity = 0;
-        public static float myScreenDensityDpi = 0;
-        /** End of Screen Param **/
+        private final static String TAG = "SecondActivity";
 
         /** 滑動Menu **/
         private SlidingMenu mSlidingMenu;
 
         private boolean mSlidingMenuShow = false;
-
-        /** Sliding Menu Fragment **/
-        private MainFragment mMainFragment;
 
         /** Sliding Menu Fragment **/
         private SlidingMenuFragment mSlidingMenuFragment;
@@ -78,17 +55,8 @@ public class MainActivity extends SlidingFragmentActivity {
         /** Search Fragment **/
         private SearchFragment mSearchFragment;
 
-        /** SuppliesHelp Fragment **/
-        private SuppliesHelpFragment mSuppliesHelpFragment;
-
         /** Organization Fragment **/
         private OrganizationFragment mOrganizationFragment;
-
-        private TestFragment mTestFragment;
-
-        private TestPostFragment mTestPostFragment;
-
-        private ListView mListView;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -96,41 +64,13 @@ public class MainActivity extends SlidingFragmentActivity {
 
                 mContext = this;
 
-                getDisplayMetrics();
+                setContentView(R.layout.activity_second);
 
-                setContentView(R.layout.activity_main);
+                setTitle("Second Activity");
 
                 initSlidingMenu();
 
-                initActionBar();
-
-                getFacebookKeyHash();
-
-                // switchTestFragment();
-
-                switchMainFragment();
-
-                switchBottomMenuFragment();
-
-        }
-
-        /**
-         * 初始化 Action Bar
-         */
-        private void initActionBar() {
-
-                // 設定ActionBar左上角的圖示
-                getSupportActionBar().setIcon(R.drawable.ic_launcher);
-                // getSupportActionBar().setCustomView(R.layout.titlebar_main);
-
-                // 設定ActionBar左上角圖示顯示狀態
-                getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-                // 設定ActionBar左上角圖示的點擊事件
-                getSupportActionBar().setHomeButtonEnabled(true);
-
-                // 给左上角圖標的左邊加上一個返回的圖標
-                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                switchOrganizationFragment(SelectingData.mSupplyData);
 
         }
 
@@ -194,7 +134,7 @@ public class MainActivity extends SlidingFragmentActivity {
                         mSlidingMenu.toggle();
 
                         if (position == 0) {
-                                switchMainFragment();
+                                // switchMainFragment();
                         }
                 }
         };
@@ -205,101 +145,22 @@ public class MainActivity extends SlidingFragmentActivity {
                         Log.i(TAG, "Click Position : " + position);
                         mSlidingMenu.toggle();
 
-                        switch (position) {
-                        case 1:
-                                switchTestFragment();
-                                break;
-                        case 2:
-                                switchTestPostFragment();
-                                break;
-                        case 4:
-                                switchSuppliesHelpFragment();
-                                break;
-                        case 6:
-                                switchOrganizationFragment();
-                                break;
-                        default:
-                                break;
+                        if (position == 1) {
+                                // switchTestFragment();
+                        } else {
+                                if (position == 4) {
+                                        // switchSuppliesHelpFragment();
+                                } else {
+                                        if (position == 6) {
+                                                // switchOrganizationFragment();
+                                        }
+                                }
                         }
                 }
         };
 
-        /** 獲取手機螢幕資訊 **/
-        public void getDisplayMetrics() {
-                DisplayMetrics metrics = new DisplayMetrics();
-                getWindowManager().getDefaultDisplay().getMetrics(metrics);
-
-                myScreenWidth = metrics.widthPixels;
-                myScreenHeight = metrics.heightPixels;
-
-                myScreenDensity = metrics.density;
-                myScreenDensityDpi = metrics.densityDpi;
-
-                Log.i(TAG, "Screen Width : " + myScreenWidth);
-                Log.i(TAG, "Screen Height : " + myScreenHeight);
-                Log.i(TAG, "Screen Density : " + myScreenDensity);
-                Log.i(TAG, "Screen DensityDpi : " + myScreenDensityDpi);
-
-        }
-
-        /** 獲取FB的KeyHash **/
-        private void getFacebookKeyHash() {
-                String mAppPackage = SysConfig.packageName;
-
-                /**
-                 * Add this code to print out the key hash, and use that KeyHash
-                 */
-                Log.d(TAG, "TRY\nKeyHash:");
-                try {
-                        PackageInfo info = getPackageManager().getPackageInfo(mAppPackage, PackageManager.GET_SIGNATURES);
-                        for (Signature signature : info.signatures) {
-                                MessageDigest md = MessageDigest.getInstance("SHA");
-                                md.update(signature.toByteArray());
-                                Log.d(TAG, Base64.encodeToString(md.digest(), Base64.DEFAULT));
-                        }
-                } catch (NameNotFoundException e) {
-
-                } catch (NoSuchAlgorithmException e) {
-
-                }
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-                switch (item.getItemId()) {
-                case android.R.id.home:
-                        toggle();
-                        return true;
-                case R.id.action_person:
-                        switchMemberLoginFragment();
-                        return true;
-                case R.id.action_search:
-                        switchSearchFragment();
-                        return true;
-                }
-                return super.onOptionsItemSelected(item);
-        }
-
-        /**
-         * switchMainFragment 介面
-         */
-        public void switchMainFragment() {
-                FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.main_content);
-
-                FragmentTransaction ft = manager.beginTransaction();
-
-                if (mMainFragment == null)
-                        mMainFragment = new MainFragment();
-
-                if (fragment == null) {
-                        ft.add(R.id.main_content, mMainFragment);
-                } else {
-                        ft.replace(R.id.main_content, mMainFragment);
-                }
-                ft.commit();
-
-                setTitle(getString(R.string.app_name));
+        public boolean onKeyDown(int keyCode, KeyEvent event) {
+                return super.onKeyDown(keyCode, event);
         }
 
         /**
@@ -412,31 +273,9 @@ public class MainActivity extends SlidingFragmentActivity {
         }
 
         /**
-         * switchSearchFragment 介面
-         */
-        public void switchSuppliesHelpFragment() {
-                FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
-
-                FragmentTransaction ft = manager.beginTransaction();
-
-                if (mSuppliesHelpFragment == null)
-                        mSuppliesHelpFragment = new SuppliesHelpFragment();
-
-                if (fragment == null) {
-                        ft.add(R.id.fragment_content, mSuppliesHelpFragment);
-                } else {
-                        ft.replace(R.id.fragment_content, mSuppliesHelpFragment);
-                }
-                ft.commit();
-
-                setTitle(getString(R.string.fragment_title_supplieshelp));
-        }
-
-        /**
          * switchOrganizationFragment 介面
          */
-        public void switchOrganizationFragment() {
+        public void switchOrganizationFragment(SupplyData mData) {
                 FragmentManager manager = getSupportFragmentManager();
                 Fragment fragment = manager.findFragmentById(R.id.fragment_content);
 
@@ -445,58 +284,14 @@ public class MainActivity extends SlidingFragmentActivity {
                 if (mOrganizationFragment == null)
                         mOrganizationFragment = new OrganizationFragment();
 
+                mOrganizationFragment.setSupplyData(mData);
+
                 if (fragment == null) {
                         ft.add(R.id.fragment_content, mOrganizationFragment);
                 } else {
                         ft.replace(R.id.fragment_content, mOrganizationFragment);
                 }
                 ft.commit();
-
-                setTitle(getString(R.string.fragment_title_organization));
-        }
-
-        /**
-         * switchTestFragment 介面
-         */
-        public void switchTestFragment() {
-                FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
-
-                FragmentTransaction ft = manager.beginTransaction();
-
-                if (mTestFragment == null)
-                        mTestFragment = new TestFragment();
-
-                if (fragment == null) {
-                        ft.add(R.id.fragment_content, mTestFragment);
-                } else {
-                        ft.replace(R.id.fragment_content, mTestFragment);
-                }
-                ft.commit();
-
-                setTitle(getString(R.string.fragment_title_test_get));
-        }
-
-        /**
-         * switchTestPostFragment 介面
-         */
-        public void switchTestPostFragment() {
-                FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
-
-                FragmentTransaction ft = manager.beginTransaction();
-
-                if (mTestPostFragment == null)
-                        mTestPostFragment = new TestPostFragment();
-
-                if (fragment == null) {
-                        ft.add(R.id.fragment_content, mTestPostFragment);
-                } else {
-                        ft.replace(R.id.fragment_content, mTestPostFragment);
-                }
-                ft.commit();
-
-                setTitle(getString(R.string.fragment_title_test_post));
         }
 
         @Override
@@ -506,21 +301,30 @@ public class MainActivity extends SlidingFragmentActivity {
                 Log.v(TAG, "Request Code : " + requestCode);
                 Log.v(TAG, "Result Code : " + resultCode);
 
-                switch (requestCode) {
-                case FBLOGIN_REQUEST_CODE:
-                        if (resultCode == Activity.RESULT_OK) {
-                                // 執行Fragment的onActivityResult
-                                if (mMemberLoginFragment != null) {
-                                        mMemberLoginFragment.onActivityResult(requestCode, resultCode, data);
-                                }
-                        }
-                        break;
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+                switch (item.getItemId()) {
+                case android.R.id.home:
+                        toggle();
+                        return true;
+                case R.id.action_person:
+                        switchMemberLoginFragment();
+                        return true;
+                case R.id.action_search:
+                        switchSearchFragment();
+                        return true;
+                case R.id.action_back:
+                        this.finish();
+                        return true;
                 }
+                return super.onOptionsItemSelected(item);
         }
 
         @Override
         public boolean onCreateOptionsMenu(Menu menu) {
-                getSupportMenuInflater().inflate(R.menu.main, menu);
+                getSupportMenuInflater().inflate(R.menu.second, menu);
                 return true;
         }
 

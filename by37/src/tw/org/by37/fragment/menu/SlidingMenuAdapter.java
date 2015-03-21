@@ -1,6 +1,10 @@
-package tw.org.by37;
+package tw.org.by37.fragment.menu;
 
 import java.util.ArrayList;
+
+import tw.org.by37.R;
+import tw.org.by37.R.id;
+import tw.org.by37.R.layout;
 
 import android.content.Context;
 import android.view.LayoutInflater;

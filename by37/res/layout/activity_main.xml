@@ -4,24 +4,19 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity" >
 
-    <ScrollView
-        android:id="@+id/scrollView"
+    <TextView
+        android:id="@+id/tv_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="MainActivity" />
+    <!-- Fragment間頁面切換的主要容器 -->
+
+    <FrameLayout
+        android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
-
-            <!-- Fragment間頁面切換的主要容器 -->
-            <FrameLayout
-                android:id="@+id/fragment_content"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" >
-            </FrameLayout>
-        </LinearLayout>
-    </ScrollView>
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/fragment_bottom"

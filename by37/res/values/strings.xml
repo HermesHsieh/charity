@@ -5,6 +5,7 @@
     <string name="action_settings">Settings</string>
     <string name="action_person">Person</string>
     <string name="action_search">Search</string>
+    <string name="action_back">Back</string>
     <string name="hello_world">Hello world!</string>
     <string name="map_api_key">AIzaSyBCpbIzDF7bEd09CLdSj2HxVoiuPOu5ifY</string>
     <!-- Facebook App Id -->
@@ -16,6 +17,17 @@
     <string name="fragment_title_member_login">會員登入</string>
     <string name="fragment_title_search">搜尋</string>
     <string name="fragment_title_test">測試</string>
+    <string name="fragment_title_supplieshelp">物資需求</string>
+    <string name="fragment_title_organization">基構簡介</string>
+    <string name="fragment_title_test_get">Test Get</string>
+    <string name="fragment_title_test_post">Test Post</string>
+
+    <!-- EditText Hint -->
+    <string name="hint_post_1">ValueName</string>
+    <string name="hint_post_2">Input Value</string>
+
+    <!-- Hint Information -->
+    <string name="org_data_empty">目前沒有基構資料</string>
 
     <!-- Sliding Menu Item -->
     <string-array name="sliding_menu_item">
@@ -29,5 +41,18 @@
         <item>分享APP</item>
         <item>使用條款</item>
     </string-array>
+
+    <!-- Right Sliding Menu Item -->
+    <string-array name="right_sliding_menu_item">
+        <item>[Test Fragment List]</item>
+        <item>Server Get</item>
+        <item>Server Post</item>
+        <item>Emergency</item>
+        <item>SuppliesHelp</item>
+        <item>ProductSell</item>
+        <item>Organization</item>
+    </string-array>
+
+    <string name="init_goods_types">顯示全部</string>
 
 </resources>

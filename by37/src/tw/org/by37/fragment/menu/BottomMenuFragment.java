@@ -1,5 +1,8 @@
-package tw.org.by37;
+package tw.org.by37.fragment.menu;
 
+import tw.org.by37.R;
+import tw.org.by37.R.id;
+import tw.org.by37.R.layout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;

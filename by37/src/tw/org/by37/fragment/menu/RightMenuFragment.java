@@ -1,6 +1,10 @@
-package tw.org.by37;
+package tw.org.by37.fragment.menu;
 
 import java.util.ArrayList;
+
+import tw.org.by37.R;
+import tw.org.by37.R.array;
+import tw.org.by37.R.layout;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,9 +20,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-public class SlidingMenuFragment extends Fragment {
+public class RightMenuFragment extends Fragment {
 
-        private final static String TAG = "SlidingMenuFragment";
+        private final static String TAG = "RightMenuFragment";
 
         private Context mContext;
 
@@ -28,7 +32,7 @@ public class SlidingMenuFragment extends Fragment {
 
         private SlidingMenuAdapter mListViewAdapter;
 
-        public SlidingMenuFragment() {
+        public RightMenuFragment() {
                 super();
         }
 
@@ -80,14 +84,14 @@ public class SlidingMenuFragment extends Fragment {
 
                 // Menu項目的名稱
                 Resources res = mContext.getResources();
-                String[] mShareName = res.getStringArray(R.array.sliding_menu_item);
+                String[] mShareName = res.getStringArray(R.array.right_sliding_menu_item);
 
                 // 設定ListView的資料
                 for (int i = 0; i < mShareName.length; i++) {
                         SlidingMenuDetail item = new SlidingMenuDetail();
                         item.name = mShareName[i];
                         if (i == 1 || i == 2) {
-                                item.isHint = true;
+                                item.isHint = false;
                         }
                         mData.add(item);
                 }
