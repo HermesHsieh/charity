@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp" >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/emergency_sample" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp" >
+
+       
+
+            <TextView
+                android:id="@+id/emergency_title_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#D4E6F8"
+                android:padding="16sp"
+                android:text="新北新店氣爆捐款資訊"
+                android:textSize="18sp" />
+
+            <ScrollView 
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="395dp"
+                    android:background="#F5F2F8" >
+
+                <TextView
+                    android:id="@+id/emergency_content_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#F5F2F8"
+                    android:padding="16dp"
+                    android:text="最後更新時間 : 2014.08.03 12:07\n愛心帳戶-新北市政府\n(一)銀行匯款\n戶名:新北市政府社會局社會救助金專戶\n帳號:高雄銀行公庫部10223334455 (註名:81氣爆)\n\n\n(二)郵局劃撥\n戶名:新北市政府社會局,帳號:42219747\n專線:07-33737373\n傳真:12345678"
+                    android:textColor="@android:color/holo_red_light"
+                    android:textSize="12sp" />
+
+                <ImageButton
+                    android:id="@+id/emergency_shrae_fb_imagebutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/emergency_content_textview"
+                    android:layout_marginRight="27dp"
+                    android:layout_marginTop="70dp"
+                    android:background="@drawable/icon_fbshare" />
+
+            </RelativeLayout>
+            </ScrollView>
+            
+       
+    </LinearLayout>
+
+</LinearLayout>

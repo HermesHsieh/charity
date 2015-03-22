@@ -6,6 +6,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import tw.org.by37.config.SysConfig;
+import tw.org.by37.fragment.emergency.EmergencyFragment;
 import tw.org.by37.fragment.main.MainFragment;
 import tw.org.by37.fragment.member.MemberLoginFragment;
 import tw.org.by37.fragment.menu.BottomMenuFragment;
@@ -87,6 +88,8 @@ public class MainActivity extends SlidingFragmentActivity {
         private TestFragment mTestFragment;
 
         private TestPostFragment mTestPostFragment;
+        
+        private EmergencyFragment mEmergencyFragment;
 
         private ListView mListView;
 
@@ -212,6 +215,9 @@ public class MainActivity extends SlidingFragmentActivity {
                         case 2:
                                 switchTestPostFragment();
                                 break;
+                        case 3:
+                        		switchEmergencyFragment();
+                        		break;
                         case 4:
                                 switchSuppliesHelpFragment();
                                 break;
@@ -498,6 +504,29 @@ public class MainActivity extends SlidingFragmentActivity {
 
                 setTitle(getString(R.string.fragment_title_test_post));
         }
+        
+        /**
+         * switchEmergencyFragment 介面
+         */
+        
+        public void switchEmergencyFragment() {
+            FragmentManager manager = getSupportFragmentManager();
+            Fragment fragment = manager.findFragmentById(R.id.fragment_content);
+
+            FragmentTransaction ft = manager.beginTransaction();
+
+            if (mEmergencyFragment == null)
+            	mEmergencyFragment = new EmergencyFragment();
+
+            if (fragment == null) {
+                    ft.add(R.id.fragment_content, mEmergencyFragment);
+            } else {
+                    ft.replace(R.id.fragment_content, mEmergencyFragment);
+            }
+            ft.commit();
+
+            setTitle(getString(R.string.fragment_title_emergency));
+    }
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {

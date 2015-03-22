@@ -21,13 +21,14 @@
     <string name="fragment_title_organization">基構簡介</string>
     <string name="fragment_title_test_get">Test Get</string>
     <string name="fragment_title_test_post">Test Post</string>
+    <string name="fragment_title_emergency">急難救助</string>
 
     <!-- EditText Hint -->
     <string name="hint_post_1">ValueName</string>
     <string name="hint_post_2">Input Value</string>
 
     <!-- Hint Information -->
-    <string name="org_data_empty">目前沒有基構資料</string>
+    <string name="org_data_empty">目前沒有機構資料</string>
 
     <!-- Sliding Menu Item -->
     <string-array name="sliding_menu_item">
