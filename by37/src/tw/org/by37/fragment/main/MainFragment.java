@@ -1,8 +1,10 @@
 package tw.org.by37.fragment.main;
 
 import tw.org.by37.R;
+import tw.org.by37.emergency.EmergencyFragment;
 import tw.org.by37.fragment.member.MemberLoginFragment;
 import tw.org.by37.fragment.organization.OrganizationFragment;
+import tw.org.by37.fragment.productsell.MainProductSellFragment;
 import tw.org.by37.fragment.search.SearchFragment;
 import tw.org.by37.fragment.supplieshelp.SuppliesHelpFragment;
 import tw.org.by37.fragment.test.TestFragment;
@@ -35,10 +37,22 @@ public class MainFragment extends Fragment {
 
         /** Organization Fragment **/
         private OrganizationFragment mOrganizationFragment;
+        
+        /** Emergency Fragment **/
+        private EmergencyFragment mEmergencyFragment;
 
+        
+        /** ProductSell Fragment**/
+        private MainProductSellFragment mMainProductSellFragment;
         private TestFragment mTestFragment;
+        
+        
 
         private ListView mListView;
+        
+        
+    	
+    	
 
         public MainFragment() {
                 super();
@@ -53,7 +67,11 @@ public class MainFragment extends Fragment {
 
                 findView(view);
                 
-                switchTestFragment();
+//                switchTestFragment();
+                
+                switchEmergencyFragment();
+                
+                switchProductSellFragment();
 
                 return view;
         }
@@ -174,6 +192,55 @@ public class MainFragment extends Fragment {
 
                 getActivity().setTitle(getString(R.string.fragment_title_test));
         }
+        
+        /**
+         * switchEmergencyFragment 介面
+         */
+        public void switchEmergencyFragment() {
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                Fragment fragment = manager.findFragmentById(R.id.fragment_emergency);
+
+                FragmentTransaction ft = manager.beginTransaction();
+
+                if (mEmergencyFragment == null)
+                	mEmergencyFragment = new EmergencyFragment();
+
+                if (fragment == null) {
+                        ft.add(R.id.fragment_emergency, mEmergencyFragment);
+                } else {
+                        ft.replace(R.id.fragment_emergency, mEmergencyFragment);
+                }
+                ft.commit();
+
+        }
+        
+        
+        /**
+         * switchProductSellFragment 介面
+         */
+        public void switchProductSellFragment() {
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                Fragment fragment = manager.findFragmentById(R.id.fragment_productsell);
+
+                FragmentTransaction ft = manager.beginTransaction();
+
+                if (mMainProductSellFragment == null)
+                	mMainProductSellFragment = new MainProductSellFragment();
+
+                if (fragment == null) {
+                        ft.add(R.id.fragment_productsell, mMainProductSellFragment);
+                } else {
+                        ft.replace(R.id.fragment_productsell, mMainProductSellFragment);
+                }
+                ft.commit();
+
+        }
+        
+        
+        
+        
+        
+        
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -215,4 +282,6 @@ public class MainFragment extends Fragment {
         public void onDestroy() {
                 super.onDestroy();
         }
+        
+        
 }

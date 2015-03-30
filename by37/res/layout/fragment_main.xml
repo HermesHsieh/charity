@@ -12,11 +12,28 @@
         android:text="MainFragment" />
 
     <!-- Fragment間頁面切換的主要容器 -->
+    
+    <FrameLayout 
+        android:id="@+id/fragment_emergency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+    </FrameLayout>
+    
 
     <FrameLayout
         android:id="@+id/fragment_content"
+        android:layout_below="@+id/fragment_emergency"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="wrap_content" >
+    </FrameLayout>
+    
+    <FrameLayout 
+        android:id="@+id/fragment_productsell"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/fragment_content"
+        android:layout_height="wrap_content">
+        
     </FrameLayout>
 
 </RelativeLayout>

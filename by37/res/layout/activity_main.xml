@@ -12,6 +12,8 @@
         android:text="MainActivity" />
     <!-- Fragment間頁面切換的主要容器 -->
 
+   
+
     <FrameLayout
         android:id="@+id/main_content"
         android:layout_width="match_parent"

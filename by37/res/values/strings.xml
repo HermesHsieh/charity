@@ -22,6 +22,7 @@
     <string name="fragment_title_test_get">Test Get</string>
     <string name="fragment_title_test_post">Test Post</string>
     <string name="fragment_title_emergency">急難救助</string>
+    <string name="fragment_title_productsell">商品義賣</string>
 
     <!-- EditText Hint -->
     <string name="hint_post_1">ValueName</string>
@@ -55,5 +56,9 @@
     </string-array>
 
     <string name="init_goods_types">顯示全部</string>
+    
+    <!-- Emergency -->
+    <string name="main_emergency_title">急難救助</string>
+    <string name="main_product_sell_title">商品義賣</string>
 
 </resources>
