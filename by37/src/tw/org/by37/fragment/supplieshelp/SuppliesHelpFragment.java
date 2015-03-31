@@ -10,7 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import tw.org.by37.R;
-import tw.org.by37.SecondActivity;
+import tw.org.by37.OrganizationActivity;
 import tw.org.by37.data.TypesData;
 import tw.org.by37.data.GoodsTypesText;
 import tw.org.by37.data.OrganizationTypesText;
@@ -177,7 +177,7 @@ public class SuppliesHelpFragment extends Fragment {
 
                                 // switchOrganizationFragment(mData);
 
-                                gotoSecondActivity();
+                                gotoOrganizationActivity();
 
                                 // Log.v(TAG, "Supplies ID : " + suppliesId);
                                 // Log.v(TAG, "Organizations ID : " +
@@ -383,23 +383,34 @@ public class SuppliesHelpFragment extends Fragment {
                                                         e.printStackTrace();
                                                         Log.e(TAG, "mJsonObject get 'goodsTypeId' error!!");
                                                 }
-                                                try {
-                                                        mData.organization_name = mJsonArray.getJSONObject(i).getJSONObject("organization").getString("name");
-                                                } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                        Log.e(TAG, "mJsonObject get 'organization_name' error!!");
-                                                }
-                                                try {
-                                                        mData.organization_longitude = mJsonArray.getJSONObject(i).getJSONObject("organization").getDouble("longitude");
-                                                } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                        Log.e(TAG, "mJsonObject get 'organization_longitude' error!!");
-                                                }
-                                                try {
-                                                        mData.organization_latitude = mJsonArray.getJSONObject(i).getJSONObject("organization").getDouble("latitude");
-                                                } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                        Log.e(TAG, "mJsonObject get 'organization_latitude' error!!");
+
+                                                Log.i(TAG, "Organization JSONArray length : " + mJsonObject.getJSONArray("organization").length());
+
+                                                for (int j = 0; j < mJsonObject.getJSONArray("organization").length(); j++) {
+                                                        try {
+                                                                mData.organization_id = mJsonObject.getJSONArray("organization").getJSONObject(j).getString("id");
+                                                        } catch (JSONException e) {
+                                                                e.printStackTrace();
+                                                                Log.e(TAG, "mJsonObject get 'organization_id' error!!");
+                                                        }
+                                                        try {
+                                                                mData.organization_name = mJsonObject.getJSONArray("organization").getJSONObject(j).getString("name");
+                                                        } catch (JSONException e) {
+                                                                e.printStackTrace();
+                                                                Log.e(TAG, "mJsonObject get 'organization_name' error!!");
+                                                        }
+                                                        try {
+                                                                mData.organization_longitude = mJsonObject.getJSONArray("organization").getJSONObject(j).getDouble("longitude");
+                                                        } catch (JSONException e) {
+                                                                e.printStackTrace();
+                                                                Log.e(TAG, "mJsonObject get 'organization_longitude' error!!");
+                                                        }
+                                                        try {
+                                                                mData.organization_latitude = mJsonObject.getJSONArray("organization").getJSONObject(j).getDouble("latitude");
+                                                        } catch (JSONException e) {
+                                                                e.printStackTrace();
+                                                                Log.e(TAG, "mJsonObject get 'organization_latitude' error!!");
+                                                        }
                                                 }
 
                                                 /** 將單一筆資料新增/更新至 supplies.db 中 **/
@@ -425,17 +436,17 @@ public class SuppliesHelpFragment extends Fragment {
                                 Log.e(TAG, "SuppliesData Result == null, (getSuppliesDataAsyncTask) ");
                         }
 
-                        // // 依照距離排序
-                        // if (sp_order.getSelectedItemPosition() == 0) {
-                        // orderSuppliesDataForDst();
-                        // } else {
-                        // // 依照時間排序
-                        // if (sp_order.getSelectedItemPosition() == 1) {
-                        // orderSuppliesDataForTime();
-                        // } else {
-                        // Log.e(TAG, "Set Supplies Data error !!");
-                        // }
-                        // }
+                        // 依照距離排序
+                        if (sp_order.getSelectedItemPosition() == 0) {
+                                orderSuppliesDataForDst();
+                        } else {
+                                // 依照時間排序
+                                if (sp_order.getSelectedItemPosition() == 1) {
+                                        orderSuppliesDataForTime();
+                                } else {
+                                        Log.e(TAG, "Set Supplies Data error !!");
+                                }
+                        }
 
                 }
 
@@ -972,11 +983,11 @@ public class SuppliesHelpFragment extends Fragment {
         /** End of Preferences **/
 
         /** GotoActivity **/
-        public void gotoSecondActivity() {
+        public void gotoOrganizationActivity() {
                 Intent intent = new Intent();
-                intent.setClass(mContext, SecondActivity.class);
+                intent.setClass(mContext, OrganizationActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivityForResult(intent, SECOND_ACTIVITY_CODE);
+                startActivityForResult(intent, ORGANIZATION_ACTIVITY_CODE);
         }
 
         /** End of GotoActivity **/

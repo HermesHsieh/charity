@@ -22,8 +22,8 @@ public class OrganizationApiService {
 
         private final static String TAG = "OrganizationApi";
 
-        private static String uri = organizationsApi;
-        
+        private static String uri = organizationsIdApi;
+
         private static String uri_types = organizationsTypeApi;
 
         public static String getAllOrganizationData() {
@@ -37,7 +37,6 @@ public class OrganizationApiService {
                 try {
                         // for port 80 requests!
                         HttpClient httpclient = new DefaultHttpClient();
-                        HttpPost httppost = new HttpPost(uri);
                         HttpGet httpget = new HttpGet(uri);
                         HttpResponse response = httpclient.execute(httpget);
 
@@ -48,7 +47,30 @@ public class OrganizationApiService {
                 }
                 return strResult;
         }
-        
+
+        public static String getAllOrganizationDataForId(String id) {
+                Log.v(TAG, "getAllOrganizationDataForId");
+
+                // 若線上資料為單筆資料，則使用JSONObject
+                // JSONObject jsonObj = null;
+                String strResult = null;
+
+                // 透過HTTP連線取得回應
+                try {
+                        // for port 80 requests!
+                        HttpClient httpclient = new DefaultHttpClient();
+                        HttpGet httpget = new HttpGet(uri + id);
+                        Log.i(TAG, "Api : " + uri + id);
+                        HttpResponse response = httpclient.execute(httpget);
+
+                        /* 取出回應字串 */
+                        strResult = EntityUtils.toString(response.getEntity(), "UTF-8");
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+                return strResult;
+        }
+
         public static String getOrganizationTypes() {
                 Log.v(TAG, "getOrganizationTypes");
 
@@ -60,7 +82,6 @@ public class OrganizationApiService {
                 try {
                         // for port 80 requests!
                         HttpClient httpclient = new DefaultHttpClient();
-                        HttpPost httppost = new HttpPost(uri_types);
                         HttpGet httpget = new HttpGet(uri_types);
                         HttpResponse response = httpclient.execute(httpget);
 

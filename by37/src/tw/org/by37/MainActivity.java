@@ -1,6 +1,6 @@
 package tw.org.by37;
 
-import static tw.org.by37.data.RequestCode.FBLOGIN_REQUEST_CODE;
+import static tw.org.by37.data.RequestCode.MEMBER_ACTIVITY_CODE;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import tw.org.by37.config.SysConfig;
 import tw.org.by37.fragment.emergency.EmergencyFragment;
 import tw.org.by37.fragment.main.MainFragment;
-import tw.org.by37.fragment.member.MemberLoginFragment;
+import tw.org.by37.fragment.member.LoginFragment;
 import tw.org.by37.fragment.menu.BottomMenuFragment;
 import tw.org.by37.fragment.menu.RightMenuFragment;
 import tw.org.by37.fragment.menu.SlidingMenuFragment;
@@ -73,8 +73,8 @@ public class MainActivity extends SlidingFragmentActivity {
         /** Bottom Menu Fragment **/
         private BottomMenuFragment mBottomMenuFragment;
 
-        /** MemberLogin Fragment **/
-        private MemberLoginFragment mMemberLoginFragment;
+        /** Login Fragment **/
+        private LoginFragment mLoginFragment;
 
         /** Search Fragment **/
         private SearchFragment mSearchFragment;
@@ -88,7 +88,7 @@ public class MainActivity extends SlidingFragmentActivity {
         private TestFragment mTestFragment;
 
         private TestPostFragment mTestPostFragment;
-        
+
         private EmergencyFragment mEmergencyFragment;
 
         private ListView mListView;
@@ -216,8 +216,8 @@ public class MainActivity extends SlidingFragmentActivity {
                                 switchTestPostFragment();
                                 break;
                         case 3:
-                        		switchEmergencyFragment();
-                        		break;
+                                switchEmergencyFragment();
+                                break;
                         case 4:
                                 switchSuppliesHelpFragment();
                                 break;
@@ -277,7 +277,7 @@ public class MainActivity extends SlidingFragmentActivity {
                         toggle();
                         return true;
                 case R.id.action_person:
-                        switchMemberLoginFragment();
+                        gotoMemberActivity();
                         return true;
                 case R.id.action_search:
                         switchSearchFragment();
@@ -375,20 +375,20 @@ public class MainActivity extends SlidingFragmentActivity {
         }
 
         /**
-         * switchMemberLoginFragment 介面
+         * switchLoginFragment 介面
          */
-        public void switchMemberLoginFragment() {
+        public void switchLoginFragment() {
                 FragmentManager manager = getSupportFragmentManager();
                 Fragment fragment = manager.findFragmentById(R.id.fragment_content);
                 FragmentTransaction ft = manager.beginTransaction();
 
-                if (mMemberLoginFragment == null)
-                        mMemberLoginFragment = new MemberLoginFragment();
+                if (mLoginFragment == null)
+                        mLoginFragment = new LoginFragment();
 
                 if (fragment == null) {
-                        ft.add(R.id.fragment_content, mMemberLoginFragment);
+                        ft.add(R.id.fragment_content, mLoginFragment);
                 } else {
-                        ft.replace(R.id.fragment_content, mMemberLoginFragment);
+                        ft.replace(R.id.fragment_content, mLoginFragment);
                 }
                 ft.commit();
 
@@ -504,29 +504,36 @@ public class MainActivity extends SlidingFragmentActivity {
 
                 setTitle(getString(R.string.fragment_title_test_post));
         }
-        
+
         /**
          * switchEmergencyFragment 介面
          */
-        
+
         public void switchEmergencyFragment() {
-            FragmentManager manager = getSupportFragmentManager();
-            Fragment fragment = manager.findFragmentById(R.id.fragment_content);
+                FragmentManager manager = getSupportFragmentManager();
+                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
 
-            FragmentTransaction ft = manager.beginTransaction();
+                FragmentTransaction ft = manager.beginTransaction();
 
-            if (mEmergencyFragment == null)
-            	mEmergencyFragment = new EmergencyFragment();
+                if (mEmergencyFragment == null)
+                        mEmergencyFragment = new EmergencyFragment();
 
-            if (fragment == null) {
-                    ft.add(R.id.fragment_content, mEmergencyFragment);
-            } else {
-                    ft.replace(R.id.fragment_content, mEmergencyFragment);
-            }
-            ft.commit();
+                if (fragment == null) {
+                        ft.add(R.id.fragment_content, mEmergencyFragment);
+                } else {
+                        ft.replace(R.id.fragment_content, mEmergencyFragment);
+                }
+                ft.commit();
 
-            setTitle(getString(R.string.fragment_title_emergency));
-    }
+                setTitle(getString(R.string.fragment_title_emergency));
+        }
+
+        public void gotoMemberActivity() {
+                Intent intent = new Intent();
+                intent.setClass(mContext, MemberActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivityForResult(intent, MEMBER_ACTIVITY_CODE);
+        }
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -535,16 +542,17 @@ public class MainActivity extends SlidingFragmentActivity {
                 Log.v(TAG, "Request Code : " + requestCode);
                 Log.v(TAG, "Result Code : " + resultCode);
 
-                switch (requestCode) {
-                case FBLOGIN_REQUEST_CODE:
-                        if (resultCode == Activity.RESULT_OK) {
-                                // 執行Fragment的onActivityResult
-                                if (mMemberLoginFragment != null) {
-                                        mMemberLoginFragment.onActivityResult(requestCode, resultCode, data);
-                                }
-                        }
-                        break;
-                }
+                // switch (requestCode) {
+                // case FBLOGIN_REQUEST_CODE:
+                // if (resultCode == Activity.RESULT_OK) {
+                // // 執行Fragment的onActivityResult
+                // if (mLoginFragment != null) {
+                // mLoginFragment.onActivityResult(requestCode, resultCode,
+                // data);
+                // }
+                // }
+                // break;
+                // }
         }
 
         @Override

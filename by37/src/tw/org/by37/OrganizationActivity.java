@@ -3,7 +3,7 @@ package tw.org.by37;
 import static tw.org.by37.data.RequestCode.FBLOGIN_REQUEST_CODE;
 import tw.org.by37.data.SelectingData;
 import tw.org.by37.data.SupplyData;
-import tw.org.by37.fragment.member.MemberLoginFragment;
+import tw.org.by37.fragment.member.LoginFragment;
 import tw.org.by37.fragment.menu.BottomMenuFragment;
 import tw.org.by37.fragment.menu.RightMenuFragment;
 import tw.org.by37.fragment.menu.SlidingMenuFragment;
@@ -29,11 +29,11 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnCloseListener;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenListener;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
-public class SecondActivity extends SlidingFragmentActivity {
+public class OrganizationActivity extends SlidingFragmentActivity {
 
         private Context mContext;
 
-        private final static String TAG = "SecondActivity";
+        private final static String TAG = "OrganizationActivity";
 
         /** 滑動Menu **/
         private SlidingMenu mSlidingMenu;
@@ -50,7 +50,7 @@ public class SecondActivity extends SlidingFragmentActivity {
         private BottomMenuFragment mBottomMenuFragment;
 
         /** MemberLogin Fragment **/
-        private MemberLoginFragment mMemberLoginFragment;
+        private LoginFragment mMemberLoginFragment;
 
         /** Search Fragment **/
         private SearchFragment mSearchFragment;
@@ -64,9 +64,9 @@ public class SecondActivity extends SlidingFragmentActivity {
 
                 mContext = this;
 
-                setContentView(R.layout.activity_second);
+                setContentView(R.layout.activity_organization);
 
-                setTitle("Second Activity");
+                setTitle(R.string.fragment_title_organization);
 
                 initSlidingMenu();
 
@@ -238,7 +238,7 @@ public class SecondActivity extends SlidingFragmentActivity {
                 FragmentTransaction ft = manager.beginTransaction();
 
                 if (mMemberLoginFragment == null)
-                        mMemberLoginFragment = new MemberLoginFragment();
+                        mMemberLoginFragment = new LoginFragment();
 
                 if (fragment == null) {
                         ft.add(R.id.fragment_content, mMemberLoginFragment);
@@ -324,7 +324,7 @@ public class SecondActivity extends SlidingFragmentActivity {
 
         @Override
         public boolean onCreateOptionsMenu(Menu menu) {
-                getSupportMenuInflater().inflate(R.menu.second, menu);
+                getSupportMenuInflater().inflate(R.menu.organization, menu);
                 return true;
         }
 

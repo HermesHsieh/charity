@@ -142,7 +142,7 @@ public class SuppliesListAdapter extends BaseAdapter {
 
         /** 取得物資需求ListView 對應 Position 的資料OrganizationId **/
         public String getSuppliesDataOrganizationId(int position) {
-                return data.get(position).organization_id;
+                return data.get(position).organizationId;
         }
 
         public class ViewHolder {

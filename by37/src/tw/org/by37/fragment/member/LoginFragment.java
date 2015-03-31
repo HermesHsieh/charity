@@ -1,11 +1,20 @@
 package tw.org.by37.fragment.member;
 
+import static tw.org.by37.data.RequestCode.SIGNUP_ACTIVITY_CODE;
+
 import java.util.Arrays;
 
+import org.json.JSONException;
+
+import tw.org.by37.MemberActivity;
 import tw.org.by37.R;
+import tw.org.by37.SignupActivity;
+import tw.org.by37.data.UserData;
+import tw.org.by37.service.UsersApiService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -34,15 +43,17 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
 import com.google.android.gms.plus.model.people.Person;
 
-public class MemberLoginFragment extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener {
+public class LoginFragment extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener {
 
-        private final static String TAG = "MemberLoginFragment";
+        private final static String TAG = "LoginFragment";
 
         private Context mContext;
 
+        /** FB Login **/
         private LoginButton btn_fb_login;
         private TextView tv_info;
         private UiLifecycleHelper uiHelper;
+        /** End of FB Login **/
 
         /** Google+ **/
         private static final int RC_SIGN_IN = 0;
@@ -65,23 +76,24 @@ public class MemberLoginFragment extends Fragment implements ConnectionCallbacks
 
         private SignInButton btnSignIn;
 
+        /** Google+ 的登入狀態 **/
         private boolean userGoogleStatus = false;
 
         /** End of Google+ **/
 
-        public MemberLoginFragment() {
-                super();
-        }
+        /** 加入會員按鈕 **/
+        private Button btn_join;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-                uiHelper = new UiLifecycleHelper(getActivity(), statusCallback);
-                uiHelper.onCreate(savedInstanceState);
+                // uiHelper = new UiLifecycleHelper(getActivity(),
+                // statusCallback);
+                // uiHelper.onCreate(savedInstanceState);
 
                 mContext = getActivity();
 
-                View view = inflater.inflate(R.layout.fragment_member_login, container, false);
+                View view = inflater.inflate(R.layout.fragment_login, container, false);
 
                 findView(view);
 
@@ -93,48 +105,127 @@ public class MemberLoginFragment extends Fragment implements ConnectionCallbacks
         @Override
         public void onCreate(Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
+                uiHelper = new UiLifecycleHelper(getActivity(), statusCallback);
+                uiHelper.onCreate(savedInstanceState);
         }
 
         public void findView(View view) {
 
                 tv_info = (TextView) view.findViewById(R.id.textView1);
 
-                btn_fb_login = (LoginButton) view.findViewById(R.id.btn_facebook);
-                btn_fb_login.setReadPermissions(Arrays.asList("email"));
-                btn_fb_login.setUserInfoChangedCallback(new UserInfoChangedCallback() {
+                btn_join = (Button) view.findViewById(R.id.btn_join);
+                btn_join.setOnClickListener(new OnClickListener() {
                         @Override
-                        public void onUserInfoFetched(GraphUser user) {
-                                if (user != null) {
-                                        StringBuffer sb = new StringBuffer();
-                                        sb.append("Id : " + user.getId() + "\n");
-                                        sb.append("Name : " + user.getName() + "\n");
-                                        sb.append("FirstName : " + user.getFirstName() + "\n");
-                                        sb.append("LastName : " + user.getLastName() + "\n");
-                                        sb.append("MiddleName : " + user.getMiddleName() + "\n");
-                                        sb.append("Username : " + user.getUsername() + "\n");
-                                        sb.append("Birthday : " + user.getBirthday() + "\n");
-                                        sb.append("Link : " + user.getLink() + "\n");
-                                        sb.append("Class : " + user.getClass() + "\n");
-                                        sb.append("Location : " + user.getLocation() + "\n");
-                                        sb.append("InnerJSONObject : " + user.getInnerJSONObject() + "\n");
-                                        tv_info.setText("You are currently logged in as " + user.getName() + "\n" + sb.toString());
-                                } else {
-                                        tv_info.setText("You are not logged in.");
-                                }
+                        public void onClick(View v) {
+                                gotoSignupActivity();
                         }
                 });
+
+                btn_fb_login = (LoginButton) view.findViewById(R.id.btn_facebook);
+                // If using in a fragment
+                btn_fb_login.setFragment(this);
+                btn_fb_login.setReadPermissions(Arrays.asList("email"));
+                btn_fb_login.setUserInfoChangedCallback(userCallback);
+        }
+
+        class getDataAsyncTask extends AsyncTask<String, Integer, String> {
+                @Override
+                protected String doInBackground(String... param) {
+
+                        String result = UsersApiService.postUsers();
+
+                        Log.i(TAG, "Result : " + result);
+
+                        return result;
+                }
+
+                @Override
+                protected void onPostExecute(String result) {
+                        super.onPostExecute(result);
+                        String mInfo = tv_info.getText().toString();
+                        int checkReg = result.indexOf("<html");
+                        String mReg = "";
+                        if (checkReg >= 0) {
+                                mReg = "Register Info : server has been sleep." + "\n\n";
+                        } else {
+                                mReg = "Register Info : " + result + "\n\n";
+                        }
+                        tv_info.setText(mReg + mInfo);
+                }
+
+                @Override
+                protected void onProgressUpdate(Integer... values) {
+                        super.onProgressUpdate(values);
+                }
+
+                /** 執行Async Task前 **/
+                @Override
+                protected void onPreExecute() {
+                        super.onPreExecute();
+                }
         }
 
         private Session.StatusCallback statusCallback = new Session.StatusCallback() {
                 @Override
                 public void call(Session session, SessionState state, Exception exception) {
-                        if (state.isOpened()) {
-                                Log.d(TAG, "Facebook session opened.");
-                        } else if (state.isClosed()) {
-                                Log.d(TAG, "Facebook session closed.");
+                        onSessionStateChange(session, state, exception);
+                }
+        };
+
+        private UserInfoChangedCallback userCallback = new UserInfoChangedCallback() {
+                @Override
+                public void onUserInfoFetched(GraphUser user) {
+                        if (user != null) {
+                                StringBuffer sb = new StringBuffer();
+                                /** set Facebook User Data **/
+                                UserData.social_id = user.getId();
+                                UserData.name = user.getName();
+                                try {
+                                        UserData.email = user.getInnerJSONObject().getString("email");
+                                } catch (JSONException e) {
+                                        e.printStackTrace();
+                                        Log.e(TAG, "email JSONException!");
+                                }
+                                UserData.login_type = "fb";
+                                sb.append("Id : " + user.getId() + "\n");
+                                sb.append("Name : " + user.getName() + "\n");
+                                sb.append("FirstName : " + user.getFirstName() + "\n");
+                                sb.append("LastName : " + user.getLastName() + "\n");
+                                sb.append("MiddleName : " + user.getMiddleName() + "\n");
+                                sb.append("Username : " + user.getUsername() + "\n");
+                                sb.append("Birthday : " + user.getBirthday() + "\n");
+                                sb.append("Link : " + user.getLink() + "\n");
+                                sb.append("Class : " + user.getClass() + "\n");
+                                sb.append("Location : " + user.getLocation() + "\n");
+                                sb.append("InnerJSONObject : " + user.getInnerJSONObject() + "\n");
+                                tv_info.setText("You are currently logged in as " + user.getName() + "\n" + sb.toString());
+
+                                new getDataAsyncTask().execute(null, null, null);
+
+                        } else {
+                                tv_info.setText("You are not logged in.");
                         }
                 }
         };
+
+        private void onSessionStateChange(Session session, SessionState state, Exception exception) {
+                if (state.isOpened()) {
+                        Log.d(TAG, "Facebook session opened.");
+                } else if (state.isClosed()) {
+                        Log.d(TAG, "Facebook session closed.");
+                }
+        }
+
+        /**
+         * Logout From Facebook
+         */
+        public static void callFacebookLogout(Context context) {
+                Log.i(TAG, "callFacebookLogout");
+                if (Session.getActiveSession() != null) {
+                        Session.getActiveSession().closeAndClearTokenInformation();
+                }
+                Session.setActiveSession(null);
+        }
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -142,11 +233,10 @@ public class MemberLoginFragment extends Fragment implements ConnectionCallbacks
                 Log.i(TAG, "Request Code : " + requestCode);
                 Log.i(TAG, "Result Code : " + resultCode);
 
-                /** FB Login Session **/
                 uiHelper.onActivityResult(requestCode, resultCode, data);
-                /** End of FB Login Session **/
 
-                if (requestCode == RC_SIGN_IN) {
+                switch (requestCode) {
+                case RC_SIGN_IN:
                         if (resultCode != getActivity().RESULT_OK) {
                                 mSignInClicked = false;
                         }
@@ -156,6 +246,7 @@ public class MemberLoginFragment extends Fragment implements ConnectionCallbacks
                         if (!mGoogleApiClient.isConnecting()) {
                                 mGoogleApiClient.connect();
                         }
+                        break;
                 }
         }
 
@@ -166,8 +257,12 @@ public class MemberLoginFragment extends Fragment implements ConnectionCallbacks
                 btnSignIn.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                                // Signin button clicked
-                                signInWithGplus();
+                                if (!userGoogleStatus) {
+                                        // Signin button clicked
+                                        signInWithGplus();
+                                } else {
+                                        signOutFromGplus();
+                                }
                         }
                 });
 
@@ -209,11 +304,6 @@ public class MemberLoginFragment extends Fragment implements ConnectionCallbacks
                 // Update the UI after signin
                 updateUI(true);
 
-                if (userGoogleStatus) {
-                        // 如果是登入狀態，則登出
-                        signOutFromGplus();
-                }
-
                 // Login Success, finish this activity to MainActivity To
                 // Auto Login
         }
@@ -232,6 +322,8 @@ public class MemberLoginFragment extends Fragment implements ConnectionCallbacks
                         // btn_google_login.setVisibility(View.GONE);
                 } else {
                         userGoogleStatus = false;
+
+                        tv_info.setText("You logout Google+ success !");
                         // btnSignIn.setVisibility(View.VISIBLE);
                         // btn_google_login.setVisibility(View.VISIBLE);
                 }
@@ -293,6 +385,12 @@ public class MemberLoginFragment extends Fragment implements ConnectionCallbacks
                                 Log.i(TAG, "Finally Set UserData");
                                 Log.i(TAG, "account : " + email + ", Social_Id : " + personId);
 
+                                /** set Google User Data **/
+                                UserData.social_id = personId;
+                                UserData.name = personName;
+                                UserData.email = email;
+                                UserData.login_type = "google";
+
                                 StringBuffer sb = new StringBuffer();
                                 sb.append("Id : ").append(personId).append("\n");
                                 sb.append("Name : ").append(personName).append("\n");
@@ -304,6 +402,8 @@ public class MemberLoginFragment extends Fragment implements ConnectionCallbacks
                                 sb.append("Nickname : ").append(personNickname).append("\n");
 
                                 tv_info.setText(sb.toString());
+
+                                new getDataAsyncTask().execute(null, null, null);
 
                                 // FunctionUtil.showToastMsg(mContext,
                                 // "Google+ Login Success");
@@ -353,6 +453,13 @@ public class MemberLoginFragment extends Fragment implements ConnectionCallbacks
         /** End of Preferences **/
 
         /** GotoActivity **/
+        public void gotoSignupActivity() {
+                Intent intent = new Intent();
+                intent.setClass(mContext, SignupActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivityForResult(intent, SIGNUP_ACTIVITY_CODE);
+        }
+
         /** End of GotoActivity **/
 
         /** Activity Bundle **/

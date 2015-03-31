@@ -7,6 +7,10 @@
     <string name="action_search">Search</string>
     <string name="action_back">Back</string>
     <string name="hello_world">Hello world!</string>
+    <!-- mNB -->
+    <!-- AIzaSyB8Vr8zM-xcbOaW9a8bgLWkfZc8Hcfwrko -->
+    <!-- mHome -->
+    <!-- AIzaSyBCpbIzDF7bEd09CLdSj2HxVoiuPOu5ifY -->
     <string name="map_api_key">AIzaSyBCpbIzDF7bEd09CLdSj2HxVoiuPOu5ifY</string>
     <!-- Facebook App Id -->
     <string name="app_id">1435759036715618</string>
@@ -15,6 +19,7 @@
 
     <!-- Title Text -->
     <string name="fragment_title_member_login">會員登入</string>
+    <string name="fragment_title_member_signup">會員註冊</string>
     <string name="fragment_title_search">搜尋</string>
     <string name="fragment_title_test">測試</string>
     <string name="fragment_title_supplieshelp">物資需求</string>
@@ -29,6 +34,39 @@
 
     <!-- Hint Information -->
     <string name="org_data_empty">目前沒有機構資料</string>
+    <string name="exit_app_hint">再按一次退出</string>
+    <string name="share_select_hint">請選擇分享項目</string>
+    <string name="share_select_all_hint">全選</string>
+    <string name="share_select_cancle_hint">取消全選</string>
+    <string name="category_nomarker_hint">沒有此分類店家</string>
+    <string name="pocket_done_hint">打卡完成</string>
+    <string name="pocket_cancle_hint">打卡取消</string>
+    <string name="social_logout_hint_1">提醒您</string>
+    <string name="social_logout_hint_2">登出後手機的資料將會刪除喔!</string>
+    <string name="pocketlist_hint_1">目前還沒有任何資料</string>
+    <string name="pocketlist_hint_2">快來建立屬於你的美食地圖!</string>
+    <string name="search_result_hint_1">找不到符合條件的資料</string>
+    <string name="search_result_hint_2">此分類沒有資料喔!</string>
+    <string name="account_hint">帳號</string>
+    <string name="password_hint">密碼</string>
+    <string name="name_hint">暱稱</string>
+    <string name="password_confirm_hint">再次確認密碼</string>
+    <string name="password_old_hint">請輸入舊密碼</string>
+    <string name="password_new_hint">請輸入新密碼</string>
+    <string name="login_social_hint">社群帳號快速登入</string>
+    <string name="login_normal_hint">已有帳號</string>
+    <string name="login_signup_hint">還沒有帳號?</string>
+    <string name="about_private_rule">隱私權政策</string>
+    <string name="about_service_rule">服務條款</string>
+    <string name="member_modify_pw_hint_1">修改密碼</string>
+    <string name="member_modify_pw_hint_2">修改密碼成功</string>
+    <string name="member_modify_pw_hint_3">修改密碼失敗，請確認密碼是否正確</string>
+    <string name="login_success_hint">登入成功</string>
+    <string name="logout_success_hint">登出成功</string>
+    <string name="login_fail_hint_1">帳號或密碼錯誤</string>
+    <string name="login_fail_hint_2">登入失敗，請重新嘗試</string>
+    <string name="no_app_hint_1">您的手機尚未安裝此程式</string>
+    <string name="internet_error_hint_1">請連接網路服務</string>
 
     <!-- Sliding Menu Item -->
     <string-array name="sliding_menu_item">
@@ -42,6 +80,19 @@
         <item>分享APP</item>
         <item>使用條款</item>
     </string-array>
+
+    <!-- Botton -->
+    <string name="btn_login_fb">Facebook登入</string>
+    <string name="btn_login_google">Google+登入</string>
+    <string name="btn_join">加入會員</string>
+    <string name="btn_login">登入</string>
+    <string name="btn_signup">註冊</string>
+    <string name="btn_submit">確認</string>
+    <string name="btn_submit_send">確認送出</string>
+    <string name="btn_logout">登出</string>
+    <string name="btn_album">相簿</string>
+    <string name="btn_camera">照相</string>
+    <string name="btn_content">內容</string>
 
     <!-- Right Sliding Menu Item -->
     <string-array name="right_sliding_menu_item">

@@ -8,6 +8,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import tw.org.by37.R;
+import tw.org.by37.data.SelectingData;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -27,13 +28,20 @@ public class MapFragment extends Fragment {
         private Context mContext;
 
         private GoogleMap map;
-        
+
         /**
          * 使用者的當前位置
          */
         private LatLng userPosition;
         private MarkerOptions mMarkerOption;
         private Marker userMarker;
+
+        /**
+         * 基構的相關參數
+         */
+        private LatLng orgPosition;
+        private MarkerOptions orgMarkerOption;
+        private Marker orgMarker;
 
         /** MyLocation Param **/
         public static double wifi_latitude = -1;
@@ -80,7 +88,7 @@ public class MapFragment extends Fragment {
                 map = mySupportMapFragment.getMap();
 
                 initMap();
-                
+
                 userPosition = new LatLng(wifi_latitude, wifi_longitude);
 
                 // 將 Camera 移動到使用者當前位置
@@ -114,6 +122,21 @@ public class MapFragment extends Fragment {
                         } catch (Exception e) {
                                 Log.v(TAG, "initMap Exception");
                         }
+                }
+        }
+
+        public void setOrganizationMarker() {
+                Log.i(TAG, "setOrganizationMarker");
+                // 如果有基構的資料,即進入基構簡介
+                if (SelectingData.mOrganizationData != null) {
+                        orgPosition = new LatLng(SelectingData.mOrganizationData.org_lat, SelectingData.mOrganizationData.org_lng);
+                        // new a Marker
+                        MarkerOptions orgMarkerOption = new MarkerOptions().position(orgPosition).title(SelectingData.mOrganizationData.org_name).snippet(SelectingData.mOrganizationData.org_title);
+                        // Add a marker in the mMap
+                        Marker marker = map.addMarker(orgMarkerOption);
+
+                        // 將 Camera 拉到使用者當前位置
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(orgPosition, 16));
                 }
         }
 

@@ -49,9 +49,12 @@ public class SysConfig {
 
         /** 基構資料 **/
         public static final String organizationsApi = ApiServer + "organizations";
+        
+        /** 基構資料 for Id **/
+        public static final String organizationsIdApi = ApiServer + "getSupportsByOrganizationId/";
 
         /** 物資需求資料, 包含物品資料及所在基構資料 **/
-        public static final String suppliesApi = ApiServer + "supports";
+        public static final String suppliesApi = ApiServer + "getOrganizationsBySupport";
 
         /** 物資類別資料 **/
         public static final String goodsTypesApi = ApiServer + "goodsTypes";

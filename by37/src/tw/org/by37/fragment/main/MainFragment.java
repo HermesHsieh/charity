@@ -1,7 +1,7 @@
 package tw.org.by37.fragment.main;
 
 import tw.org.by37.R;
-import tw.org.by37.fragment.member.MemberLoginFragment;
+import tw.org.by37.fragment.member.LoginFragment;
 import tw.org.by37.fragment.organization.OrganizationFragment;
 import tw.org.by37.fragment.search.SearchFragment;
 import tw.org.by37.fragment.supplieshelp.SuppliesHelpFragment;
@@ -25,7 +25,7 @@ public class MainFragment extends Fragment {
         private Context mContext;
 
         /** MemberLogin Fragment **/
-        private MemberLoginFragment mMemberLoginFragment;
+        private LoginFragment mMemberLoginFragment;
 
         /** Search Fragment **/
         private SearchFragment mSearchFragment;
@@ -69,13 +69,13 @@ public class MainFragment extends Fragment {
         /**
          * switchMemberLoginFragment 介面
          */
-        public void switchMemberLoginFragment() {
+        public void switchLoginFragment() {
                 FragmentManager manager = getActivity().getSupportFragmentManager();
                 Fragment fragment = manager.findFragmentById(R.id.fragment_content);
                 FragmentTransaction ft = manager.beginTransaction();
 
                 if (mMemberLoginFragment == null)
-                        mMemberLoginFragment = new MemberLoginFragment();
+                        mMemberLoginFragment = new LoginFragment();
 
                 if (fragment == null) {
                         ft.add(R.id.fragment_content, mMemberLoginFragment);

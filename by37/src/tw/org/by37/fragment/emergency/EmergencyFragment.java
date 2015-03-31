@@ -9,14 +9,10 @@ import android.view.ViewGroup;
 
 public class EmergencyFragment extends Fragment {
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		View v = inflater.inflate(R.layout.fragment_emergency, container,false);
-		return v;
-	}
-	
-	
-
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+                // TODO Auto-generated method stub
+                View v = inflater.inflate(R.layout.fragment_emergency, container, false);
+                return v;
+        }
 }

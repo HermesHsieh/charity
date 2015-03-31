@@ -10,11 +10,13 @@ import org.json.JSONObject;
 
 import tw.org.by37.R;
 import tw.org.by37.data.OrganizationData;
+import tw.org.by37.data.SelectingData;
 import tw.org.by37.data.SupplyData;
 import tw.org.by37.fragment.organization.DBControlOrganization;
 import tw.org.by37.fragment.supplieshelp.SuppliesHelpFragment;
 import tw.org.by37.fragment.test.TestFragment;
 import tw.org.by37.service.OrganizationApiService;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,8 +39,6 @@ public class OrganizationFragment extends Fragment {
 
         private Context mContext;
 
-        private OrganizationData mOrganizationData = null;
-
         private SupplyData mSupplyData = null;
 
         private boolean db_modify = false;
@@ -48,10 +48,8 @@ public class OrganizationFragment extends Fragment {
         private TextView tv_info;
 
         private MapFragment mMapFragment;
-
-        public void setOrganizationData(OrganizationData data) {
-                this.mOrganizationData = data;
-        }
+        
+        private ProgressDialog psDialog;
 
         public void setSupplyData(SupplyData data) {
                 this.mSupplyData = data;
@@ -71,7 +69,7 @@ public class OrganizationFragment extends Fragment {
                 findView(view);
 
                 getOrganizationData();
-                
+
                 switchMapFragment();
 
                 if (mSupplyData != null) {
@@ -80,7 +78,7 @@ public class OrganizationFragment extends Fragment {
                         /** 沒有物資需求,僅基構簡介 **/
                 }
 
-                if (mOrganizationData != null) {
+                if (SelectingData.mOrganizationData != null) {
                 } else {
                         /** 沒有設定基構資料 **/
                         Log.e(TAG, "OrganizationData == null !!");
@@ -100,9 +98,194 @@ public class OrganizationFragment extends Fragment {
 
         private void getOrganizationData() {
                 // 獲取上次更新的時間
-                data_updateTime = getDataUpdateTimePreferences(mContext);
+                // data_updateTime = getDataUpdateTimePreferences(mContext);
 
-                new getOrganizationDataAsyncTask().execute();
+                // new getOrganizationDataAsyncTask().execute();
+
+                new getOrganizationDataForIdAsyncTask().execute();
+        }
+
+        class getOrganizationDataForIdAsyncTask extends AsyncTask<String, Integer, String> {
+                @Override
+                protected String doInBackground(String... param) {
+
+                        String result = OrganizationApiService.getAllOrganizationDataForId(SelectingData.organizationId);
+
+                        Log.i(TAG, "Result : " + result);
+
+                        return result;
+                }
+
+                @Override
+                protected void onPostExecute(String result) {
+                        super.onPostExecute(result);
+
+                        OrganizationData mData = new OrganizationData();
+
+                        if (result != null) {
+                                try {
+                                        JSONObject mJsonObject = new JSONObject(result);
+
+                                        try {
+                                                mData.org_id = mJsonObject.getString("id");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'id' error!!");
+                                        }
+                                        try {
+                                                mData.org_name = mJsonObject.getString("name");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'name' error!!");
+                                        }
+                                        try {
+                                                mData.org_title = mJsonObject.getString("title");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'title' error!!");
+                                        }
+                                        try {
+                                                mData.org_content = mJsonObject.getString("content");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'content' error!!");
+                                        }
+                                        try {
+                                                mData.org_keyword = mJsonObject.getString("keyword");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'keyword' error!!");
+                                        }
+                                        try {
+                                                mData.org_email = mJsonObject.getString("email");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'email' error!!");
+                                        }
+                                        try {
+                                                mData.org_fax = mJsonObject.getString("fax");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'fax' error!!");
+                                        }
+                                        try {
+                                                mData.org_address = mJsonObject.getString("address");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'address' error!!");
+                                        }
+                                        try {
+                                                mData.org_phone = mJsonObject.getString("phone");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'phone' error!!");
+                                        }
+                                        try {
+                                                mData.org_div = mJsonObject.getString("division");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'division' error!!");
+                                        }
+                                        try {
+                                                mData.org_city = mJsonObject.getString("city");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'city' error!!");
+                                        }
+                                        try {
+                                                mData.org_type = mJsonObject.getString("type");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'type' error!!");
+                                        }
+                                        try {
+                                                mData.org_lng = mJsonObject.getDouble("longitude");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'longitude' error!!");
+                                        }
+                                        try {
+                                                mData.org_lat = mJsonObject.getDouble("latitude");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'latitude' error!!");
+                                        }
+                                        try {
+                                                mData.org_url = mJsonObject.getString("url");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'url' error!!");
+                                        }
+                                        try {
+                                                mData.org_contact = mJsonObject.getString("contact");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'contact' error!!");
+                                        }
+                                        try {
+                                                mData.org_number = mJsonObject.getString("number");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'number' error!!");
+                                        }
+                                        try {
+                                                mData.org_created_at = mJsonObject.getString("created_at");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'created_at' error!!");
+                                        }
+                                        try {
+                                                mData.org_updated_at = mJsonObject.getString("updated_at");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'updated_at' error!!");
+                                        }
+
+                                } catch (JSONException e) {
+                                        e.printStackTrace();
+                                        mData = null;
+                                        Log.e(TAG, "mJsonObject error!!");
+                                        Log.e(TAG, "The OrganizationData from Server == null!!");
+                                }
+
+                        } else {
+                                Log.e(TAG, "OrganizationData Result == null, (getOrganizationDataAsyncTask) ");
+                        }
+
+                        if (mSupplyData != null) {
+                                SelectingData.mOrganizationData = mData;
+                        } else {
+                                Log.e(TAG, "mSupplyData == null !!");
+                        }
+
+                        if (tv_info != null) {
+                                if (SelectingData.mOrganizationData != null) {
+                                        tv_info.setText("= Organization Data =\n" + SelectingData.mOrganizationData.getDataString() + "\n= Supply Data =\n" + mSupplyData.getDataString());
+                                } else {
+                                        tv_info.setText(R.string.org_data_empty);
+                                }
+                        } else {
+                                Log.e(TAG, "TextView == null !!");
+                        }
+
+                        if (mMapFragment != null) {
+                                mMapFragment.setOrganizationMarker();
+                        }
+                        
+                        psDialog.dismiss();
+                }
+
+                @Override
+                protected void onProgressUpdate(Integer... values) {
+                        super.onProgressUpdate(values);
+                }
+
+                /** 執行Async Task前 **/
+                @Override
+                protected void onPreExecute() {
+                        super.onPreExecute();
+                        psDialog = ProgressDialog.show(mContext, "訊息", "資料讀取中，請稍候...");
+                }
         }
 
         class getOrganizationDataAsyncTask extends AsyncTask<String, Integer, String> {
@@ -271,14 +454,14 @@ public class OrganizationFragment extends Fragment {
                         // 如果db中資料筆數大於0
                         if (DBControlOrganization.getDataCount(mContext) > 0) {
                                 if (mSupplyData != null) {
-                                        mOrganizationData = DBControlOrganization.getForId(mContext, mSupplyData.organizationId);
+                                        SelectingData.mOrganizationData = DBControlOrganization.getForId(mContext, mSupplyData.organizationId);
                                 } else {
                                         Log.e(TAG, "mSupplyData == null !!");
                                 }
 
                                 if (tv_info != null) {
-                                        if (mOrganizationData != null) {
-                                                tv_info.setText("= Organization Data =\n" + mOrganizationData.getDataString() + "\n= Supply Data =\n" + mSupplyData.getDataString());
+                                        if (SelectingData.mOrganizationData != null) {
+                                                tv_info.setText("= Organization Data =\n" + SelectingData.mOrganizationData.getDataString() + "\n= Supply Data =\n" + mSupplyData.getDataString());
                                         } else {
                                                 tv_info.setText(R.string.org_data_empty);
                                         }
@@ -400,5 +583,6 @@ public class OrganizationFragment extends Fragment {
         @Override
         public void onDestroy() {
                 super.onDestroy();
+                SelectingData.clearOrganizationData();
         }
 }

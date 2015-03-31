@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import tw.org.by37.MainActivity;
 
 import android.R;
+import android.util.Log;
 
 public class SelectingData {
+        private final static String TAG = "SelectingData";
 
         public static String suppliesId = "";
 
@@ -31,11 +33,16 @@ public class SelectingData {
 
         /** 確認是否有基構資料 **/
         public static boolean checkOrganizationData() {
-
                 if (mOrganizationData != null) {
                         return true;
                 }
                 return false;
+        }
+
+        /** 清除基構資料 **/
+        public static void clearOrganizationData() {
+                Log.i(TAG, "clearOrganizationData");
+                mOrganizationData = null;
         }
 
         /** 清空物資類別資料 **/

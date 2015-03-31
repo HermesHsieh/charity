@@ -23,7 +23,7 @@ public class SuppliesApiService {
         private final static String TAG = "SuppliesApi";
 
         private static String uri = suppliesApi;
-        
+
         private static String uri_types = goodsTypesApi;
 
         public static String getAllSuppliesData() {
@@ -37,18 +37,19 @@ public class SuppliesApiService {
                 try {
                         // for port 80 requests!
                         HttpClient httpclient = new DefaultHttpClient();
-                        HttpPost httppost = new HttpPost(uri);
                         HttpGet httpget = new HttpGet(uri);
                         HttpResponse response = httpclient.execute(httpget);
 
                         /* 取出回應字串 */
                         strResult = EntityUtils.toString(response.getEntity(), "UTF-8");
+
+                        Log.i(TAG, "getAllSuppliesData Result : " + strResult);
                 } catch (Exception e) {
                         e.printStackTrace();
                 }
                 return strResult;
         }
-        
+
         public static String getGoodsTypes() {
                 Log.v(TAG, "getGoodsTypes");
 
@@ -60,7 +61,6 @@ public class SuppliesApiService {
                 try {
                         // for port 80 requests!
                         HttpClient httpclient = new DefaultHttpClient();
-                        HttpPost httppost = new HttpPost(uri_types);
                         HttpGet httpget = new HttpGet(uri_types);
                         HttpResponse response = httpclient.execute(httpget);
 

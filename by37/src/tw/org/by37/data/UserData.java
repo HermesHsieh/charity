@@ -25,7 +25,7 @@ public class UserData {
         public static String account = "";
         /** 使用者密碼 **/
         public static String password = "";
-        /** 0=一般註冊, 1=Facebook, 2=Google+ **/
+        /** by37=一般註冊, fb=Facebook, google=Google+ **/
         public static String login_type = "";
         /** 社群平台ID,僅社群登入使用 **/
         public static String social_id = "";
