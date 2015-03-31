@@ -42,7 +42,8 @@ public class SysConfig {
         public static final String usersApi = ApiServer + "users";
 
         /** 急難救助資料 **/
-        public static final String emergencyApi = ApiServer + "emergencies";
+        public static final String emergenciesApi = ApiServer + "emergencies";
+        public static final String emergencyAPI = ApiServer+"emergency/";
 
         /** 基構類別 **/
         public static final String organizationsTypeApi = ApiServer + "organizationsType";
@@ -58,5 +59,10 @@ public class SysConfig {
 
         /** 物資類別資料 **/
         public static final String goodsTypesApi = ApiServer + "goodsTypes";
+        
+        /**廣播參數**/
+        public static final String MAIN_BROADCAST_STRING = "MainBroadcast";
+        public static final String GET_EMERGENCY_BROADCAST = "GetEmergencyBroadCast";
+        public static final String GET_EMERGENCY_CONTENT_BROADCAST = "GetEmergencyContentBroadCast";
 
 }

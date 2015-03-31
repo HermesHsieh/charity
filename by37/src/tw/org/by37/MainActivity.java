@@ -6,13 +6,14 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import tw.org.by37.config.SysConfig;
-import tw.org.by37.fragment.emergency.EmergencyFragment;
+import tw.org.by37.emergency.EmergencyFragment;
 import tw.org.by37.fragment.main.MainFragment;
 import tw.org.by37.fragment.member.LoginFragment;
 import tw.org.by37.fragment.menu.BottomMenuFragment;
 import tw.org.by37.fragment.menu.RightMenuFragment;
 import tw.org.by37.fragment.menu.SlidingMenuFragment;
 import tw.org.by37.fragment.organization.OrganizationFragment;
+import tw.org.by37.fragment.productsell.MainProductSellFragment;
 import tw.org.by37.fragment.search.SearchFragment;
 import tw.org.by37.fragment.supplieshelp.SuppliesHelpFragment;
 import tw.org.by37.fragment.test.TestFragment;
@@ -31,7 +32,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -90,8 +90,13 @@ public class MainActivity extends SlidingFragmentActivity {
         private TestPostFragment mTestPostFragment;
 
         private EmergencyFragment mEmergencyFragment;
+        
+        /**ProductSell Fragment**/
+        private MainProductSellFragment mMainProductSellFragment;
 
         private ListView mListView;
+        
+       
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -114,6 +119,8 @@ public class MainActivity extends SlidingFragmentActivity {
                 switchMainFragment();
 
                 switchBottomMenuFragment();
+                
+                
 
         }
 
@@ -221,6 +228,9 @@ public class MainActivity extends SlidingFragmentActivity {
                         case 4:
                                 switchSuppliesHelpFragment();
                                 break;
+                        case 5:
+                        		switchMainProductFragment();
+                        		break;
                         case 6:
                                 switchOrganizationFragment();
                                 break;
@@ -528,11 +538,35 @@ public class MainActivity extends SlidingFragmentActivity {
                 setTitle(getString(R.string.fragment_title_emergency));
         }
 
+
         public void gotoMemberActivity() {
                 Intent intent = new Intent();
                 intent.setClass(mContext, MemberActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent, MEMBER_ACTIVITY_CODE);
+        }
+        
+        /**
+         * switchProductFragment 介面
+         */
+        
+        public void switchMainProductFragment() {
+            FragmentManager manager = getSupportFragmentManager();
+            Fragment fragment = manager.findFragmentById(R.id.fragment_content);
+
+            FragmentTransaction ft = manager.beginTransaction();
+
+            if (mMainProductSellFragment == null)
+            	mMainProductSellFragment = new MainProductSellFragment();
+
+            if (fragment == null) {
+                    ft.add(R.id.fragment_content, mMainProductSellFragment);
+            } else {
+                    ft.replace(R.id.fragment_content, mMainProductSellFragment);
+            }
+            ft.commit();
+
+            setTitle(getString(R.string.fragment_title_productsell));
         }
 
         @Override
@@ -560,5 +594,24 @@ public class MainActivity extends SlidingFragmentActivity {
                 getSupportMenuInflater().inflate(R.menu.main, menu);
                 return true;
         }
+        
+        
+        
+        @Override
+		protected void onResume() {
+			// TODO Auto-generated method stub
+			super.onResume();
+			
+		}
+        
+        @Override
+        protected void onPause(){
+        	super.onPause();
+        	
+        }
+
+		
+        
+        
 
 }
