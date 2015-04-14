@@ -1,10 +1,8 @@
 package tw.org.by37.fragment.main;
 
 import tw.org.by37.R;
-
-import tw.org.by37.fragment.member.LoginFragment;
 import tw.org.by37.emergency.EmergencyFragment;
-import tw.org.by37.fragment.member.MemberLoginFragment;
+import tw.org.by37.fragment.member.LoginFragment;
 import tw.org.by37.fragment.organization.OrganizationFragment;
 import tw.org.by37.fragment.productsell.MainProductSellFragment;
 import tw.org.by37.fragment.search.SearchFragment;

@@ -3,6 +3,8 @@ package tw.org.by37.fragment.menu;
 import tw.org.by37.R;
 import tw.org.by37.R.id;
 import tw.org.by37.R.layout;
+import tw.org.by37.fragment.productsell.NewProductActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -57,6 +59,17 @@ public class BottomMenuFragment extends Fragment {
                 rl_btn_1 = (RelativeLayout) view.findViewById(R.id.rl_btn_1);
                 rl_btn_2 = (RelativeLayout) view.findViewById(R.id.rl_btn_2);
                 rl_btn_3 = (RelativeLayout) view.findViewById(R.id.rl_btn_3);
+                
+                img_btn_1.setOnClickListener(new ImageButton.OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						Intent i = new Intent();
+						i.setClass(getActivity(), NewProductActivity.class);
+						getActivity().startActivity(i);
+					}
+				});
 
                 ll_bottommenu = (LinearLayout) view.findViewById(R.id.ll_bottommenu);
 
