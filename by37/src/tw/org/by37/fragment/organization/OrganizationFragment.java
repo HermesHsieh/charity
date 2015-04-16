@@ -1,20 +1,19 @@
 package tw.org.by37.fragment.organization;
 
-import static tw.org.by37.config.SysConfig.k_Supplies_Data_UpdateTime;
-
-import java.util.ArrayList;
+import static tw.org.by37.config.RequestCode.SUPPLIESHELP_ACTIVITY_CODE;
+import static tw.org.by37.config.SysConfig.k_Organization_Data_UpdateTime;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import tw.org.by37.MainActivity;
 import tw.org.by37.R;
+import tw.org.by37.SuppliesHelpActivity;
 import tw.org.by37.data.OrganizationData;
 import tw.org.by37.data.SelectingData;
 import tw.org.by37.data.SupplyData;
-import tw.org.by37.fragment.organization.DBControlOrganization;
 import tw.org.by37.fragment.supplieshelp.SuppliesHelpFragment;
-import tw.org.by37.fragment.test.TestFragment;
 import tw.org.by37.service.OrganizationApiService;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -29,9 +28,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import static tw.org.by37.config.SysConfig.*;
 
 public class OrganizationFragment extends Fragment {
 
@@ -48,8 +50,18 @@ public class OrganizationFragment extends Fragment {
         private TextView tv_info;
 
         private MapFragment mMapFragment;
-        
+
         private ProgressDialog psDialog;
+
+        /** Organization Information Item RelativeLayout Button **/
+        private RelativeLayout rl_1, rl_2, rl_3;
+        /** Organization Information Content Text **/
+        private TextView tv_info_title, tv_info_content;
+
+        private TextView tv_org_name, tv_view_all_need;
+
+        /** 動態設定機構TextView的參數 **/
+        private boolean isMeasured = false;
 
         public void setSupplyData(SupplyData data) {
                 this.mSupplyData = data;
@@ -94,6 +106,108 @@ public class OrganizationFragment extends Fragment {
 
         public void findView(View view) {
                 tv_info = (TextView) view.findViewById(R.id.tv_info);
+                tv_org_name = (TextView) view.findViewById(R.id.tv_org_name);
+                tv_view_all_need = (TextView) view.findViewById(R.id.tv_view_all_need);
+
+                /** Organization Information Item RelativeLayout Button **/
+                rl_1 = (RelativeLayout) view.findViewById(R.id.rl_1);
+                rl_2 = (RelativeLayout) view.findViewById(R.id.rl_2);
+                rl_3 = (RelativeLayout) view.findViewById(R.id.rl_3);
+
+                /** Organization Information Content Text **/
+                tv_info_title = (TextView) view.findViewById(R.id.tv_info_title);
+                tv_info_content = (TextView) view.findViewById(R.id.tv_info_content);
+
+                rl_1.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                                setOrganizationInfo(getString(R.string.org_info_main));
+                        }
+                });
+                rl_2.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                                setOrganizationInfo(getString(R.string.org_info_service));
+                        }
+                });
+                rl_3.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                                setOrganizationInfo(getString(R.string.org_info_contact));
+                        }
+                });
+
+                tv_view_all_need.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                                gotoSuppliesHelpActivity();
+                        }
+                });
+        }
+
+        /** 設定機構相關訊息(標題,內容,關鍵字) **/
+        private void setOrganizationInfo(String title) {
+                tv_info_title.setText(title);
+                if (tv_org_name != null && SelectingData.mOrganizationData != null) {
+                        String name = SelectingData.mOrganizationData.org_name;
+                        Log.i(TAG, "Org : " + name);
+                        // name = name.replace("中華民國", "");
+                        Log.i(TAG, "Replace(1) : " + name);
+                        // name = name.replace("財團法人", "");
+                        Log.i(TAG, "Replace(2) : " + name);
+                        tv_org_name.setText(name);
+
+                        /** 動態設定機構名稱,若長度超過螢幕之一半,則設定以 ... 表示 **/
+                        ViewTreeObserver observer = tv_org_name.getViewTreeObserver();
+                        observer.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                                public boolean onPreDraw() {
+                                        if (!isMeasured) {
+                                                LayoutParams mText = (LayoutParams) tv_org_name.getLayoutParams();
+                                                Log.i(TAG, "mText Width : " + mText.width);
+                                                Log.i(TAG, "Screen Width : " + (MainActivity.myScreenWidth) / 2);
+                                                if (tv_org_name.getMeasuredWidth() > (MainActivity.myScreenWidth) / 2) {
+                                                        mText.width = (MainActivity.myScreenWidth) / 2;
+                                                }
+                                                tv_org_name.setLayoutParams(mText);
+                                                isMeasured = true;
+                                        }
+                                        return true;
+                                }
+                        });
+
+                        String content = "";
+                        String keyword = "";
+
+                        if (title.equals(getString(R.string.org_info_main))) {
+                                content = SelectingData.mOrganizationData.org_content;
+                                keyword = SelectingData.mOrganizationData.org_keyword;
+                        }
+
+                        if (title.equals(getString(R.string.org_info_service))) {
+
+                        }
+
+                        if (title.equals(getString(R.string.org_info_contact))) {
+
+                        }
+
+                        if (content.length() > 0 && keyword.length() > 0) {
+                                content = content + "\n\n關鍵字 : " + keyword;
+                                tv_info_content.setText(content);
+                        }
+                }
+
+                /** 設定按壓下去後的Background Color **/
+                rl_1.setBackgroundResource(R.drawable.item_click);
+                rl_2.setBackgroundResource(R.drawable.item_click);
+                rl_3.setBackgroundResource(R.drawable.item_click);
+                if (title.equals(getString(R.string.org_info_main)))
+                        rl_1.setBackgroundColor(getResources().getColor(R.color.org_light_gray_color));
+                if (title.equals(getString(R.string.org_info_service)))
+                        rl_2.setBackgroundColor(getResources().getColor(R.color.org_light_gray_color));
+                if (title.equals(getString(R.string.org_info_contact)))
+                        rl_3.setBackgroundColor(getResources().getColor(R.color.org_light_gray_color));
+
         }
 
         private void getOrganizationData() {
@@ -260,7 +374,10 @@ public class OrganizationFragment extends Fragment {
 
                         if (tv_info != null) {
                                 if (SelectingData.mOrganizationData != null) {
+                                        setOrganizationInfo(getString(R.string.org_info_main));
+
                                         tv_info.setText("= Organization Data =\n" + SelectingData.mOrganizationData.getDataString() + "\n= Supply Data =\n" + mSupplyData.getDataString());
+
                                 } else {
                                         tv_info.setText(R.string.org_data_empty);
                                 }
@@ -271,7 +388,6 @@ public class OrganizationFragment extends Fragment {
                         if (mMapFragment != null) {
                                 mMapFragment.setOrganizationMarker();
                         }
-                        
                         psDialog.dismiss();
                 }
 
@@ -284,7 +400,186 @@ public class OrganizationFragment extends Fragment {
                 @Override
                 protected void onPreExecute() {
                         super.onPreExecute();
-                        psDialog = ProgressDialog.show(mContext, "訊息", "資料讀取中，請稍候...");
+                        psDialog = ProgressDialog.show(mContext, getString(R.string.msg), getString(R.string.loading));
+                }
+        }
+
+        class getSuppliesDataForIdAsyncTask extends AsyncTask<String, Integer, String> {
+                @Override
+                protected String doInBackground(String... param) {
+
+                        String result = OrganizationApiService.getAllOrganizationDataForId(SelectingData.organizationId);
+
+                        Log.i(TAG, "Result : " + result);
+
+                        return result;
+                }
+
+                @Override
+                protected void onPostExecute(String result) {
+                        super.onPostExecute(result);
+
+                        OrganizationData mData = new OrganizationData();
+
+                        if (result != null) {
+                                try {
+                                        JSONObject mJsonObject = new JSONObject(result);
+
+                                        try {
+                                                mData.org_id = mJsonObject.getString("id");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'id' error!!");
+                                        }
+                                        try {
+                                                mData.org_name = mJsonObject.getString("name");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'name' error!!");
+                                        }
+                                        try {
+                                                mData.org_title = mJsonObject.getString("title");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'title' error!!");
+                                        }
+                                        try {
+                                                mData.org_content = mJsonObject.getString("content");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'content' error!!");
+                                        }
+                                        try {
+                                                mData.org_keyword = mJsonObject.getString("keyword");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'keyword' error!!");
+                                        }
+                                        try {
+                                                mData.org_email = mJsonObject.getString("email");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'email' error!!");
+                                        }
+                                        try {
+                                                mData.org_fax = mJsonObject.getString("fax");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'fax' error!!");
+                                        }
+                                        try {
+                                                mData.org_address = mJsonObject.getString("address");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'address' error!!");
+                                        }
+                                        try {
+                                                mData.org_phone = mJsonObject.getString("phone");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'phone' error!!");
+                                        }
+                                        try {
+                                                mData.org_div = mJsonObject.getString("division");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'division' error!!");
+                                        }
+                                        try {
+                                                mData.org_city = mJsonObject.getString("city");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'city' error!!");
+                                        }
+                                        try {
+                                                mData.org_type = mJsonObject.getString("type");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'type' error!!");
+                                        }
+                                        try {
+                                                mData.org_lng = mJsonObject.getDouble("longitude");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'longitude' error!!");
+                                        }
+                                        try {
+                                                mData.org_lat = mJsonObject.getDouble("latitude");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'latitude' error!!");
+                                        }
+                                        try {
+                                                mData.org_url = mJsonObject.getString("url");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'url' error!!");
+                                        }
+                                        try {
+                                                mData.org_contact = mJsonObject.getString("contact");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'contact' error!!");
+                                        }
+                                        try {
+                                                mData.org_number = mJsonObject.getString("number");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'number' error!!");
+                                        }
+                                        try {
+                                                mData.org_created_at = mJsonObject.getString("created_at");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'created_at' error!!");
+                                        }
+                                        try {
+                                                mData.org_updated_at = mJsonObject.getString("updated_at");
+                                        } catch (JSONException e) {
+                                                e.printStackTrace();
+                                                Log.e(TAG, "mJsonObject get 'updated_at' error!!");
+                                        }
+
+                                } catch (JSONException e) {
+                                        e.printStackTrace();
+                                        mData = null;
+                                        Log.e(TAG, "mJsonObject error!!");
+                                        Log.e(TAG, "The OrganizationData from Server == null!!");
+                                }
+
+                        } else {
+                                Log.e(TAG, "OrganizationData Result == null, (getOrganizationDataAsyncTask) ");
+                        }
+
+                        if (mSupplyData != null) {
+                                SelectingData.mOrganizationData = mData;
+                        } else {
+                                Log.e(TAG, "mSupplyData == null !!");
+                        }
+
+                        if (tv_info != null) {
+                                if (SelectingData.mOrganizationData != null) {
+                                        tv_info.setText("= Organization Data =\n" + SelectingData.mOrganizationData.getDataString() + "\n= Supply Data =\n" + mSupplyData.getDataString());
+                                } else {
+                                        tv_info.setText(R.string.org_data_empty);
+                                }
+                        } else {
+                                Log.e(TAG, "TextView == null !!");
+                        }
+
+                        if (mMapFragment != null) {
+                                mMapFragment.setOrganizationMarker();
+                        }
+                }
+
+                @Override
+                protected void onProgressUpdate(Integer... values) {
+                        super.onProgressUpdate(values);
+                }
+
+                /** 執行Async Task前 **/
+                @Override
+                protected void onPreExecute() {
                 }
         }
 
@@ -504,15 +799,6 @@ public class OrganizationFragment extends Fragment {
                 Log.i(TAG, "Result Code : " + resultCode);
         }
 
-        /** Preferences **/
-        /** End of Preferences **/
-
-        /** GotoActivity **/
-        /** End of GotoActivity **/
-
-        /** Activity Bundle **/
-        /** End of Activity Bundle **/
-
         /**
          * switchMapFragment 介面
          */
@@ -533,6 +819,7 @@ public class OrganizationFragment extends Fragment {
                 ft.commit();
         }
 
+        /** Preferences **/
         /** 儲存參數, (context,time) **/
         private void saveDataUpdateTimePreferences(Context context, float time) {
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
@@ -559,6 +846,21 @@ public class OrganizationFragment extends Fragment {
                 editor.remove(k_Organization_Data_UpdateTime);
                 editor.commit();
         }
+
+        /** End of Preferences **/
+
+        /** GotoActivity **/
+        public void gotoSuppliesHelpActivity() {
+                Intent intent = new Intent();
+                intent.setClass(mContext, SuppliesHelpActivity.class);
+                // intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivityForResult(intent, SUPPLIESHELP_ACTIVITY_CODE);
+        }
+
+        /** End of GotoActivity **/
+
+        /** Activity Bundle **/
+        /** End of Activity Bundle **/
 
         @Override
         public void onResume() {

@@ -3,6 +3,10 @@
 
     <color name="main_background">#f2f1ed</color>
     <color name="sliding_menu_background_2">#21b0c3</color>
+    <color name="corners_solid_background">#DDDDDD</color>
+    <color name="org_pass_purple_color">#653565</color>
+    <color name="org_dark_gray_color">#D9D9D9</color>
+    <color name="org_light_gray_color">#F5F5F5</color>
     
     <color name="border_line_white">#ffffff</color>
     <color name="border_line_red">#D94D4A</color>

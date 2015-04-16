@@ -7,6 +7,7 @@ import tw.org.by37.R.id;
 import tw.org.by37.R.layout;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,6 +90,17 @@ public class SlidingMenuAdapter extends BaseAdapter {
                 } else {
                         holder.img_hint.setVisibility(View.GONE);
                 }
+
+                // 設定項目icon,若沒有設定icon,則用預設的icon
+                Drawable drawable = null;
+                if (data.get(position).icon >= 0) {
+                        drawable = mContext.getResources().getDrawable(data.get(position).icon);
+                } else {
+                        drawable = mContext.getResources().getDrawable(R.drawable.ic_person);
+                }
+                // 這一步必須要做,否則不會顯示.
+                drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+                holder.tv_name.setCompoundDrawables(drawable, null, null, null);
 
                 return convertView;
         }

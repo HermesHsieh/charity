@@ -1,10 +1,12 @@
 package tw.org.by37.fragment.main;
 
+import static tw.org.by37.config.RequestCode.SUPPLIESHELP_ACTIVITY_CODE;
+import tw.org.by37.MainActivity;
+import tw.org.by37.OrganizationActivity;
 import tw.org.by37.R;
-
-import tw.org.by37.fragment.member.LoginFragment;
+import tw.org.by37.SuppliesHelpActivity;
 import tw.org.by37.emergency.EmergencyFragment;
-import tw.org.by37.fragment.member.MemberLoginFragment;
+import tw.org.by37.fragment.member.LoginFragment;
 import tw.org.by37.fragment.organization.OrganizationFragment;
 import tw.org.by37.fragment.productsell.MainProductSellFragment;
 import tw.org.by37.fragment.search.SearchFragment;
@@ -16,20 +18,23 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class MainFragment extends Fragment {
 
         private final static String TAG = "MainFragment";
 
         private Context mContext;
-
-        /** MemberLogin Fragment **/
-        private LoginFragment mMemberLoginFragment;
 
         /** Search Fragment **/
         private SearchFragment mSearchFragment;
@@ -39,26 +44,15 @@ public class MainFragment extends Fragment {
 
         /** Organization Fragment **/
         private OrganizationFragment mOrganizationFragment;
-        
+
         /** Emergency Fragment **/
         private EmergencyFragment mEmergencyFragment;
 
-        
-        /** ProductSell Fragment**/
+        /** ProductSell Fragment **/
         private MainProductSellFragment mMainProductSellFragment;
         private TestFragment mTestFragment;
-        
-        
 
         private ListView mListView;
-        
-        
-    	
-    	
-
-        public MainFragment() {
-                super();
-        }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,11 +62,13 @@ public class MainFragment extends Fragment {
                 View view = inflater.inflate(R.layout.fragment_main, container, false);
 
                 findView(view);
-                
-//                switchTestFragment();
-                
+
+                setFragmentHeight(view);
+
                 switchEmergencyFragment();
-                
+
+                switchSuppliesHelpFragment();
+
                 switchProductSellFragment();
 
                 return view;
@@ -84,27 +80,45 @@ public class MainFragment extends Fragment {
         }
 
         public void findView(View view) {
+                /** 顯示全部物資 **/
+                TextView textView = (TextView) view.findViewById(R.id.tv_supplies_all);
+                /** 字體加底線 **/
+                SpannableString content = new SpannableString(getString(R.string.view_all));
+                content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+                textView.setText(content);
+
+                textView.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                                // goto View All SuppliesHelp Data
+                                gotoSuppliesHelpActivity();
+                        }
+                });
         }
 
-        /**
-         * switchMemberLoginFragment 介面
-         */
-        public void switchLoginFragment() {
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
-                FragmentTransaction ft = manager.beginTransaction();
+        /** 動態設定三個fragment的高度,比例根據螢幕的高度 **/
+        public void setFragmentHeight(View view) {
+                Log.i(TAG, "setFragmentHeight");
+                FrameLayout mEmergency = (FrameLayout) view.findViewById(R.id.fragment_emergency);
+                FrameLayout mSuppliesHelps = (FrameLayout) view.findViewById(R.id.fragment_supplieshelp);
+                FrameLayout mProductSell = (FrameLayout) view.findViewById(R.id.fragment_productsell);
 
-                if (mMemberLoginFragment == null)
-                        mMemberLoginFragment = new LoginFragment();
+                LayoutParams mEMGParams = (LayoutParams) mEmergency.getLayoutParams();
+                LayoutParams mSPHParams = (LayoutParams) mSuppliesHelps.getLayoutParams();
+                LayoutParams mPDSParams = (LayoutParams) mProductSell.getLayoutParams();
 
-                if (fragment == null) {
-                        ft.add(R.id.fragment_content, mMemberLoginFragment);
-                } else {
-                        ft.replace(R.id.fragment_content, mMemberLoginFragment);
-                }
-                ft.commit();
+                mEMGParams.height = (MainActivity.myScreenHeight) * 15 / 100;
+                mSPHParams.height = (MainActivity.myScreenHeight) * 30 / 100;
+                mPDSParams.height = (MainActivity.myScreenHeight) * 65 / 100;
 
-                getActivity().setTitle(getString(R.string.fragment_title_member_login));
+                Log.i(TAG, "Screen Height : " + MainActivity.myScreenHeight);
+                Log.i(TAG, "mEmergency Height : " + mEMGParams.height);
+                Log.i(TAG, "mSuppliesHelps Height : " + mSPHParams.height);
+                Log.i(TAG, "mProductSell Height : " + mPDSParams.height);
+
+                mEmergency.setLayoutParams(mEMGParams);
+                mSuppliesHelps.setLayoutParams(mSPHParams);
+                mProductSell.setLayoutParams(mPDSParams);
         }
 
         /**
@@ -125,30 +139,6 @@ public class MainFragment extends Fragment {
                         ft.replace(R.id.fragment_content, mSearchFragment);
                 }
                 ft.commit();
-
-                getActivity().setTitle(getString(R.string.fragment_title_search));
-        }
-
-        /**
-         * switchSearchFragment 介面
-         */
-        public void switchSuppliesHelpFragment() {
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
-
-                FragmentTransaction ft = manager.beginTransaction();
-
-                if (mSuppliesHelpFragment == null)
-                        mSuppliesHelpFragment = new SuppliesHelpFragment();
-
-                if (fragment == null) {
-                        ft.add(R.id.fragment_content, mSuppliesHelpFragment);
-                } else {
-                        ft.replace(R.id.fragment_content, mSuppliesHelpFragment);
-                }
-                ft.commit();
-
-                getActivity().setTitle(getString(R.string.fragment_title_supplieshelp));
         }
 
         /**
@@ -169,8 +159,6 @@ public class MainFragment extends Fragment {
                         ft.replace(R.id.fragment_content, mOrganizationFragment);
                 }
                 ft.commit();
-
-                getActivity().setTitle(getString(R.string.fragment_title_organization));
         }
 
         /**
@@ -191,21 +179,20 @@ public class MainFragment extends Fragment {
                         ft.replace(R.id.fragment_content, mTestFragment);
                 }
                 ft.commit();
-
-                getActivity().setTitle(getString(R.string.fragment_title_test));
         }
-        
+
         /**
          * switchEmergencyFragment 介面
          */
         public void switchEmergencyFragment() {
+                Log.i(TAG, "switchEmergencyFragment");
                 FragmentManager manager = getActivity().getSupportFragmentManager();
                 Fragment fragment = manager.findFragmentById(R.id.fragment_emergency);
 
                 FragmentTransaction ft = manager.beginTransaction();
 
                 if (mEmergencyFragment == null)
-                	mEmergencyFragment = new EmergencyFragment();
+                        mEmergencyFragment = new EmergencyFragment();
 
                 if (fragment == null) {
                         ft.add(R.id.fragment_emergency, mEmergencyFragment);
@@ -213,21 +200,43 @@ public class MainFragment extends Fragment {
                         ft.replace(R.id.fragment_emergency, mEmergencyFragment);
                 }
                 ft.commit();
-
         }
-        
-        
+
+        /**
+         * switchSuppliesHelpFragment 介面
+         */
+        public void switchSuppliesHelpFragment() {
+                Log.i(TAG, "switchSuppliesHelpFragment");
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                Fragment fragment = manager.findFragmentById(R.id.fragment_supplieshelp);
+
+                FragmentTransaction ft = manager.beginTransaction();
+
+                if (mSuppliesHelpFragment == null)
+                        mSuppliesHelpFragment = new SuppliesHelpFragment();
+
+                mSuppliesHelpFragment.setIndexView(true);
+
+                if (fragment == null) {
+                        ft.add(R.id.fragment_supplieshelp, mSuppliesHelpFragment);
+                } else {
+                        ft.replace(R.id.fragment_supplieshelp, mSuppliesHelpFragment);
+                }
+                ft.commit();
+        }
+
         /**
          * switchProductSellFragment 介面
          */
         public void switchProductSellFragment() {
+                Log.i(TAG, "switchProductSellFragment");
                 FragmentManager manager = getActivity().getSupportFragmentManager();
                 Fragment fragment = manager.findFragmentById(R.id.fragment_productsell);
 
                 FragmentTransaction ft = manager.beginTransaction();
 
                 if (mMainProductSellFragment == null)
-                	mMainProductSellFragment = new MainProductSellFragment();
+                        mMainProductSellFragment = new MainProductSellFragment();
 
                 if (fragment == null) {
                         ft.add(R.id.fragment_productsell, mMainProductSellFragment);
@@ -237,12 +246,6 @@ public class MainFragment extends Fragment {
                 ft.commit();
 
         }
-        
-        
-        
-        
-        
-        
 
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -255,6 +258,13 @@ public class MainFragment extends Fragment {
         /** End of Preferences **/
 
         /** GotoActivity **/
+        public void gotoSuppliesHelpActivity() {
+                Intent intent = new Intent();
+                intent.setClass(mContext, SuppliesHelpActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivityForResult(intent, SUPPLIESHELP_ACTIVITY_CODE);
+        }
+
         /** End of GotoActivity **/
 
         /** Activity Bundle **/
@@ -284,6 +294,5 @@ public class MainFragment extends Fragment {
         public void onDestroy() {
                 super.onDestroy();
         }
-        
-        
+
 }

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:alpha="0.8"
+    android:background="@color/normal_purple_bg"
+    android:paddingLeft="@dimen/org_map_menu_padding"
+    android:paddingRight="@dimen/org_map_menu_padding" >
+
+    <TextView
+        android:id="@+id/tv_org_name"
+        style="@style/TextViewShort_1"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:drawablePadding="@dimen/tv_drawable_padding"
+        android:drawableRight="@drawable/ic_home"
+        android:gravity="center_vertical"
+        android:textColor="@color/border_line_white"
+        android:textSize="20sp" />
+
+    <ImageButton
+        android:id="@+id/img_btn_guide"
+        style="@style/map_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@+id/img_btn_favorite"
+        android:background="@drawable/item_click"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_action_make_available_offline" />
+
+    <ImageButton
+        android:id="@+id/img_btn_favorite"
+        style="@style/map_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@+id/img_btn_share"
+        android:background="@drawable/item_click"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_action_important" />
+
+    <ImageButton
+        android:id="@+id/img_btn_share"
+        style="@style/map_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/item_click"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_action_share" />
+
+</RelativeLayout>

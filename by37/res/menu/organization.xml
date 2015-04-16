@@ -8,7 +8,7 @@
         android:title="@string/action_back"/>
     <item
         android:id="@+id/action_person"
-        android:icon="@drawable/ic_action_person"
+        android:icon="@drawable/ic_person"
         android:orderInCategory="10"
         android:showAsAction="ifRoom"
         android:title="@string/action_person"/>

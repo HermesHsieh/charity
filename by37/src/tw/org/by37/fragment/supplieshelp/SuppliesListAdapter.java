@@ -2,6 +2,7 @@ package tw.org.by37.fragment.supplieshelp;
 
 import java.util.ArrayList;
 
+import tw.org.by37.MainActivity;
 import tw.org.by37.R;
 import tw.org.by37.data.SelectingData;
 import tw.org.by37.data.SupplyData;
@@ -12,6 +13,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.view.ViewTreeObserver;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -31,9 +35,19 @@ public class SuppliesListAdapter extends BaseAdapter {
 
         private double mLatitude = 0.0;
 
+        /** 動態設定機構TextView的參數 **/
+        private boolean isMeasured = false;
+
+        private boolean index_view = false;
+
         public SuppliesListAdapter(Context context) {
                 this.infalter = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 this.mContext = context;
+        }
+
+        /** 是否為首頁顯示 **/
+        public void setIndexView(boolean status) {
+                index_view = status;
         }
 
         @Override
@@ -66,13 +80,27 @@ public class SuppliesListAdapter extends BaseAdapter {
                         holder.tv_distance = (TextView) view.findViewById(R.id.tv_distance);
                         holder.tv_category = (TextView) view.findViewById(R.id.tv_category);
 
+                        /** 動態設定機構名稱長度 **/
+                        LayoutParams mText = (LayoutParams) holder.tv_organization_name.getLayoutParams();
+                        mText.width = (MainActivity.myScreenWidth) * 3 / 7;
+                        holder.tv_organization_name.setLayoutParams(mText);
+
+                        /** 動態設定機構名稱的Margin **/
+                        MarginLayoutParams marginParams = (MarginLayoutParams) holder.tv_organization_name.getLayoutParams();
+                        if (index_view) {
+                                marginParams.leftMargin = ((MainActivity.myScreenWidth) / 2) * 7 / 10;
+                        } else {
+                                marginParams.leftMargin = ((MainActivity.myScreenWidth) / 2) * 4 / 5;
+                        }
+                        holder.tv_organization_name.setLayoutParams(marginParams);
+
                         view.setTag(holder);
                 } else {
                         holder = (ViewHolder) view.getTag();
                 }
 
-                holder.tv_name.setText("NAME : " + data.get(position).name);
-                holder.tv_organization_name.setText("OrganizationID,Name : " + data.get(position).organizationId + ", " + data.get(position).organization_name);
+                holder.tv_name.setText(data.get(position).name);
+                holder.tv_organization_name.setText(data.get(position).organization_name);
 
                 double lat = data.get(position).organization_latitude;
                 double lng = data.get(position).organization_longitude;
@@ -86,7 +114,7 @@ public class SuppliesListAdapter extends BaseAdapter {
                 else
                         sDst = (dst / 1000) + " KM";
 
-                holder.tv_distance.setText("Distance : " + sDst);
+                holder.tv_distance.setText(sDst);
 
                 holder.tv_category.setText("Category : " + data.get(position).category + ", Name : " + SelectingData.getGoodsTypesNameForId(data.get(position).category));
 

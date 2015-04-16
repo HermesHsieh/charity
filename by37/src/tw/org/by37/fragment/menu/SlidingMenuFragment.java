@@ -84,14 +84,33 @@ public class SlidingMenuFragment extends Fragment {
 
                 // Menu項目的名稱
                 Resources res = mContext.getResources();
-                String[] mShareName = res.getStringArray(R.array.sliding_menu_item);
+                String[] mListName = res.getStringArray(R.array.sliding_menu_item);
 
                 // 設定ListView的資料
-                for (int i = 0; i < mShareName.length; i++) {
+                for (int i = 0; i < mListName.length; i++) {
                         SlidingMenuDetail item = new SlidingMenuDetail();
-                        item.name = mShareName[i];
-                        if (i == 1 || i == 2) {
+                        item.name = mListName[i];
+
+                        if (item.name.equals("義賣商品分類")) {
                                 item.isHint = true;
+                        }
+                        if (item.name.equals("慈善機構分類")) {
+                                item.isHint = true;
+                        }
+                        if (item.name.equals("設定")) {
+                                item.icon = R.drawable.ic_action_settings;
+                        }
+                        if (item.name.equals("常見問題(FAQ)")) {
+                                item.icon = R.drawable.ic_action_help;
+                        }
+                        if (item.name.equals("聯絡建議")) {
+                                item.icon = R.drawable.ic_action_call;
+                        }
+                        if (item.name.equals("分享APP")) {
+                                item.icon = R.drawable.ic_action_share;
+                        }
+                        if (item.name.equals("使用條款")) {
+                                item.icon = R.drawable.ic_action_view_as_list;
                         }
                         mData.add(item);
                 }

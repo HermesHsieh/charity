@@ -11,14 +11,14 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="5dp"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_account" />
+        android:src="@drawable/ic_mail" />
 
     <EditText
         android:id="@+id/edt_account"
-        style="@style/EditTextAccount_1"
+        style="@style/EditTextStyle_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/img_account"
-        android:maxLines="1" />
+        android:hint="@string/account_hint" />
 
 </RelativeLayout>

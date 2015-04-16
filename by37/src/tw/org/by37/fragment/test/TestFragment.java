@@ -69,7 +69,7 @@ public class TestFragment extends Fragment {
 
                 findView(view);
                 
-                getActivity().setTitle(R.string.fragment_title_test_get);
+                getActivity().setTitle(R.string.title_test_get);
 
                 return view;
         }

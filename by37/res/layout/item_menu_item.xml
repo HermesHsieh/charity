@@ -7,7 +7,7 @@
         android:id="@+id/item_click"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/selector_listview_click" >
+        android:background="@drawable/item_click" >
 
         <ImageView
             android:id="@+id/img_icon"
@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_action_person" />
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tv_name"
@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/img_icon"
+            android:drawablePadding="@dimen/tv_drawable_padding"
             android:text="ITEM"
             android:textColor="#FFFFFF"
             android:textSize="26sp" />
@@ -31,10 +32,11 @@
             android:id="@+id/img_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/tv_name"
+            android:layout_marginRight="20dp"
             android:contentDescription="@string/app_name"
-            android:src="@drawable/ic_action_search" />
+            android:src="@drawable/ic_action_next_item" />
     </RelativeLayout>
 
 </RelativeLayout>

@@ -15,10 +15,11 @@
 
     <EditText
         android:id="@+id/edt_name"
-        style="@style/EditTextName_1"
+        style="@style/EditTextStyle_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/img_name"
+        android:hint="@string/name_hint"
         android:maxLines="1" />
 
 </RelativeLayout>

@@ -44,20 +44,24 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+import static tw.org.by37.config.RequestCode.*;
 import static tw.org.by37.config.SysConfig.*;
-import static tw.org.by37.data.RequestCode.*;
 
 public class SuppliesHelpFragment extends Fragment {
 
         private final static String TAG = "SuppliesHelpFragment";
+        private final static String pTAG = "Position";
 
         private Context mContext;
 
         /** 是否為簡易模式(即首頁的顯示狀態) **/
-        private boolean simple_mode = false;
+        private boolean index_view = false;
 
         private ListView mListView;
+
+        private TextView tv_supplies_total;
 
         private SuppliesListAdapter mSuppliesListAdapter;
 
@@ -119,6 +123,11 @@ public class SuppliesHelpFragment extends Fragment {
                 super();
         }
 
+        /** 設定在首頁顯示與否的參數 **/
+        public void setIndexView(boolean view) {
+                index_view = view;
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -148,10 +157,13 @@ public class SuppliesHelpFragment extends Fragment {
         }
 
         public void findView(View view) {
+                tv_supplies_total = (TextView) view.findViewById(R.id.tv_supplies_total);
                 // new Wifi ListView
                 mListView = (ListView) view.findViewById(android.R.id.list);
                 // new Wifi ListView Adapter
                 mSuppliesListAdapter = new SuppliesListAdapter(getActivity());
+                // 設定是否為首頁顯示
+                mSuppliesListAdapter.setIndexView(index_view);
                 // 配適Wifi ListView Adapter
                 mListView.setAdapter(mSuppliesListAdapter);
 
@@ -236,6 +248,7 @@ public class SuppliesHelpFragment extends Fragment {
         /** 獲取物資需求類別資料 **/
         private void getSuppliesTypesData() {
                 Log.i(TAG, "getSuppliesTypesData");
+
                 GoodsTypesText mData = new GoodsTypesText();
                 // 假如檔案存在
                 if (mData.existFile()) {
@@ -339,49 +352,41 @@ public class SuppliesHelpFragment extends Fragment {
                                                         mData.id = mJsonObject.getString("id");
                                                 } catch (JSONException e) {
                                                         e.printStackTrace();
-                                                        Log.e(TAG, "mJsonObject get 'id' error!!");
                                                 }
                                                 try {
                                                         mData.name = mJsonObject.getString("name");
                                                 } catch (JSONException e) {
                                                         e.printStackTrace();
-                                                        Log.e(TAG, "mJsonObject get 'name' error!!");
                                                 }
                                                 try {
                                                         mData.description = mJsonObject.getString("description");
                                                 } catch (JSONException e) {
                                                         e.printStackTrace();
-                                                        Log.e(TAG, "mJsonObject get 'description' error!!");
                                                 }
                                                 try {
                                                         mData.organizationId = mJsonObject.getString("organizationId");
                                                 } catch (JSONException e) {
                                                         e.printStackTrace();
-                                                        Log.e(TAG, "mJsonObject get 'organizationId' error!!");
                                                 }
                                                 try {
                                                         mData.total = mJsonObject.getString("total");
                                                 } catch (JSONException e) {
                                                         e.printStackTrace();
-                                                        Log.e(TAG, "mJsonObject get 'total' error!!");
                                                 }
                                                 try {
                                                         mData.created_at = mJsonObject.getString("created_at");
                                                 } catch (JSONException e) {
                                                         e.printStackTrace();
-                                                        Log.e(TAG, "mJsonObject get 'created_at' error!!");
                                                 }
                                                 try {
                                                         mData.updated_at = mJsonObject.getString("updated_at");
                                                 } catch (JSONException e) {
                                                         e.printStackTrace();
-                                                        Log.e(TAG, "mJsonObject get 'updated_at' error!!");
                                                 }
                                                 try {
                                                         mData.category = mJsonObject.getString("goodsTypeId");
                                                 } catch (JSONException e) {
                                                         e.printStackTrace();
-                                                        Log.e(TAG, "mJsonObject get 'goodsTypeId' error!!");
                                                 }
 
                                                 Log.i(TAG, "Organization JSONArray length : " + mJsonObject.getJSONArray("organization").length());
@@ -391,25 +396,21 @@ public class SuppliesHelpFragment extends Fragment {
                                                                 mData.organization_id = mJsonObject.getJSONArray("organization").getJSONObject(j).getString("id");
                                                         } catch (JSONException e) {
                                                                 e.printStackTrace();
-                                                                Log.e(TAG, "mJsonObject get 'organization_id' error!!");
                                                         }
                                                         try {
                                                                 mData.organization_name = mJsonObject.getJSONArray("organization").getJSONObject(j).getString("name");
                                                         } catch (JSONException e) {
                                                                 e.printStackTrace();
-                                                                Log.e(TAG, "mJsonObject get 'organization_name' error!!");
                                                         }
                                                         try {
                                                                 mData.organization_longitude = mJsonObject.getJSONArray("organization").getJSONObject(j).getDouble("longitude");
                                                         } catch (JSONException e) {
                                                                 e.printStackTrace();
-                                                                Log.e(TAG, "mJsonObject get 'organization_longitude' error!!");
                                                         }
                                                         try {
                                                                 mData.organization_latitude = mJsonObject.getJSONArray("organization").getJSONObject(j).getDouble("latitude");
                                                         } catch (JSONException e) {
                                                                 e.printStackTrace();
-                                                                Log.e(TAG, "mJsonObject get 'organization_latitude' error!!");
                                                         }
                                                 }
 
@@ -428,8 +429,7 @@ public class SuppliesHelpFragment extends Fragment {
 
                                 } catch (JSONException e) {
                                         e.printStackTrace();
-                                        Log.e(TAG, "mJsonArray error!!");
-                                        Log.e(TAG, "The SuppliesData from Server == null!!");
+                                        Log.e(TAG, "The SuppliesData from Server == null !!");
                                 }
 
                         } else {
@@ -448,6 +448,8 @@ public class SuppliesHelpFragment extends Fragment {
                                 }
                         }
 
+                        if (tv_supplies_total != null)
+                                tv_supplies_total.setText(String.valueOf(DBControlSupplies.getDataCount(mContext)));
                 }
 
                 @Override
@@ -494,7 +496,6 @@ public class SuppliesHelpFragment extends Fragment {
 
                                 } catch (JSONException e) {
                                         e.printStackTrace();
-                                        Log.e(TAG, "mJsonArray error!!");
                                         Log.e(TAG, "The GoodsTypesData from Server == null!!");
                                 }
 
@@ -539,25 +540,21 @@ public class SuppliesHelpFragment extends Fragment {
                                                 mData.id = mJsonObject.getString("id");
                                         } catch (JSONException e) {
                                                 e.printStackTrace();
-                                                Log.e(TAG, "mJsonObject get 'id' error!!");
                                         }
                                         try {
                                                 mData.name = mJsonObject.getString("name");
                                         } catch (JSONException e) {
                                                 e.printStackTrace();
-                                                Log.e(TAG, "mJsonObject get 'name' error!!");
                                         }
                                         try {
                                                 mData.created_at = mJsonObject.getString("created_at");
                                         } catch (JSONException e) {
                                                 e.printStackTrace();
-                                                Log.e(TAG, "mJsonObject get 'created_at' error!!");
                                         }
                                         try {
                                                 mData.updated_at = mJsonObject.getString("updated_at");
                                         } catch (JSONException e) {
                                                 e.printStackTrace();
-                                                Log.e(TAG, "mJsonObject get 'updated_at' error!!");
                                         }
 
                                         /** 加入到物資類別清單 **/
@@ -566,7 +563,6 @@ public class SuppliesHelpFragment extends Fragment {
                                 }
                         } catch (JSONException e) {
                                 e.printStackTrace();
-                                Log.e(TAG, "mJsonArray error!!");
                                 Log.e(TAG, "The GoodsTypesData from Server == null!!");
                         }
                 } else {
@@ -588,23 +584,14 @@ public class SuppliesHelpFragment extends Fragment {
 
         /** 依照距離排序 **/
         private void orderSuppliesDataForDst() {
-                // /** ListView 顯示用的資料,從db中取得資料(依距離) **/
-                // ArrayList<SupplyData> mList =
-                // DBControlSupplies.getSuppliesDataForDistance(mContext,
-                // wifi_longitude, wifi_latitude);
-                //
-                // /** 最後將ListView的資料設定到Adapter中 **/
-                // if (mSuppliesListAdapter != null) {
-                // mSuppliesListAdapter.setListData(mList, wifi_longitude,
-                // wifi_latitude);
-                // }
-
                 /**
                  * ListView 顯示用的資料,從db中取得資料(依距離)
                  **/
                 ArrayList<SupplyData> mList = DBControlSupplies.getSuppliesDataForDistance(mContext, wifi_longitude, wifi_latitude);
 
                 ArrayList<SupplyData> mList_select = new ArrayList<SupplyData>();
+
+                ArrayList<SupplyData> mList_index = new ArrayList<SupplyData>();
 
                 if (pref_category != 0) {
                         for (int i = 0; i < mList.size(); i++) {
@@ -619,6 +606,31 @@ public class SuppliesHelpFragment extends Fragment {
                 }
 
                 Log.i(TAG, "mList_select : " + mList_select.size());
+
+                /** 以機構名稱篩選 **/
+                if (SelectingData.mOrganizationData != null) {
+                        for (int i = 0; i < mList_select.size(); i++) {
+                                if (mList_select.get(i).organization_name.equals(SelectingData.mOrganizationData.org_name)) {
+                                        mList_index.add(mList_select.get(i));
+                                }
+                        }
+                        mList_select.clear();
+                        mList_select = mList_index;
+                } else {
+                        /** 首頁顯示,最多三筆資料 **/
+                        if (index_view) {
+                                if (mList_select.size() > 2) { // 假設資料多餘三筆
+                                        for (int i = 0; i < 3; i++) {
+                                                mList_index.add(mList_select.get(i));
+                                        }
+                                        mList_select.clear();
+                                        mList_select = mList_index;
+                                }
+                        }
+                }
+
+                Log.i(TAG, "mList_select : " + mList_select.size());
+
                 /** 最後將ListView的資料設定到Adapter中 **/
                 if (mSuppliesListAdapter != null) {
                         mSuppliesListAdapter.setListData(mList_select, wifi_longitude, wifi_latitude);
@@ -627,24 +639,14 @@ public class SuppliesHelpFragment extends Fragment {
 
         /** 依照時間排序 **/
         private void orderSuppliesDataForTime() {
-                // /** ListView 顯示用的資料,從db中取得資料(依時間) **/
-                // ArrayList<SupplyData> mList =
-                // DBControlSupplies.getSuppliesDataForTime(mContext);
-                //
-                // /** 最後將ListView的資料設定到Adapter中 **/
-                // if (mSuppliesListAdapter != null) {
-                // mSuppliesListAdapter.setListData(mList, wifi_longitude,
-                // wifi_latitude);
-                // }
-
-                // 依時間排序
-
                 /**
                  * ListView 顯示用的資料,從db中取得資料(依時間)
                  **/
                 ArrayList<SupplyData> mList = DBControlSupplies.getSuppliesDataForTime(mContext);
 
                 ArrayList<SupplyData> mList_select = new ArrayList<SupplyData>();
+
+                ArrayList<SupplyData> mList_index = new ArrayList<SupplyData>();
 
                 if (pref_category != 0) {
                         for (int i = 0; i < mList.size(); i++) {
@@ -657,6 +659,31 @@ public class SuppliesHelpFragment extends Fragment {
                 } else {
                         mList_select = mList;
                 }
+
+                Log.i(TAG, "mList_select : " + mList_select.size());
+
+                /** 以機構名稱篩選 **/
+                if (SelectingData.mOrganizationData != null) {
+                        for (int i = 0; i < mList_select.size(); i++) {
+                                if (mList_select.get(i).organization_name.equals(SelectingData.mOrganizationData.org_name)) {
+                                        mList_index.add(mList_select.get(i));
+                                }
+                        }
+                        mList_select.clear();
+                        mList_select = mList_index;
+                } else {
+                        /** 首頁顯示,最多三筆資料 **/
+                        if (index_view) {
+                                if (mList_select.size() > 2) { // 假設資料多餘三筆
+                                        for (int i = 0; i < 3; i++) {
+                                                mList_index.add(mList_select.get(i));
+                                        }
+                                        mList_select.clear();
+                                        mList_select = mList_index;
+                                }
+                        }
+                }
+
                 Log.i(TAG, "mList_select : " + mList_select.size());
                 /** 最後將ListView的資料設定到Adapter中 **/
                 if (mSuppliesListAdapter != null) {
@@ -741,7 +768,6 @@ public class SuppliesHelpFragment extends Fragment {
 
                                 } catch (JSONException e) {
                                         e.printStackTrace();
-                                        Log.e(TAG, "mJsonArray error!!");
                                         Log.e(TAG, "The GoodsTypesData from Server == null!!");
                                 }
 
@@ -794,25 +820,21 @@ public class SuppliesHelpFragment extends Fragment {
                                                 mData.id = mJsonObject.getString("id");
                                         } catch (JSONException e) {
                                                 e.printStackTrace();
-                                                Log.e(TAG, "mJsonObject get 'id' error!!");
                                         }
                                         try {
                                                 mData.name = mJsonObject.getString("name");
                                         } catch (JSONException e) {
                                                 e.printStackTrace();
-                                                Log.e(TAG, "mJsonObject get 'name' error!!");
                                         }
                                         try {
                                                 mData.created_at = mJsonObject.getString("created_at");
                                         } catch (JSONException e) {
                                                 e.printStackTrace();
-                                                Log.e(TAG, "mJsonObject get 'created_at' error!!");
                                         }
                                         try {
                                                 mData.updated_at = mJsonObject.getString("updated_at");
                                         } catch (JSONException e) {
                                                 e.printStackTrace();
-                                                Log.e(TAG, "mJsonObject get 'updated_at' error!!");
                                         }
 
                                         /** 加入到物資類別清單 **/
@@ -821,14 +843,13 @@ public class SuppliesHelpFragment extends Fragment {
                                 }
                         } catch (JSONException e) {
                                 e.printStackTrace();
-                                Log.e(TAG, "mJsonArray error!!");
                                 Log.e(TAG, "The GoodsTypesData from Server == null!!");
                         }
                 } else {
                         Log.e(TAG, "getGoodsTypes Result == null !!");
                 }
 
-                Log.i(TAG, SelectingData.getOrganizationTypesListItemString());
+                Log.i(TAG, "getOrganizationTypesListItemString\n" + SelectingData.getOrganizationTypesListItemString());
         }
 
         /** 複製預設物資分類的資料到手機儲存路徑 **/
@@ -929,9 +950,9 @@ public class SuppliesHelpFragment extends Fragment {
                 public void onLocationChanged(Location gps_location) { // 當地點改變時
                         // TODO Auto-generated method stub
                         getGPSLocation(gps_location);
-                        Log.i(TAG, "GPS Location Change");
-                        Log.i(TAG, "gps_latitude : " + gps_latitude);
-                        Log.i(TAG, "gps_longitude : " + gps_longitude);
+                        Log.i(pTAG, "GPS Location Change");
+                        Log.i(pTAG, "gps_latitude : " + gps_latitude);
+                        Log.i(pTAG, "gps_longitude : " + gps_longitude);
                 }
 
                 @Override
@@ -956,9 +977,9 @@ public class SuppliesHelpFragment extends Fragment {
                 public void onLocationChanged(Location wifi_location) { // 當地點改變時
                         // TODO Auto-generated method stub
                         getWiFiLLocation(wifi_location);
-                        Log.i(TAG, "Wifi Location Change");
-                        Log.i(TAG, "wifi_latitude : " + wifi_latitude);
-                        Log.i(TAG, "wifi_longitude : " + wifi_longitude);
+                        Log.i(pTAG, "Wifi Location Change");
+                        Log.i(pTAG, "wifi_latitude : " + wifi_latitude);
+                        Log.i(pTAG, "wifi_longitude : " + wifi_longitude);
                 }
 
                 @Override

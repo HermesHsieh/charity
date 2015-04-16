@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp" >
 
     <TextView
         android:id="@+id/tv_fragment"
@@ -9,31 +11,38 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:gravity="end"
-        android:text="MainFragment" />
+        android:text="MainFragment"
+        android:visibility="gone" />
 
     <!-- Fragment間頁面切換的主要容器 -->
-    
-    <FrameLayout 
-        android:id="@+id/fragment_emergency"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        
-    </FrameLayout>
-    
 
-    <FrameLayout
-        android:id="@+id/fragment_content"
-        android:layout_below="@+id/fragment_emergency"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-    </FrameLayout>
-    
-    <FrameLayout 
-        android:id="@+id/fragment_productsell"
-        android:layout_width="match_parent"
-        android:layout_below="@+id/fragment_content"
-        android:layout_height="wrap_content">
-        
-    </FrameLayout>
+            <FrameLayout
+                android:id="@+id/fragment_emergency"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+            </FrameLayout>
 
+            <FrameLayout
+                android:id="@+id/fragment_supplieshelp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/fragment_emergency" >
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tv_supplies_all"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/fragment_supplieshelp"
+                android:gravity="right"
+                android:text="@string/view_all"
+                android:textColor="@color/btn_blue_color"
+                android:textStyle="bold" />
+
+            <FrameLayout
+                android:id="@+id/fragment_productsell"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_supplies_all" >
+            </FrameLayout>
 </RelativeLayout>

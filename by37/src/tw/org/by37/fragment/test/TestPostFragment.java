@@ -67,7 +67,7 @@ public class TestPostFragment extends Fragment {
 
                 findView(view);
 
-                getActivity().setTitle(R.string.fragment_title_test_post);
+                getActivity().setTitle(R.string.title_test_post);
 
                 return view;
         }

@@ -11,15 +11,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:background="@drawable/item_click"
         android:visibility="visible" >
 
-        <ImageButton
-            android:id="@+id/img_btn_1"
+        <TextView
+            android:id="@+id/tv_btn_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:background="@drawable/selector_listview_click"
-            android:contentDescription="@string/app_name" />
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:drawableLeft="@drawable/ic_sell"
+            android:drawablePadding="@dimen/tv_drawable_padding"
+            android:text="@string/sell_product"
+            android:textColor="@color/border_line_white"
+            android:textSize="@dimen/fragment_title_text_size" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -27,31 +32,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:background="@drawable/item_click"
+        android:paddingLeft="15dp"
         android:visibility="visible" >
 
-        <ImageButton
-            android:id="@+id/img_btn_2"
+        <TextView
+            android:id="@+id/tv_btn_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:background="@drawable/selector_listview_click"
-            android:contentDescription="@string/app_name" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/rl_btn_3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:visibility="visible" >
-
-        <ImageButton
-            android:id="@+id/img_btn_3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:background="@drawable/selector_listview_click"
-            android:contentDescription="@string/app_name" />
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:drawableLeft="@drawable/ic_news"
+            android:drawablePadding="@dimen/tv_drawable_padding"
+            android:text="@string/news"
+            android:textColor="@color/border_line_white"
+            android:textSize="@dimen/fragment_title_text_size" />
     </RelativeLayout>
 
 </LinearLayout>

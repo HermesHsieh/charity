@@ -43,24 +43,27 @@ public class SysConfig {
 
         /** 急難救助資料 **/
         public static final String emergenciesApi = ApiServer + "emergencies";
-        public static final String emergencyAPI = ApiServer+"emergency/";
+        public static final String emergencyAPI = ApiServer + "emergency/";
 
         /** 基構類別 **/
         public static final String organizationsTypeApi = ApiServer + "organizationsType";
 
         /** 基構資料 **/
         public static final String organizationsApi = ApiServer + "organizations";
-        
+
         /** 基構資料 for Id **/
         public static final String organizationsIdApi = ApiServer + "getSupportsByOrganizationId/";
 
         /** 物資需求資料, 包含物品資料及所在基構資料 **/
         public static final String suppliesApi = ApiServer + "getOrganizationsBySupport";
 
+        /** 物資需求資料 for Id **/
+        public static final String suppliesIdApi = ApiServer + "getSupportBySupportId/";
+
         /** 物資類別資料 **/
         public static final String goodsTypesApi = ApiServer + "goodsTypes";
-        
-        /**廣播參數**/
+
+        /** 廣播參數 **/
         public static final String MAIN_BROADCAST_STRING = "MainBroadcast";
         public static final String GET_EMERGENCY_BROADCAST = "GetEmergencyBroadCast";
         public static final String GET_EMERGENCY_CONTENT_BROADCAST = "GetEmergencyContentBroadCast";

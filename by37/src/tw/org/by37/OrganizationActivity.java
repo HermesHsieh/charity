@@ -1,6 +1,6 @@
 package tw.org.by37;
 
-import static tw.org.by37.data.RequestCode.FBLOGIN_REQUEST_CODE;
+import static tw.org.by37.config.RequestCode.FBLOGIN_REQUEST_CODE;
 import tw.org.by37.data.SelectingData;
 import tw.org.by37.data.SupplyData;
 import tw.org.by37.fragment.member.LoginFragment;
@@ -66,7 +66,7 @@ public class OrganizationActivity extends SlidingFragmentActivity {
 
                 setContentView(R.layout.activity_organization);
 
-                setTitle(R.string.fragment_title_organization);
+                setTitle(R.string.title_organization);
 
                 initSlidingMenu();
 
@@ -204,32 +204,6 @@ public class OrganizationActivity extends SlidingFragmentActivity {
         }
 
         /**
-         * switchBottomMenuFragment 介面
-         */
-        public void switchBottomMenuFragment() {
-                FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_bottom);
-
-                FragmentTransaction ft = manager.beginTransaction();
-
-                if (mBottomMenuFragment == null)
-                        mBottomMenuFragment = new BottomMenuFragment();
-
-                /** 設定Button數量 **/
-                mBottomMenuFragment.setButtonCounter(2);
-
-                /** 設定Button iCon (-1:未設定) **/
-                mBottomMenuFragment.setButtonResource(R.drawable.ic_action_person, R.drawable.ic_action_search, -1);
-
-                if (fragment == null) {
-                        ft.add(R.id.fragment_bottom, mBottomMenuFragment);
-                } else {
-                        ft.replace(R.id.fragment_bottom, mBottomMenuFragment);
-                }
-                ft.commit();
-        }
-
-        /**
          * switchMemberLoginFragment 介面
          */
         public void switchMemberLoginFragment() {
@@ -246,8 +220,6 @@ public class OrganizationActivity extends SlidingFragmentActivity {
                         ft.replace(R.id.fragment_content, mMemberLoginFragment);
                 }
                 ft.commit();
-
-                setTitle(getString(R.string.fragment_title_member_login));
         }
 
         /**
@@ -268,8 +240,6 @@ public class OrganizationActivity extends SlidingFragmentActivity {
                         ft.replace(R.id.fragment_content, mSearchFragment);
                 }
                 ft.commit();
-
-                setTitle(getString(R.string.fragment_title_search));
         }
 
         /**

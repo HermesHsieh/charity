@@ -1,6 +1,6 @@
 package tw.org.by37.fragment.member;
 
-import static tw.org.by37.data.RequestCode.SIGNUP_ACTIVITY_CODE;
+import static tw.org.by37.config.RequestCode.SIGNUP_ACTIVITY_CODE;
 
 import java.util.Arrays;
 
@@ -11,12 +11,15 @@ import tw.org.by37.R;
 import tw.org.by37.SignupActivity;
 import tw.org.by37.data.UserData;
 import tw.org.by37.service.UsersApiService;
+import tw.org.by37.util.FunctionUtil;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -126,6 +129,13 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                 btn_fb_login.setFragment(this);
                 btn_fb_login.setReadPermissions(Arrays.asList("email"));
                 btn_fb_login.setUserInfoChangedCallback(userCallback);
+
+                /** 忘記密碼 **/
+                TextView textView = (TextView) view.findViewById(R.id.tv_forget_password);
+                /** 加底線 **/
+                SpannableString content = new SpannableString(getString(R.string.forget_password));
+                content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+                textView.setText(content);
         }
 
         class getDataAsyncTask extends AsyncTask<String, Integer, String> {
@@ -143,12 +153,12 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                 protected void onPostExecute(String result) {
                         super.onPostExecute(result);
                         String mInfo = tv_info.getText().toString();
-                        int checkReg = result.indexOf("<html");
                         String mReg = "";
-                        if (checkReg >= 0) {
-                                mReg = "Register Info : server has been sleep." + "\n\n";
-                        } else {
+                        /** 判別伺服器是否正常work狀態 **/
+                        if (FunctionUtil.ServiceStatus(result)) {
                                 mReg = "Register Info : " + result + "\n\n";
+                        } else {
+                                mReg = "Register Info : server has been sleep." + "\n\n";
                         }
                         tv_info.setText(mReg + mInfo);
                 }

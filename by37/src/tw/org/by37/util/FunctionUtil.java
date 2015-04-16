@@ -20,4 +20,14 @@ public class FunctionUtil {
                 distance = Math.round(distance * 10000) / 10000;
                 return distance;
         }
+
+        /** 判別伺服器是否正常運作,true = work, false = sleep **/
+        public static boolean ServiceStatus(String string) {
+                boolean status = true;
+                int checkString = string.indexOf("<html");
+                if (checkString >= 0) {
+                        status = false;
+                }
+                return status;
+        }
 }

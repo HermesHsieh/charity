@@ -1,6 +1,6 @@
 package tw.org.by37;
 
-import static tw.org.by37.data.RequestCode.MEMBER_ACTIVITY_CODE;
+import static tw.org.by37.config.RequestCode.MEMBER_ACTIVITY_CODE;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -18,7 +18,6 @@ import tw.org.by37.fragment.search.SearchFragment;
 import tw.org.by37.fragment.supplieshelp.SuppliesHelpFragment;
 import tw.org.by37.fragment.test.TestFragment;
 import tw.org.by37.fragment.test.TestPostFragment;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -90,13 +89,11 @@ public class MainActivity extends SlidingFragmentActivity {
         private TestPostFragment mTestPostFragment;
 
         private EmergencyFragment mEmergencyFragment;
-        
-        /**ProductSell Fragment**/
+
+        /** ProductSell Fragment **/
         private MainProductSellFragment mMainProductSellFragment;
 
         private ListView mListView;
-        
-       
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -119,8 +116,6 @@ public class MainActivity extends SlidingFragmentActivity {
                 switchMainFragment();
 
                 switchBottomMenuFragment();
-                
-                
 
         }
 
@@ -200,7 +195,7 @@ public class MainActivity extends SlidingFragmentActivity {
         AdapterView.OnItemClickListener mLeftListViewItemClickListener = new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> l, View v, int position, long id) {
-                        Log.i(TAG, "Click Position : " + position);
+                        Log.i(TAG, "Click Left Menu Position : " + position);
                         mSlidingMenu.toggle();
 
                         if (position == 0) {
@@ -212,7 +207,7 @@ public class MainActivity extends SlidingFragmentActivity {
         AdapterView.OnItemClickListener mRightListViewItemClickListener = new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> l, View v, int position, long id) {
-                        Log.i(TAG, "Click Position : " + position);
+                        Log.i(TAG, "Click Right Menu Position : " + position);
                         mSlidingMenu.toggle();
 
                         switch (position) {
@@ -229,8 +224,8 @@ public class MainActivity extends SlidingFragmentActivity {
                                 switchSuppliesHelpFragment();
                                 break;
                         case 5:
-                        		switchMainProductFragment();
-                        		break;
+                                switchMainProductFragment();
+                                break;
                         case 6:
                                 switchOrganizationFragment();
                                 break;
@@ -300,6 +295,7 @@ public class MainActivity extends SlidingFragmentActivity {
          * switchMainFragment 介面
          */
         public void switchMainFragment() {
+                Log.i(TAG, "switchMainFragment");
                 FragmentManager manager = getSupportFragmentManager();
                 Fragment fragment = manager.findFragmentById(R.id.main_content);
 
@@ -314,8 +310,6 @@ public class MainActivity extends SlidingFragmentActivity {
                         ft.replace(R.id.main_content, mMainFragment);
                 }
                 ft.commit();
-
-                setTitle(getString(R.string.app_name));
         }
 
         /**
@@ -370,12 +364,6 @@ public class MainActivity extends SlidingFragmentActivity {
                 if (mBottomMenuFragment == null)
                         mBottomMenuFragment = new BottomMenuFragment();
 
-                /** 設定Button數量 **/
-                mBottomMenuFragment.setButtonCounter(2);
-
-                /** 設定Button iCon (-1:未設定) **/
-                mBottomMenuFragment.setButtonResource(R.drawable.ic_action_person, R.drawable.ic_action_search, -1);
-
                 if (fragment == null) {
                         ft.add(R.id.fragment_bottom, mBottomMenuFragment);
                 } else {
@@ -389,20 +377,18 @@ public class MainActivity extends SlidingFragmentActivity {
          */
         public void switchLoginFragment() {
                 FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
+                Fragment fragment = manager.findFragmentById(R.id.main_content);
                 FragmentTransaction ft = manager.beginTransaction();
 
                 if (mLoginFragment == null)
                         mLoginFragment = new LoginFragment();
 
                 if (fragment == null) {
-                        ft.add(R.id.fragment_content, mLoginFragment);
+                        ft.add(R.id.main_content, mLoginFragment);
                 } else {
-                        ft.replace(R.id.fragment_content, mLoginFragment);
+                        ft.replace(R.id.main_content, mLoginFragment);
                 }
                 ft.commit();
-
-                setTitle(getString(R.string.fragment_title_member_login));
         }
 
         /**
@@ -410,7 +396,7 @@ public class MainActivity extends SlidingFragmentActivity {
          */
         public void switchSearchFragment() {
                 FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
+                Fragment fragment = manager.findFragmentById(R.id.main_content);
 
                 FragmentTransaction ft = manager.beginTransaction();
 
@@ -418,13 +404,11 @@ public class MainActivity extends SlidingFragmentActivity {
                         mSearchFragment = new SearchFragment();
 
                 if (fragment == null) {
-                        ft.add(R.id.fragment_content, mSearchFragment);
+                        ft.add(R.id.main_content, mSearchFragment);
                 } else {
-                        ft.replace(R.id.fragment_content, mSearchFragment);
+                        ft.replace(R.id.main_content, mSearchFragment);
                 }
                 ft.commit();
-
-                setTitle(getString(R.string.fragment_title_search));
         }
 
         /**
@@ -432,7 +416,7 @@ public class MainActivity extends SlidingFragmentActivity {
          */
         public void switchSuppliesHelpFragment() {
                 FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
+                Fragment fragment = manager.findFragmentById(R.id.main_content);
 
                 FragmentTransaction ft = manager.beginTransaction();
 
@@ -440,13 +424,11 @@ public class MainActivity extends SlidingFragmentActivity {
                         mSuppliesHelpFragment = new SuppliesHelpFragment();
 
                 if (fragment == null) {
-                        ft.add(R.id.fragment_content, mSuppliesHelpFragment);
+                        ft.add(R.id.main_content, mSuppliesHelpFragment);
                 } else {
-                        ft.replace(R.id.fragment_content, mSuppliesHelpFragment);
+                        ft.replace(R.id.main_content, mSuppliesHelpFragment);
                 }
                 ft.commit();
-
-                setTitle(getString(R.string.fragment_title_supplieshelp));
         }
 
         /**
@@ -454,7 +436,7 @@ public class MainActivity extends SlidingFragmentActivity {
          */
         public void switchOrganizationFragment() {
                 FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
+                Fragment fragment = manager.findFragmentById(R.id.main_content);
 
                 FragmentTransaction ft = manager.beginTransaction();
 
@@ -462,13 +444,11 @@ public class MainActivity extends SlidingFragmentActivity {
                         mOrganizationFragment = new OrganizationFragment();
 
                 if (fragment == null) {
-                        ft.add(R.id.fragment_content, mOrganizationFragment);
+                        ft.add(R.id.main_content, mOrganizationFragment);
                 } else {
-                        ft.replace(R.id.fragment_content, mOrganizationFragment);
+                        ft.replace(R.id.main_content, mOrganizationFragment);
                 }
                 ft.commit();
-
-                setTitle(getString(R.string.fragment_title_organization));
         }
 
         /**
@@ -476,7 +456,7 @@ public class MainActivity extends SlidingFragmentActivity {
          */
         public void switchTestFragment() {
                 FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
+                Fragment fragment = manager.findFragmentById(R.id.main_content);
 
                 FragmentTransaction ft = manager.beginTransaction();
 
@@ -484,13 +464,11 @@ public class MainActivity extends SlidingFragmentActivity {
                         mTestFragment = new TestFragment();
 
                 if (fragment == null) {
-                        ft.add(R.id.fragment_content, mTestFragment);
+                        ft.add(R.id.main_content, mTestFragment);
                 } else {
-                        ft.replace(R.id.fragment_content, mTestFragment);
+                        ft.replace(R.id.main_content, mTestFragment);
                 }
                 ft.commit();
-
-                setTitle(getString(R.string.fragment_title_test_get));
         }
 
         /**
@@ -498,7 +476,7 @@ public class MainActivity extends SlidingFragmentActivity {
          */
         public void switchTestPostFragment() {
                 FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
+                Fragment fragment = manager.findFragmentById(R.id.main_content);
 
                 FragmentTransaction ft = manager.beginTransaction();
 
@@ -506,13 +484,11 @@ public class MainActivity extends SlidingFragmentActivity {
                         mTestPostFragment = new TestPostFragment();
 
                 if (fragment == null) {
-                        ft.add(R.id.fragment_content, mTestPostFragment);
+                        ft.add(R.id.main_content, mTestPostFragment);
                 } else {
-                        ft.replace(R.id.fragment_content, mTestPostFragment);
+                        ft.replace(R.id.main_content, mTestPostFragment);
                 }
                 ft.commit();
-
-                setTitle(getString(R.string.fragment_title_test_post));
         }
 
         /**
@@ -521,7 +497,7 @@ public class MainActivity extends SlidingFragmentActivity {
 
         public void switchEmergencyFragment() {
                 FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
+                Fragment fragment = manager.findFragmentById(R.id.main_content);
 
                 FragmentTransaction ft = manager.beginTransaction();
 
@@ -529,15 +505,12 @@ public class MainActivity extends SlidingFragmentActivity {
                         mEmergencyFragment = new EmergencyFragment();
 
                 if (fragment == null) {
-                        ft.add(R.id.fragment_content, mEmergencyFragment);
+                        ft.add(R.id.main_content, mEmergencyFragment);
                 } else {
-                        ft.replace(R.id.fragment_content, mEmergencyFragment);
+                        ft.replace(R.id.main_content, mEmergencyFragment);
                 }
                 ft.commit();
-
-                setTitle(getString(R.string.fragment_title_emergency));
         }
-
 
         public void gotoMemberActivity() {
                 Intent intent = new Intent();
@@ -545,28 +518,26 @@ public class MainActivity extends SlidingFragmentActivity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent, MEMBER_ACTIVITY_CODE);
         }
-        
+
         /**
          * switchProductFragment 介面
          */
-        
+
         public void switchMainProductFragment() {
-            FragmentManager manager = getSupportFragmentManager();
-            Fragment fragment = manager.findFragmentById(R.id.fragment_content);
+                FragmentManager manager = getSupportFragmentManager();
+                Fragment fragment = manager.findFragmentById(R.id.main_content);
 
-            FragmentTransaction ft = manager.beginTransaction();
+                FragmentTransaction ft = manager.beginTransaction();
 
-            if (mMainProductSellFragment == null)
-            	mMainProductSellFragment = new MainProductSellFragment();
+                if (mMainProductSellFragment == null)
+                        mMainProductSellFragment = new MainProductSellFragment();
 
-            if (fragment == null) {
-                    ft.add(R.id.fragment_content, mMainProductSellFragment);
-            } else {
-                    ft.replace(R.id.fragment_content, mMainProductSellFragment);
-            }
-            ft.commit();
-
-            setTitle(getString(R.string.fragment_title_productsell));
+                if (fragment == null) {
+                        ft.add(R.id.main_content, mMainProductSellFragment);
+                } else {
+                        ft.replace(R.id.main_content, mMainProductSellFragment);
+                }
+                ft.commit();
         }
 
         @Override
@@ -594,24 +565,18 @@ public class MainActivity extends SlidingFragmentActivity {
                 getSupportMenuInflater().inflate(R.menu.main, menu);
                 return true;
         }
-        
-        
-        
+
         @Override
-		protected void onResume() {
-			// TODO Auto-generated method stub
-			super.onResume();
-			
-		}
-        
-        @Override
-        protected void onPause(){
-        	super.onPause();
-        	
+        protected void onResume() {
+                // TODO Auto-generated method stub
+                super.onResume();
+
         }
 
-		
-        
-        
+        @Override
+        protected void onPause() {
+                super.onPause();
+
+        }
 
 }

@@ -63,9 +63,9 @@ public class MemberActivity extends SlidingFragmentActivity {
 
                 mContext = this;
 
-                setContentView(R.layout.fragment_main);
+                setContentView(R.layout.activity_member);
 
-                setTitle(R.string.fragment_title_member_login);
+                setTitle(R.string.title_member_login);
 
                 initSlidingMenu();
 
@@ -131,10 +131,6 @@ public class MemberActivity extends SlidingFragmentActivity {
                 public void onItemClick(AdapterView<?> l, View v, int position, long id) {
                         Log.i(TAG, "Click Position : " + position);
                         mSlidingMenu.toggle();
-
-                        if (position == 0) {
-                                // switchMainFragment();
-                        }
                 }
         };
 
@@ -143,18 +139,6 @@ public class MemberActivity extends SlidingFragmentActivity {
                 public void onItemClick(AdapterView<?> l, View v, int position, long id) {
                         Log.i(TAG, "Click Position : " + position);
                         mSlidingMenu.toggle();
-
-                        if (position == 1) {
-                                // switchTestFragment();
-                        } else {
-                                if (position == 4) {
-                                        // switchSuppliesHelpFragment();
-                                } else {
-                                        if (position == 6) {
-                                                // switchOrganizationFragment();
-                                        }
-                                }
-                        }
                 }
         };
 
@@ -203,50 +187,22 @@ public class MemberActivity extends SlidingFragmentActivity {
         }
 
         /**
-         * switchBottomMenuFragment 介面
-         */
-        public void switchBottomMenuFragment() {
-                FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_bottom);
-
-                FragmentTransaction ft = manager.beginTransaction();
-
-                if (mBottomMenuFragment == null)
-                        mBottomMenuFragment = new BottomMenuFragment();
-
-                /** 設定Button數量 **/
-                mBottomMenuFragment.setButtonCounter(2);
-
-                /** 設定Button iCon (-1:未設定) **/
-                mBottomMenuFragment.setButtonResource(R.drawable.ic_action_person, R.drawable.ic_action_search, -1);
-
-                if (fragment == null) {
-                        ft.add(R.id.fragment_bottom, mBottomMenuFragment);
-                } else {
-                        ft.replace(R.id.fragment_bottom, mBottomMenuFragment);
-                }
-                ft.commit();
-        }
-
-        /**
          * switchLoginFragment 介面
          */
         public void switchLoginFragment() {
                 FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
+                Fragment fragment = manager.findFragmentById(R.id.main_content);
                 FragmentTransaction ft = manager.beginTransaction();
 
                 if (mLoginFragment == null)
                         mLoginFragment = new LoginFragment();
 
                 if (fragment == null) {
-                        ft.add(R.id.fragment_content, mLoginFragment);
+                        ft.add(R.id.main_content, mLoginFragment);
                 } else {
-                        ft.replace(R.id.fragment_content, mLoginFragment);
+                        ft.replace(R.id.main_content, mLoginFragment);
                 }
                 ft.commit();
-
-                setTitle(getString(R.string.fragment_title_member_login));
         }
 
         /**
@@ -267,8 +223,6 @@ public class MemberActivity extends SlidingFragmentActivity {
                         ft.replace(R.id.fragment_content, mSearchFragment);
                 }
                 ft.commit();
-
-                setTitle(getString(R.string.fragment_title_search));
         }
 
         /**
@@ -276,7 +230,7 @@ public class MemberActivity extends SlidingFragmentActivity {
          */
         public void switchSignupFragment() {
                 FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
+                Fragment fragment = manager.findFragmentById(R.id.main_content);
 
                 FragmentTransaction ft = manager.beginTransaction();
 
@@ -284,9 +238,9 @@ public class MemberActivity extends SlidingFragmentActivity {
                         mSignupFragment = new SignupFragment();
 
                 if (fragment == null) {
-                        ft.add(R.id.fragment_content, mSignupFragment);
+                        ft.add(R.id.main_content, mSignupFragment);
                 } else {
-                        ft.replace(R.id.fragment_content, mSignupFragment);
+                        ft.replace(R.id.main_content, mSignupFragment);
                 }
                 ft.commit();
         }
