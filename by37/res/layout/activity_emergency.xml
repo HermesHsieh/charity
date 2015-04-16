@@ -30,14 +30,14 @@
             android:text=""
             android:textSize="18sp" />
 
-        <ScrollView
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            android:background="#F5F2F8" >
 
-            <RelativeLayout
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="395dp"
-                android:background="#F5F2F8" >
+                android:layout_height="match_parent" >
 
                 <TextView
                     android:id="@+id/emergency_content_textview"
@@ -48,18 +48,16 @@
                     android:text=""
                     android:textColor="@android:color/holo_red_light"
                     android:textSize="12sp" />
+            </ScrollView>
 
-                <ImageButton
-                    android:id="@+id/emergency_shrae_fb_imagebutton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_below="@+id/emergency_content_textview"
-                    android:layout_marginRight="27dp"
-                    android:layout_marginTop="70dp"
-                    android:background="@drawable/icon_fbshare" />
-            </RelativeLayout>
-        </ScrollView>
+            <ImageButton
+                android:id="@+id/emergency_shrae_fb_imagebutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/icon_fbshare" />
+        </RelativeLayout>
     </LinearLayout>
 
 </LinearLayout>

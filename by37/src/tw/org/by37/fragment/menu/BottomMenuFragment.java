@@ -1,6 +1,10 @@
 package tw.org.by37.fragment.menu;
 
 import tw.org.by37.R;
+import tw.org.by37.R.id;
+import tw.org.by37.R.layout;
+import tw.org.by37.fragment.productsell.NewProductActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -50,6 +54,9 @@ public class BottomMenuFragment extends Fragment {
                         switch (v.getId()) {
                         case R.id.rl_btn_1:
                                 Log.i(TAG, "Btn1 Click");
+						Intent i = new Intent();
+						i.setClass(getActivity(), NewProductActivity.class);
+						getActivity().startActivity(i);
                                 break;
                         case R.id.rl_btn_2:
                                 Log.i(TAG, "Btn2 Click");

@@ -115,6 +115,22 @@
     <!-- Emergency -->
     <string name="main_emergency_title">急難救助</string>
     <string name="main_product_sell_title">商品義賣</string>
+    
+    <!--Product Sell -->
+    <string name="new_product_title">新增義賣商品</string>
+    <string name="product_name">商品名稱</string>
+    <string name="product_type">商品類別</string>
+    <string name="product_photo">商品圖片</string>
+    <string name="product_amout">數量</string>
+    <string name="product_love_point">愛心點數</string>
+    <string name="product_donate">捐贈對象</string>
+    <string name="product_description">商品描述</string>
+    <string name="product_transpot">運送方式</string>
+    <string name="product_location">商品位置</string>
+    <string name="product_keyword">商品關鍵字</string>
+    <string name="btn_preview">預覽</string>
+    <string name="btn_upload_product">義賣商品上架</string>
+    <string name="btn_select_pictrue">選擇照片</string>
 
     <!-- Organization information Item Name -->
     <string name="org_info_main">設立宗旨</string>

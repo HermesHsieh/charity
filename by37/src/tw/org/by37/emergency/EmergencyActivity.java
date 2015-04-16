@@ -13,7 +13,15 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.facebook.AppEventsLogger;
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.facebook.UiLifecycleHelper;
+import com.facebook.widget.FacebookDialog;
 
 public class EmergencyActivity extends Activity {
 	
@@ -30,6 +38,9 @@ public class EmergencyActivity extends Activity {
 	private TextView mTitleTextView;
 	private TextView mContentTextView;
 	
+	private ImageButton mShareToFBBtn;
+	private UiLifecycleHelper uiHelper;       // Facebook SDK介面幫助類別
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -45,18 +56,21 @@ public class EmergencyActivity extends Activity {
 		protected void onResume() {
              super.onResume();
              registerReceiver(mMainBroadcastReceiverr, mGetEmergencyContentIntentFilter);
+             AppEventsLogger.activateApp(this);
      }
 	 
 	 @Override
 		protected void onPause() {
              super.onPause();
              unregisterReceiver(mMainBroadcastReceiverr);
+             AppEventsLogger.deactivateApp(this);
      }
 	
 	/**初始參數**/
     private void init(){
     	mGetEmergencyContentIntentFilter 	= new IntentFilter(SysConfig.GET_EMERGENCY_CONTENT_BROADCAST);
     	mMainBroadcastReceiverr 			= new MainBroadcastReceiver();
+    	uiHelper 							= new UiLifecycleHelper(this, callback);
     	
     	new GetEmergencyContentTask(this).execute(id);
     	
@@ -65,6 +79,16 @@ public class EmergencyActivity extends Activity {
     private void setView(){
     	mTitleTextView = (TextView)findViewById(R.id.emergency_title_textview);
     	mContentTextView = (TextView)findViewById(R.id.emergency_content_textview);
+    	
+    	mShareToFBBtn = (ImageButton)findViewById(R.id.emergency_shrae_fb_imagebutton);
+    	mShareToFBBtn.setOnClickListener(new ImageButton.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				postStatus();
+			}
+		});
     }
     
     /**設定收到廣播後的動作**/
@@ -116,6 +140,33 @@ public class EmergencyActivity extends Activity {
     	
     	mTitleTextView.setText(title);
     	mContentTextView.setText(content);
+    }
+    
+    Session.StatusCallback callback = new Session.StatusCallback()
+    {
+        @Override
+        public void call(Session session, SessionState state, Exception exception)
+        {
+        }
+    };
+    
+    private void postStatus()
+    {
+        // 判斷使用者安裝的Facebook App是否可以提供該功能
+        if(FacebookDialog.canPresentShareDialog(this, FacebookDialog.ShareDialogFeature.SHARE_DIALOG))
+        {
+            // 使用FacebookDialog.ShareDialog來張貼文章
+            FacebookDialog shareDialog = new FacebookDialog.ShareDialogBuilder(this)
+                    .setLink("http://www.aaronlife.com") // 要張貼的連結
+                    .setPicture("http://www.aaronlife.com/travel/images/travel_2014-09-16_13.jpg") // 照片連結
+                    .build();
+
+            uiHelper.trackPendingDialogCall(shareDialog.present()); // 切換到張貼狀態的Facebook Activity
+        }
+        else
+        {
+            Toast.makeText(this, "不支援Sharedialog", Toast.LENGTH_SHORT).show();
+        }
     }
 
 	
