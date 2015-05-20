@@ -7,7 +7,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent"
+        android:scrollbars="none" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,8 +31,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp" >
+                    android:padding="5dp" >
 
                     <TextView
                         android:layout_width="70dp"
@@ -41,35 +41,44 @@
                         android:text="@string/product_name" />
 
                     <EditText
+                        android:id="@+id/new_product_name_edittext"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
                     android:orientation="horizontal"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp" >
+                    android:padding="5dp" >
 
                     <TextView
                         android:layout_width="70dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:paddingBottom="5dp"
                         android:paddingTop="5dp"
                         android:text="@string/product_type" />
+
+                    <Spinner
+                        android:id="@+id/new_product_type_spinner"
+                        android:layout_width="120dp"
+                        android:layout_height="match_parent" />
+
+                    <CheckBox
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="銅板捐" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp" >
+                    android:padding="5dp" >
 
                     <TextView
                         android:layout_width="70dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="30dp"
                         android:paddingBottom="5dp"
                         android:paddingTop="5dp"
                         android:text="@string/product_photo" />
@@ -77,8 +86,10 @@
                     <Button
                         android:id="@+id/new_product_select_picture_btn"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/btn_select_pictrue" />
+                        android:layout_height="30dp"
+                        android:background="@android:color/holo_green_light"
+                        android:text="@string/btn_select_pictrue"
+                        android:textSize="14sp" />
 
                     <ImageView
                         android:id="@+id/new_product_picture_imageview"
@@ -100,8 +111,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp" >
+                    android:padding="5dp" >
 
                     <TextView
                         android:layout_width="70dp"
@@ -109,44 +119,62 @@
                         android:paddingBottom="5dp"
                         android:paddingTop="5dp"
                         android:text="@string/product_amout" />
+
+                    <SeekBar
+                        android:id="@+id/new_product_amount_seekbar"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.55"
+                        android:max="10" />
+
+                    <TextView
+                        android:id="@+id/new_product_amount_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingRight="0dp"
+                        android:text="0" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="70dp"
                     android:orientation="horizontal"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp" >
+                    android:padding="5dp" >
 
                     <TextView
                         android:layout_width="70dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:paddingBottom="5dp"
                         android:paddingTop="5dp"
                         android:text="@string/product_love_point" />
+
+                    <RadioGroup
+                        android:id="@+id/new_product_love_point_radiogroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical" >
+
+                        <RadioButton
+                            android:id="@+id/new_product_love_point_type1_radiobtn"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:text="限我選定的類別或機構"
+                            android:textSize="12sp" />
+
+                        <RadioButton
+                            android:id="@+id/new_product_love_point_type2_radiobtn"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:text="不限我選定的類別或機構"
+                            android:textSize="12sp" />
+                    </RadioGroup>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp" >
-
-                    <TextView
-                        android:layout_width="70dp"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="5dp"
-                        android:paddingTop="5dp"
-                        android:text="@string/product_donate" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp" >
+                    android:padding="5dp" >
 
                     <TextView
                         android:layout_width="70dp"
@@ -156,17 +184,17 @@
                         android:text="@string/product_description" />
 
                     <EditText
+                        android:id="@+id/new_product_discription_edittext"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:lines="5" />
+                        android:layout_height="50dp"
+                        android:lines="2" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="100dp"
                     android:orientation="horizontal"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp" >
+                    android:padding="5dp" >
 
                     <TextView
                         android:layout_width="70dp"
@@ -174,14 +202,41 @@
                         android:paddingBottom="5dp"
                         android:paddingTop="5dp"
                         android:text="@string/product_transpot" />
+
+                    <RadioGroup
+                        android:id="@+id/new_product_transpot_radiogroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical" >
+
+                        <RadioButton
+                            android:id="@+id/new_product_transpot_type1_radiobtn"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:text="自取"
+                            android:textSize="12sp" />
+
+                        <RadioButton
+                            android:id="@+id/new_product_transpot_type2_radiobtn"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:text="宅配．買方付運費"
+                            android:textSize="12sp" />
+
+                        <RadioButton
+                            android:id="@+id/new_product_transpot_type3_radiobtn"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:text="宅配．賣方付運費"
+                            android:textSize="12sp" />
+                    </RadioGroup>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp" >
+                    android:padding="5dp" >
 
                     <TextView
                         android:layout_width="70dp"
@@ -189,14 +244,18 @@
                         android:paddingBottom="5dp"
                         android:paddingTop="5dp"
                         android:text="@string/product_location" />
+
+                    <EditText
+                        android:id="@+id/new_product_location_edittext"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp" >
+                    android:padding="5dp">
 
                     <TextView
                         android:layout_width="70dp"
@@ -204,6 +263,11 @@
                         android:paddingBottom="5dp"
                         android:paddingTop="5dp"
                         android:text="@string/product_keyword" />
+
+                    <EditText
+                        android:id="@+id/new_product_keyword_edittext"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp" />
                 </LinearLayout>
             </LinearLayout>
 
