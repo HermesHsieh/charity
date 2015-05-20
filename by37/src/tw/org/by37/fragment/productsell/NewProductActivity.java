@@ -238,7 +238,8 @@ public class NewProductActivity extends Activity {
 	        params.add(new BasicNameValuePair("quantity", productAmount));
 //	        params.add(new BasicNameValuePair("image", imagepath));
 	        params.add(new BasicNameValuePair("image", imageList.get(0)));
-	        params.add(new BasicNameValuePair("user_id", UserData.id.toString()));
+//	        params.add(new BasicNameValuePair("user_id", UserData.id.toString()));
+	        params.add(new BasicNameValuePair("user_id", "60"));
 	        params.add(new BasicNameValuePair("type", productType));
 	       
 

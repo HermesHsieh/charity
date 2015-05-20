@@ -20,12 +20,13 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/main_emergency_count_tv"
+                android:id="@+id/main_product_count_tv"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:background="@android:color/holo_red_light"
                 android:gravity="center"
-                android:text="1"/>
+                android:text=""
+                android:visibility="gone"/>
         </LinearLayout>
 
     <HorizontalScrollView
