@@ -27,6 +27,7 @@ import tw.org.by37.R;
 import tw.org.by37.data.GoodsTypesText;
 import tw.org.by37.data.SelectingData;
 import tw.org.by37.data.TypesData;
+import tw.org.by37.data.UserData;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -44,6 +45,8 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -202,6 +205,7 @@ public class NewProductActivity extends Activity {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
 			progDailog.dismiss();
+			finish();
 		}
 
 		@Override
@@ -234,8 +238,8 @@ public class NewProductActivity extends Activity {
 	        params.add(new BasicNameValuePair("quantity", productAmount));
 //	        params.add(new BasicNameValuePair("image", imagepath));
 	        params.add(new BasicNameValuePair("image", imageList.get(0)));
-	        params.add(new BasicNameValuePair("user_id", "1"));
-	        params.add(new BasicNameValuePair("type", "1"));
+	        params.add(new BasicNameValuePair("user_id", UserData.id.toString()));
+	        params.add(new BasicNameValuePair("type", productType));
 	       
 
 	        try {
@@ -340,6 +344,23 @@ public class NewProductActivity extends Activity {
 
 		ArrayAdapter<String> adapter_category = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, category);
 		mProductTypeSpinner.setAdapter(adapter_category);
+		mProductTypeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// TODO Auto-generated method stub
+				Log.d(TAG, "arg2 = "+arg2);
+				productType = SelectingData.mGoodsTypes.get(arg2).id.toString();
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
 	}
 	
 	@Override
