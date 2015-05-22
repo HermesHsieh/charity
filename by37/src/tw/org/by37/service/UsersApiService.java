@@ -1,0 +1,210 @@
+package tw.org.by37.service;
+
+import static tw.org.by37.config.SysConfig.*;
+
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
+
+import tw.org.by37.data.UserData;
+import tw.org.by37.productsell.NewProductActivity;
+import android.app.ProgressDialog;
+import android.net.Uri;
+import android.util.Log;
+import android.widget.Toast;
+
+public class UsersApiService {
+
+        private final static String TAG = "UsersApi";
+
+        private static String uri = usersApi;
+
+        private static String uriLogin = usersLoginApi;
+
+        private static String uriUserData = usersDataApi;
+
+        /* Post User To Server */
+        public static String postUsers() {
+                Log.i(TAG, "postUsers");
+
+                String result = null;
+
+                /* 建立HTTP Post連線 */
+                HttpPost httpRequest = new HttpPost(uri);
+
+                /*
+                 * Post運作傳送變數必須用NameValuePair[]陣列儲存
+                 */
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("name", UserData.name));
+                if (UserData.password.length() > 0) {
+                        params.add(new BasicNameValuePair("password", UserData.password));
+                } else {
+                        params.add(new BasicNameValuePair("password", "test1"));
+                }
+                params.add(new BasicNameValuePair("source", UserData.source));
+                params.add(new BasicNameValuePair("email", UserData.email));
+
+                try {
+
+                        /* 發出HTTP request */
+                        httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+                        /* 取得HTTP response */
+                        HttpResponse httpResponse = new DefaultHttpClient().execute(httpRequest);
+                        /* 若狀態碼為200 ok */
+                        if (httpResponse.getStatusLine().getStatusCode() == 200) {
+                                /* 取出回應字串 */
+                                result = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+                                Log.i(TAG, "Data : " + result);
+                        }
+
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "HttpRequest Exception");
+                }
+                return result;
+        }
+
+        public static String RegisterUser() {
+                Log.i(TAG, "RegisterUser");
+
+                String result = null;
+                HttpClient client = new DefaultHttpClient();
+
+                HttpPost post = new HttpPost(uri);
+
+                /*
+                 * Post運作傳送變數必須用NameValuePair[]陣列儲存
+                 */
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("name", UserData.name));
+                params.add(new BasicNameValuePair("password", UserData.password));
+                params.add(new BasicNameValuePair("source", UserData.source));
+                params.add(new BasicNameValuePair("email", UserData.email));
+                if (UserData.image.length() > 0) {
+                        params.add(new BasicNameValuePair("image", UserData.image));
+                }
+                Log.i(TAG, "name : " + UserData.name);
+                Log.i(TAG, "password : " + UserData.password);
+                Log.i(TAG, "source : " + UserData.source);
+                Log.i(TAG, "email : " + UserData.email);
+                Log.i(TAG, "Image Path : " + UserData.image);
+
+                try {
+                        // setup multipart entity
+                        MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+                        for (int i = 0; i < params.size(); i++) {
+                                // identify param type by Key
+                                if (params.get(i).getName().equals("image")) {
+                                        entity.addPart(params.get(i).getName(), new FileBody(new File(params.get(i).getValue())));
+                                } else {
+                                        entity.addPart(params.get(i).getName(), new StringBody(params.get(i).getValue(), Charset.forName("UTF-8")));
+                                }
+                        }
+
+                        post.setEntity(entity);
+
+                        try {
+                                // execute and get response
+                                result = new String(client.execute(post, new BasicResponseHandler()).getBytes(), HTTP.UTF_8);
+
+                                Log.i(TAG, "RegisterUser Result : " + result);
+                        } catch (Exception e) {
+                                e.printStackTrace();
+                                Log.e(TAG, "RegisterUser Result Exception!");
+                        }
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "RegisterUser Exception");
+                }
+
+                return result;
+        }
+
+        public static String LoginUser() {
+                Log.i(TAG, "LoginUser");
+
+                String result = null;
+
+                /* 建立HTTP Post連線 */
+                HttpPost httpRequest = new HttpPost(uriLogin);
+
+                /*
+                 * Post運作傳送變數必須用NameValuePair[]陣列儲存
+                 */
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("email", UserData.email));
+                params.add(new BasicNameValuePair("password", UserData.password));
+                params.add(new BasicNameValuePair("source", UserData.source));
+                Log.i(TAG, "email : " + UserData.email);
+                Log.i(TAG, "password : " + UserData.password);
+                Log.i(TAG, "source : " + UserData.source);
+
+                try {
+
+                        /* 發出HTTP request */
+                        httpRequest.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+                        /* 取得HTTP response */
+                        HttpResponse httpResponse = new DefaultHttpClient().execute(httpRequest);
+                        /* 若狀態碼為200 ok */
+                        if (httpResponse.getStatusLine().getStatusCode() == 200) {
+                                /* 取出回應字串 */
+                                result = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+                                Log.i(TAG, "Data : " + result);
+                        }
+
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "HttpRequest Exception");
+                }
+                return result;
+        }
+
+        public static String GetUserData() {
+                Log.i(TAG, "GetUserData");
+
+                String result = null;
+
+                // 透過HTTP連線取得回應
+                try {
+                        // for port 80 requests!
+                        HttpClient httpclient = new DefaultHttpClient();
+                        HttpGet httpget = new HttpGet(uriUserData + UserData.user_id);
+                        HttpResponse response = httpclient.execute(httpget);
+
+                        /* 取出回應字串 */
+                        result = EntityUtils.toString(response.getEntity(), "UTF-8");
+
+                        Log.i(TAG, "GetUserData Result : " + result);
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+                return result;
+        }
+}

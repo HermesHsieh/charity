@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/member_button_margin"
+            android:paddingRight="@dimen/member_button_margin" >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="20dp"
+                android:paddingTop="10dp"
+                android:text="@string/title_member_service"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/btn_logout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_logout" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" >
+
+                    <Button
+                        android:id="@+id/btn_trade"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:layout_margin="@dimen/member_button_margin"
+                        android:background="@drawable/item_btn"
+                        android:text="@string/trade_history" />
+
+                    <TextView
+                        android:id="@+id/tv_trade"
+                        android:layout_width="75dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="100dp"
+                        android:background="@drawable/corners_orange_bg"
+                        android:gravity="center_horizontal"
+                        android:paddingBottom="3dp"
+                        android:paddingTop="3dp"
+                        android:text="15"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" >
+
+                    <Button
+                        android:id="@+id/btn_money"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:layout_margin="@dimen/member_button_margin"
+                        android:background="@drawable/item_btn"
+                        android:text="@string/heart_money_history" />
+
+                    <TextView
+                        android:id="@+id/tv_money"
+                        android:layout_width="75dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="100dp"
+                        android:background="@drawable/corners_orange_bg"
+                        android:gravity="center_horizontal"
+                        android:paddingBottom="3dp"
+                        android:paddingTop="3dp"
+                        android:text="999"
+                        android:textColor="#FFFFFF"
+                        android:textSize="20sp" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/btn_edit_product"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/member_button_margin"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_btn"
+                    android:text="@string/edit_product" />
+
+                <Button
+                    android:id="@+id/btn_my_market"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/member_button_margin"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_btn"
+                    android:text="@string/my_market" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/btn_like_history"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/member_button_margin"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_btn"
+                    android:text="@string/like_history" />
+
+                <Button
+                    android:id="@+id/btn_edit_member"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/member_button_margin"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_btn"
+                    android:text="@string/edit_member_data" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/member_button_margin"
+                android:background="@drawable/item_dashline" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/btn_edit_favorite_org"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/member_button_margin"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_btn"
+                    android:text="@string/edit_favorite_org" />
+
+                <Button
+                    android:id="@+id/btn_edit_position"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/member_button_margin"
+                    android:layout_weight="1"
+                    android:background="@drawable/item_btn"
+                    android:text="@string/edit_position" />
+            </LinearLayout>
+
+            <include
+                android:id="@+id/avatar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btn_logout"
+                android:layout_gravity="center_horizontal"
+                layout="@layout/img_avatar" />
+
+            <TextView
+                android:id="@+id/tv_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/avatar" />
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:alpha="0.8"
+    android:background="@drawable/org_map_float_menu"
+    android:orientation="horizontal" >
+
+    <ImageButton
+        android:id="@+id/img_btn_guide"
+        style="@style/map_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_click"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_action_make_available_offline" />
+
+    <ImageButton
+        android:id="@+id/img_btn_favorite"
+        style="@style/map_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_click"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_action_important" />
+
+    <ImageButton
+        android:id="@+id/img_btn_share"
+        style="@style/map_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_click"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_action_share" />
+
+</LinearLayout>

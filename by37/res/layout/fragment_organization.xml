@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/rl_map"
+        android:layout_width="match_parent"
+        android:layout_height="200dp" >
+
+        <FrameLayout
+            android:id="@+id/fragment_map"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible" >
+        </FrameLayout>
+
+        <include
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="20dp"
+            layout="@layout/item_map_float_menu" />
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            layout="@layout/item_map_bottom_bar" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/rl_map" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/org_horizontal_outline_padding"
+            android:paddingRight="@dimen/org_horizontal_outline_padding" >
+
+            <include
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/org_block_vertical_margin"
+                android:layout_marginTop="@dimen/org_block_vertical_margin"
+                layout="@layout/item_org_property" />
+
+            <include
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/org_block_vertical_margin"
+                android:layout_marginTop="@dimen/org_block_vertical_margin"
+                layout="@layout/item_org_supplies" />
+
+            <include
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/org_block_vertical_margin"
+                android:layout_marginTop="@dimen/org_block_vertical_margin"
+                layout="@layout/item_org_info" />
+
+            <TextView
+                android:id="@+id/tv_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="tv_info" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

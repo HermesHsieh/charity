@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/org_dark_gray_color"
+        android:orientation="horizontal" >
+
+        <RelativeLayout
+            android:id="@+id/rl_1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/org_light_gray_color" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:paddingBottom="@dimen/org_info_vertical"
+                android:paddingTop="@dimen/org_info_vertical"
+                android:text="@string/org_info_main" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:background="@drawable/item_click" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:paddingBottom="@dimen/org_info_vertical"
+                android:paddingTop="@dimen/org_info_vertical"
+                android:text="@string/org_info_service" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_3"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/item_click" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:paddingBottom="@dimen/org_info_vertical"
+                android:paddingTop="@dimen/org_info_vertical"
+                android:text="@string/org_info_contact" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/org_light_gray_color"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/org_info_horizontal_outline_padding"
+        android:paddingRight="@dimen/org_info_horizontal_outline_padding" >
+
+        <TextView
+            android:id="@+id/tv_info_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/org_info_vertical"
+            android:paddingTop="@dimen/org_info_vertical"
+            android:text="@string/org_info_main"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_info_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/org_info_vertical"
+            android:paddingTop="@dimen/org_info_vertical"
+            android:text="Content" />
+    </LinearLayout>
+
+</LinearLayout>
