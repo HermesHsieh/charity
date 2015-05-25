@@ -26,6 +26,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -35,6 +36,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.actionbarsherlock.view.Menu;
@@ -122,6 +124,10 @@ public class MainActivity extends SlidingFragmentActivity {
                 switchMainFragment();
 
                 switchBottomMenuFragment();
+
+                // FrameLayout mBtnMenu = (FrameLayout)
+                // findViewById(R.id.fragment_bottom);
+                // mBtnMenu.setBackgroundColor(getResources().getColor(R.color.bottom_menu_background));
 
         }
 
@@ -564,7 +570,7 @@ public class MainActivity extends SlidingFragmentActivity {
                                 FunctionUtil.showToastMsg(mContext, getString(R.string.login_success_hint));
                                 break;
                         case LOGOUT_SUCCESS_CODE:
-                                FunctionUtil.showToastMsg(mContext,  getString(R.string.logout_success_hint));
+                                FunctionUtil.showToastMsg(mContext, getString(R.string.logout_success_hint));
                                 break;
                         }
                         break;
