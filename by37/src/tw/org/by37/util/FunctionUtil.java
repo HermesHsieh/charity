@@ -23,11 +23,18 @@ public class FunctionUtil {
         private final static String TAG = "FunctionUtil";
 
         public static void createFileRoot() {
-                /** App內存路徑 **/
-                File mFile = new File(PIC_PATH);
-                Log.v(TAG, PIC_PATH + ", PIC_PATH Exist : " + mFile.exists());
+                /** App Database 內存路徑 **/
+                File mFile = new File(DB_PATH);
+                Log.v(TAG, DB_PATH + ", DB_PATH Exist : " + mFile.exists());
                 if (!mFile.exists()) {
                         mFile.mkdirs();
+                        Log.v(TAG, "-- create --");
+                }
+                /** App照片內存路徑 **/
+                File mPicFile = new File(PIC_PATH);
+                Log.v(TAG, PIC_PATH + ", PIC_PATH Exist : " + mFile.exists());
+                if (!mPicFile.exists()) {
+                        mPicFile.mkdirs();
                         Log.v(TAG, "-- create --");
                 }
                 /** SD卡Picture路徑 **/
@@ -127,5 +134,15 @@ public class FunctionUtil {
 
                 // 利用Builder物件建立AlertDialog
                 return builder.create();
+        }
+
+        /** 判別伺服器是否在睡覺 **/
+        public static boolean isSleepServer(String result) {
+                int checkReg = result.indexOf("<html");
+                if (checkReg >= 0) {
+                        return true;
+                } else {
+                        return false;
+                }
         }
 }

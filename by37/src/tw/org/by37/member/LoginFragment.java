@@ -1,26 +1,34 @@
 package tw.org.by37.member;
 
 import static tw.org.by37.config.RequestCode.*;
-import static tw.org.by37.config.RequestCode.SIGNUP_ACTIVITY_CODE;
+import static tw.org.by37.config.SysConfig.*;
 
+import java.net.URL;
 import java.util.Arrays;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import tw.org.by37.MemberActivity;
+import tw.org.by37.MainActivity;
 import tw.org.by37.R;
 import tw.org.by37.SignupActivity;
-import tw.org.by37.data.UserData;
+import tw.org.by37.data.RegisterData;
+import tw.org.by37.data.UserData2;
 import tw.org.by37.service.UsersApiService;
 import tw.org.by37.util.FunctionUtil;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
 import android.text.SpannableString;
+import android.text.TextWatcher;
 import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +36,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +65,8 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
         private final static String TAG = "LoginFragment";
 
         private Context mContext;
+
+        private ProgressDialog psDialog;
 
         /** Google+ **/
         private static final int RC_SIGN_IN = 0;
@@ -89,12 +102,29 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
         private EditText edt_account;
         private EditText edt_password;
 
+        /** 提示字 忘記密碼 **/
         private TextView tv_forget_password;
+
+        /** 記住我 **/
+        private CheckBox ckb_remember_me;
+        /** 記住我的帳號 **/
+        private String rm_account;
+        private boolean remember_me = false;
+
+        public static String fb_name = null;
+        public static String fb_email = null;
+        public static String fb_image = null;
+
+        public static String g_name = null;
+        public static String g_email = null;
+        public static String g_image = null;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
                 View view = inflater.inflate(R.layout.fragment_login, container, false);
                 mContext = getActivity();
+                getRememberMe();
+                getUserRMAccount();
                 findView(view);
                 initGoogleSignInButton(view);
                 return view;
@@ -113,14 +143,62 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                 edt_account = (EditText) view.findViewById(R.id.edt_account);
                 edt_password = (EditText) view.findViewById(R.id.edt_password);
 
+                if (remember_me) {
+                        if (rm_account != null)
+                                edt_account.setText(rm_account);
+                }
+
+                edt_account.addTextChangedListener(new TextWatcher() {
+
+                        @Override
+                        public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        }
+
+                        @Override
+                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable s) {
+                                // 假如記住我的選項有打勾
+                                if (remember_me) {
+                                        new Thread(new Runnable() {
+                                                public void run() {
+                                                        rm_account = edt_account.getText().toString();
+                                                        // 當輸入帳號時都將他的值儲存於手機內
+                                                        putUserRMAccount(rm_account);
+                                                }
+                                        }).start();
+                                }
+                        }
+                });
+
+                ckb_remember_me = (CheckBox) view.findViewById(R.id.ckb_remember_me);
+                ckb_remember_me.setChecked(remember_me);
+                ckb_remember_me.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                                Log.d(TAG, "onCheckedChanged : " + isChecked);
+                                remember_me = isChecked;
+                                putUserRememberMe();
+                                if (remember_me) {
+                                        rm_account = edt_account.getText().toString();
+                                        putUserRMAccount(rm_account);
+                                } else {
+                                        removeUserRMAccount();
+                                }
+                        }
+                });
+
                 btn_login = (Button) view.findViewById(R.id.btn_login);
                 btn_login.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                                UserData.email = edt_account.getText().toString();
-                                UserData.password = edt_password.getText().toString();
-                                UserData.source = "by37";
-                                new UserLoginAsyncTask().execute(null, null, null);
+                                RegisterData.email = edt_account.getText().toString();
+                                RegisterData.password = edt_password.getText().toString();
+                                RegisterData.source = "by37";
+                                MainActivity.mUserApplication.setRegisterData();
+                                new UserLoginAsyncTask().execute();
                         }
                 });
 
@@ -149,10 +227,14 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
         class UserLoginAsyncTask extends AsyncTask<String, Integer, String> {
                 @Override
                 protected String doInBackground(String... param) {
+                        Log.d(TAG, "UserLoginAsyncTask");
 
-                        String result = UsersApiService.LoginUser();
+                        String user = RegisterData.email;
+                        String pwd = RegisterData.password;
+                        String src = RegisterData.source;
 
-                        Log.i(TAG, "Result : " + result);
+                        String result = UsersApiService.LoginUser(user, pwd, src);
+                        Log.d(TAG, "Result : " + result);
 
                         return result;
                 }
@@ -160,6 +242,8 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                 @Override
                 protected void onPostExecute(String result) {
                         super.onPostExecute(result);
+                        /** 關閉提示Dialog **/
+                        psDialog.dismiss();
                         String mInfo = tv_info.getText().toString();
                         String mReg = "";
                         String status = "";
@@ -167,10 +251,10 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                         if (result != null) {
 
                                 /** 判別伺服器是否正常work狀態 **/
-                                if (FunctionUtil.ServiceStatus(result)) {
-                                        mReg = "Register Info : " + result + "\n\n";
-                                } else {
+                                if (FunctionUtil.isSleepServer(result)) {
                                         mReg = "Register Info : server has been sleep." + "\n\n";
+                                } else {
+                                        mReg = "Register Info : " + result + "\n\n";
                                 }
                                 tv_info.setText(mReg + mInfo);
 
@@ -179,12 +263,35 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                                         status = mJObj.getString("status");
 
                                         if (status.equals("success")) {
-                                                UserData.setUserData(mContext, result);
-
+                                                /** 儲存使用者資料於手機內存 **/
+                                                MainActivity.mUserApplication.putUserLogin();
+                                                /** 儲存使用者結果資料於手機內存 **/
+                                                MainActivity.mUserApplication.putUserResult(result);
+                                                /** 刷新使用者資料 **/
+                                                MainActivity.mUserApplication.updateUserResult();
+                                                /** 刷新使用者大頭照資料 **/
+                                                MainActivity.mUserApplication.updateUser_Image();
+                                                /** 登入成功,finish **/
                                                 LoginSuccess();
                                         } else {
                                                 if (status.equals("fail")) {
-                                                        FunctionUtil.AlertDialogCheck(mContext, "", mJObj.getString("message")).show();
+                                                        if (RegisterData.source.equals("by37")) {
+                                                                FunctionUtil.AlertDialogCheck(mContext, "", mJObj.getString("message")).show();
+                                                                Log.d(TAG, "Login fail : by37");
+                                                                Log.d(TAG, "Meaage : " + mJObj.getString("message"));
+                                                        } else {
+                                                                if (RegisterData.source.equals("facebook")) {
+                                                                        Log.d(TAG, "Login fail : facebook");
+                                                                        Log.d(TAG, "Meaage : " + mJObj.getString("message"));
+                                                                        gotoSignupActivity();
+                                                                } else {
+                                                                        if (RegisterData.source.equals("google")) {
+                                                                                Log.d(TAG, "Login fail : google");
+                                                                                Log.d(TAG, "Meaage : " + mJObj.getString("message"));
+                                                                                gotoSignupActivity();
+                                                                        }
+                                                                }
+                                                        }
                                                 }
                                         }
                                 } catch (JSONException e) {
@@ -203,66 +310,8 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                 @Override
                 protected void onPreExecute() {
                         super.onPreExecute();
-                }
-        }
-
-        class UserDataAsyncTask extends AsyncTask<String, Integer, String> {
-                @Override
-                protected String doInBackground(String... param) {
-
-                        String result = UsersApiService.GetUserData();
-
-                        Log.i(TAG, "Result : " + result);
-
-                        return result;
-                }
-
-                @Override
-                protected void onPostExecute(String result) {
-                        super.onPostExecute(result);
-
-                        String mInfo = tv_info.getText().toString();
-                        String mReg = "";
-                        String status = "";
-
-                        if (result != null) {
-
-                                /** 判別伺服器是否正常work狀態 **/
-                                if (FunctionUtil.ServiceStatus(result)) {
-                                        mReg = "Register Info : " + result + "\n\n";
-                                } else {
-                                        mReg = "Register Info : server has been sleep." + "\n\n";
-                                }
-                                tv_info.setText(mReg + mInfo);
-                        }
-                        // try {
-                        // JSONObject mJObj = new JSONObject(result);
-                        // status = mJObj.getString("status");
-                        //
-                        // if (status.equals("true")) {
-                        // UserData.setUserData(mContext, result);
-                        // LoginSuccess();
-                        // } else {
-                        // if (status.equals("false")) {
-                        // FunctionUtil.AlertDialogCheck(mContext, "",
-                        // mJObj.getString("message")).show();
-                        // }
-                        // }
-                        // } catch (JSONException e) {
-                        // // TODO Auto-generated catch block
-                        // e.printStackTrace();
-                        // }
-                }
-
-                @Override
-                protected void onProgressUpdate(Integer... values) {
-                        super.onProgressUpdate(values);
-                }
-
-                /** 執行Async Task前 **/
-                @Override
-                protected void onPreExecute() {
-                        super.onPreExecute();
+                        /** 開啟提示Dialog **/
+                        psDialog = ProgressDialog.show(mContext, "", "登入中，請稍候...");
                 }
         }
 
@@ -273,21 +322,23 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                 }
         };
 
+        /** Facebook登入後的 UserCallBack **/
         private UserInfoChangedCallback userCallback = new UserInfoChangedCallback() {
                 @Override
                 public void onUserInfoFetched(GraphUser user) {
                         if (user != null) {
-                                StringBuffer sb = new StringBuffer();
-                                /** set Facebook User Data **/
-                                UserData.social_id = user.getId();
-                                UserData.name = user.getName();
-                                UserData.source = "facebook";
                                 try {
-                                        UserData.email = user.getInnerJSONObject().getString("email");
-                                } catch (JSONException e) {
-                                        e.printStackTrace();
-                                        Log.e(TAG, "email JSONException!");
+                                        RegisterData.email = user.getInnerJSONObject().getString("email");
+                                        RegisterData.password = "";
+                                        RegisterData.source = "facebook";
+                                        RegisterData.name = user.getName();
+                                        RegisterData.image = getFacebookProfilePicturePath(user.getId());
+                                } catch (JSONException e1) {
+                                        // TODO Auto-generated catch block
+                                        e1.printStackTrace();
                                 }
+
+                                StringBuffer sb = new StringBuffer();
                                 sb.append("Id : " + user.getId() + "\n");
                                 sb.append("Name : " + user.getName() + "\n");
                                 sb.append("FirstName : " + user.getFirstName() + "\n");
@@ -301,11 +352,9 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                                 sb.append("InnerJSONObject : " + user.getInnerJSONObject() + "\n");
                                 tv_info.setText("You are currently logged in as " + user.getName() + "\n" + sb.toString());
 
-                                // new getDataAsyncTask().execute(null, null,
-                                // null);
+                                callFacebookLogout();
 
-                        } else {
-                                tv_info.setText("You are not logged in.");
+                                new UserLoginAsyncTask().execute();
                         }
                 }
         };
@@ -318,11 +367,15 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                 }
         }
 
+        private String getFacebookProfilePicturePath(String userID) {
+                return "https://graph.facebook.com/" + userID + "/picture?type=large";
+        }
+
         /**
          * Logout From Facebook
          */
-        public static void callFacebookLogout(Context context) {
-                Log.i(TAG, "callFacebookLogout");
+        public static void callFacebookLogout() {
+                Log.i(TAG, "FacebookLogout");
                 if (Session.getActiveSession() != null) {
                         Session.getActiveSession().closeAndClearTokenInformation();
                 }
@@ -487,12 +540,6 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                                 Log.i(TAG, "Finally Set UserData");
                                 Log.i(TAG, "account : " + email + ", Social_Id : " + personId);
 
-                                /** set Google User Data **/
-                                UserData.social_id = personId;
-                                UserData.name = personName;
-                                UserData.email = email;
-                                UserData.source = "google";
-
                                 StringBuffer sb = new StringBuffer();
                                 sb.append("Id : ").append(personId).append("\n");
                                 sb.append("Name : ").append(personName).append("\n");
@@ -505,11 +552,16 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
 
                                 tv_info.setText(sb.toString());
 
-                                // new getDataAsyncTask().execute(null, null,
-                                // null);
+                                signOutFromGplus();
 
-                                // FunctionUtil.showToastMsg(mContext,
-                                // "Google+ Login Success");
+                                /** set Google User Data **/
+                                RegisterData.name = personName;
+                                RegisterData.email = email;
+                                RegisterData.password = "";
+                                RegisterData.source = "google";
+                                RegisterData.image = personPhotoUrl;
+
+                                new UserLoginAsyncTask().execute();
                         } else {
                                 Toast.makeText(mContext, "Person information is null", Toast.LENGTH_LONG).show();
                         }
@@ -552,9 +604,6 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
 
         /** End of Google+ **/
 
-        /** Preferences **/
-        /** End of Preferences **/
-
         /** GotoActivity **/
         public void gotoSignupActivity() {
                 Intent intent = new Intent();
@@ -573,6 +622,57 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
 
         /** Activity Bundle **/
         /** End of Activity Bundle **/
+
+        /** Preferences **/
+        /** 獲取記住我資料 **/
+        public void getRememberMe() {
+                Log.i(TAG, "getRememberMe");
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+                try {
+                        remember_me = sp.getBoolean(k_UserData_5, false);
+                } catch (Exception e) {
+                }
+                Log.d(TAG, "remember_me : " + remember_me);
+        }
+
+        /** 儲存記住我資料 **/
+        public void putUserRememberMe() {
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putBoolean(k_UserData_5, remember_me);
+                editor.commit();
+        }
+
+        /** 獲取記住我的帳號資料 **/
+        public void getUserRMAccount() {
+                Log.i(TAG, "getUserRMAccount");
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+                try {
+                        rm_account = sp.getString(k_UserData_6, null);
+                } catch (Exception e) {
+                }
+                Log.d(TAG, "rm_account : " + rm_account);
+        }
+
+        /** 儲存記住我的帳號資料 **/
+        public void putUserRMAccount(String account) {
+                Log.i(TAG, "putUserRMAccount " + account);
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString(k_UserData_6, account);
+                editor.commit();
+        }
+
+        /** 清除記住我的帳號資料 **/
+        public void removeUserRMAccount() {
+                Log.i(TAG, "removeUserRMAccount");
+                SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.remove(k_UserData_6);
+                editor.commit();
+        }
+
+        /** End of Preferences **/
 
         @Override
         public void onResume() {

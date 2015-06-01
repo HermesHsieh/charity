@@ -50,6 +50,7 @@
                 layout="@layout/item_org_property" />
 
             <include
+                android:id="@+id/fragment_org_supply"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/org_block_vertical_margin"
@@ -62,12 +63,6 @@
                 android:layout_marginBottom="@dimen/org_block_vertical_margin"
                 android:layout_marginTop="@dimen/org_block_vertical_margin"
                 layout="@layout/item_org_info" />
-
-            <TextView
-                android:id="@+id/tv_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="tv_info" />
         </LinearLayout>
     </ScrollView>
 

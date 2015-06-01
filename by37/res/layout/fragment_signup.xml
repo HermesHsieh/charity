@@ -43,19 +43,16 @@
                     layout="@layout/edt_account" />
 
                 <include
+                    android:id="@+id/fragment_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     layout="@layout/edt_password" />
 
                 <include
+                    android:id="@+id/fragment_password_confirm"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     layout="@layout/edt_password_confirm" />
-
-                <include
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    layout="@layout/edt_nick_name" />
 
                 <include
                     android:layout_width="match_parent"

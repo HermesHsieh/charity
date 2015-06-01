@@ -6,10 +6,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import tw.org.by37.config.SysConfig;
-import tw.org.by37.data.UserData;
+import tw.org.by37.data.UserData2;
 import tw.org.by37.emergency.EmergencyFragment;
 import tw.org.by37.main.MainFragment;
 import tw.org.by37.member.LoginFragment;
+import tw.org.by37.member.UserData;
+import tw.org.by37.member.UserLoginAsyncTask;
 import tw.org.by37.menu.BottomMenuFragment;
 import tw.org.by37.menu.RightMenuFragment;
 import tw.org.by37.menu.SlidingMenuFragment;
@@ -28,6 +30,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -41,6 +44,7 @@ import android.widget.ListView;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.google.gson.Gson;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnCloseListener;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenListener;
@@ -58,6 +62,8 @@ public class MainActivity extends SlidingFragmentActivity {
         public static float myScreenDensity = 0;
         public static float myScreenDensityDpi = 0;
         /** End of Screen Param **/
+
+        public static UserApplication mUserApplication;
 
         /** 滑動Menu **/
         private SlidingMenu mSlidingMenu;
@@ -99,19 +105,26 @@ public class MainActivity extends SlidingFragmentActivity {
 
         private ListView mListView;
 
+        private MainActivity mMainActivity;
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
-
-                mContext = this;
-
-                FunctionUtil.createFileRoot();
-
-                getDisplayMetrics();
-
-                UserData.getUserResultPreferences(mContext);
-
                 setContentView(R.layout.activity_main);
+                FunctionUtil.createFileRoot();
+                getDisplayMetrics();
+                mMainActivity = this;
+                mContext = this;
+                mUserApplication = (UserApplication) mContext.getApplicationContext();
+
+                /** 登入使用者(手機內存資料) **/
+                new Thread(new Runnable() {
+                        public void run() {
+                                new UserLoginAsyncTask().execute();
+                        }
+                }).start();
+                /** End of 登入使用者(手機內存資料) **/
+
 
                 initSlidingMenu();
 
@@ -124,11 +137,6 @@ public class MainActivity extends SlidingFragmentActivity {
                 switchMainFragment();
 
                 switchBottomMenuFragment();
-
-                // FrameLayout mBtnMenu = (FrameLayout)
-                // findViewById(R.id.fragment_bottom);
-                // mBtnMenu.setBackgroundColor(getResources().getColor(R.color.bottom_menu_background));
-
         }
 
         /**
@@ -259,11 +267,10 @@ public class MainActivity extends SlidingFragmentActivity {
                 myScreenDensity = metrics.density;
                 myScreenDensityDpi = metrics.densityDpi;
 
-                Log.i(TAG, "Screen Width : " + myScreenWidth);
-                Log.i(TAG, "Screen Height : " + myScreenHeight);
-                Log.i(TAG, "Screen Density : " + myScreenDensity);
-                Log.i(TAG, "Screen DensityDpi : " + myScreenDensityDpi);
-
+                Log.d(TAG, "Screen Width : " + myScreenWidth);
+                Log.d(TAG, "Screen Height : " + myScreenHeight);
+                Log.d(TAG, "Screen Density : " + myScreenDensity);
+                Log.d(TAG, "Screen DensityDpi : " + myScreenDensityDpi);
         }
 
         /** 獲取FB的KeyHash **/
@@ -525,13 +532,6 @@ public class MainActivity extends SlidingFragmentActivity {
                 ft.commit();
         }
 
-        public void gotoMemberActivity() {
-                Intent intent = new Intent();
-                intent.setClass(mContext, MemberActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivityForResult(intent, MEMBER_ACTIVITY_CODE);
-        }
-
         /**
          * switchProductFragment 介面
          */
@@ -551,6 +551,13 @@ public class MainActivity extends SlidingFragmentActivity {
                         ft.replace(R.id.main_content, mMainProductSellFragment);
                 }
                 ft.commit();
+        }
+
+        public void gotoMemberActivity() {
+                Intent intent = new Intent();
+                intent.setClass(mContext, MemberActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivityForResult(intent, MEMBER_ACTIVITY_CODE);
         }
 
         @Override

@@ -10,7 +10,7 @@ import android.util.Log;
 import static tw.org.by37.config.SysConfig.*;
 
 /** 全域靜態使用者帳號資料的類別 **/
-public class UserData {
+public class UserData2 {
 
         private final static String TAG = "UserData";
 
@@ -52,6 +52,14 @@ public class UserData {
 
         public static String organization_ids = "";
 
+        public void setUserStatus(boolean status) {
+                this.userStatus = status;
+        }
+
+        public boolean getUserStatus() {
+                return userStatus;
+        }
+
         /** 登出, 清除使用者帳號資料 **/
         public static void clearUserData(Context context) {
                 clearUserResultPreferences(context);
@@ -87,54 +95,54 @@ public class UserData {
 
                                 saveUserResultPreferences(context, result);
 
-                                UserData.userStatus = true;
+                                UserData2.userStatus = true;
                                 try {
-                                        UserData.email = jObj.getJSONObject("user").getString("email");
+                                        UserData2.email = jObj.getJSONObject("user").getString("email");
                                 } catch (JSONException e) {
                                         e.printStackTrace();
                                 }
                                 try {
-                                        UserData.source = jObj.getJSONObject("user").getString("source");
+                                        UserData2.source = jObj.getJSONObject("user").getString("source");
                                 } catch (JSONException e) {
                                         e.printStackTrace();
                                 }
                                 try {
-                                        UserData.enable = jObj.getJSONObject("user").getString("enable");
+                                        UserData2.enable = jObj.getJSONObject("user").getString("enable");
                                 } catch (JSONException e) {
                                         e.printStackTrace();
                                 }
                                 try {
-                                        UserData.role = jObj.getJSONObject("user").getString("role");
+                                        UserData2.role = jObj.getJSONObject("user").getString("role");
                                 } catch (JSONException e) {
                                         e.printStackTrace();
                                 }
                                 try {
-                                        UserData.user_id = jObj.getJSONObject("user").getJSONObject("info").getString("user_id");
+                                        UserData2.user_id = jObj.getJSONObject("user").getJSONObject("info").getString("user_id");
                                 } catch (JSONException e) {
                                         e.printStackTrace();
                                 }
                                 try {
-                                        UserData.address = jObj.getJSONObject("user").getJSONObject("info").getString("address");
+                                        UserData2.address = jObj.getJSONObject("user").getJSONObject("info").getString("address");
                                 } catch (JSONException e) {
                                         e.printStackTrace();
                                 }
                                 try {
-                                        UserData.birthday = jObj.getJSONObject("user").getJSONObject("info").getString("birthday");
+                                        UserData2.birthday = jObj.getJSONObject("user").getJSONObject("info").getString("birthday");
                                 } catch (JSONException e) {
                                         e.printStackTrace();
                                 }
                                 try {
-                                        UserData.image = jObj.getJSONObject("user").getJSONObject("info").getString("image");
+                                        UserData2.image = jObj.getJSONObject("user").getJSONObject("info").getString("image");
                                 } catch (JSONException e) {
                                         e.printStackTrace();
                                 }
                                 try {
-                                        UserData.about_me = jObj.getJSONObject("user").getJSONObject("info").getString("about_me");
+                                        UserData2.about_me = jObj.getJSONObject("user").getJSONObject("info").getString("about_me");
                                 } catch (JSONException e) {
                                         e.printStackTrace();
                                 }
                                 try {
-                                        UserData.organization_ids = jObj.getJSONObject("user").getJSONObject("info").getString("organization_ids");
+                                        UserData2.organization_ids = jObj.getJSONObject("user").getJSONObject("info").getString("organization_ids");
                                 } catch (JSONException e) {
                                         e.printStackTrace();
                                 }

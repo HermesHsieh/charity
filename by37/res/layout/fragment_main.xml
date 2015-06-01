@@ -36,6 +36,21 @@
                 android:text="@string/view_all"
                 android:textColor="@color/btn_blue_color"
                 android:textStyle="bold" />
+            
+            <FrameLayout
+                android:id="@+id/fragment_near_organization"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+            </FrameLayout>
+            
+            <TextView
+                android:id="@+id/tv_organization_all"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:text="@string/view_all"
+                android:textColor="@color/btn_blue_color"
+                android:textStyle="bold" />
 
             <FrameLayout
                 android:id="@+id/fragment_productsell"

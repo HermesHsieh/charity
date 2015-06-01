@@ -23,7 +23,7 @@
         android:layout_toRightOf="@+id/img_icon" />
 
     <TextView
-        android:id="@+id/tv_organization_name"
+        android:id="@+id/tv_type"
         style="@style/TextViewShort_1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

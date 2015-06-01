@@ -27,6 +27,13 @@
                 android:text="@string/title_member_service"
                 android:textSize="20sp" />
 
+            <include
+                android:id="@+id/avatar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                layout="@layout/img_avatar" />
+
             <Button
                 android:id="@+id/btn_logout"
                 android:layout_width="match_parent"
@@ -173,19 +180,10 @@
                     android:text="@string/edit_position" />
             </LinearLayout>
 
-            <include
-                android:id="@+id/avatar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/btn_logout"
-                android:layout_gravity="center_horizontal"
-                layout="@layout/img_avatar" />
-
             <TextView
                 android:id="@+id/tv_info"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/avatar" />
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </ScrollView>
 

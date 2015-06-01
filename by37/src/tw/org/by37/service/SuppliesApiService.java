@@ -52,8 +52,8 @@ public class SuppliesApiService {
                 return strResult;
         }
 
-        public static String getAllSuppliesDataForId(String id) {
-                Log.v(TAG, "getAllSuppliesDataForId");
+        public static String getSuppliesDataForId(String id) {
+                Log.v(TAG, "getSuppliesDataForId");
 
                 // 若線上資料為單筆資料，則使用JSONObject
                 // JSONObject jsonObj = null;
@@ -69,7 +69,7 @@ public class SuppliesApiService {
                         /* 取出回應字串 */
                         strResult = EntityUtils.toString(response.getEntity(), "UTF-8");
 
-                        Log.i(TAG, "getAllSuppliesData Result : " + strResult);
+                        Log.i(TAG, "getSuppliesDataForId Result : " + strResult);
                 } catch (Exception e) {
                         e.printStackTrace();
                 }

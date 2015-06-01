@@ -155,18 +155,26 @@ public class MapFragment extends Fragment {
                 }
         }
 
-        public void setOrganizationMarker() {
+        public void setOrganizationMarker(String org_lat, String org_lng, String org_name, String org_title) {
                 Log.i(TAG, "setOrganizationMarker");
                 // 如果有基構的資料,即進入基構簡介
-                if (SelectingData.mOrganizationData != null) {
-                        orgPosition = new LatLng(SelectingData.mOrganizationData.org_lat, SelectingData.mOrganizationData.org_lng);
-                        // new a Marker
-                        MarkerOptions orgMarkerOption = new MarkerOptions().position(orgPosition).title(SelectingData.mOrganizationData.org_name).snippet(SelectingData.mOrganizationData.org_title);
-                        // Add a marker in the mMap
-                        Marker marker = map.addMarker(orgMarkerOption);
 
-                        // 將 Camera 拉到使用者當前位置
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(orgPosition, 16));
+                Double lat = Double.valueOf(org_lat);
+                Double lng = Double.valueOf(org_lng);
+                if (lat != null && lng != null) {
+                        if (lat > 0 && lng > 0) {
+                                orgPosition = new LatLng(lat, lng);
+                                // new a Marker
+                                MarkerOptions orgMarkerOption = new MarkerOptions().position(orgPosition).title(org_name).snippet(org_title);
+                                // Add a marker in the mMap
+                                map.addMarker(orgMarkerOption);
+                                // 將 Camera 拉到使用者當前位置
+                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(orgPosition, 16));
+                        } else {
+                                Log.e(TAG, "Organization Location error");
+                        }
+                } else {
+                        Log.e(TAG, "Organization Location == null");
                 }
         }
 

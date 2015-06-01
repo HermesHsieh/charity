@@ -23,11 +23,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import tw.org.by37.BackActivity;
 import tw.org.by37.R;
 import tw.org.by37.data.GoodsTypesText;
 import tw.org.by37.data.SelectingData;
 import tw.org.by37.data.TypesData;
-import tw.org.by37.data.UserData;
+import tw.org.by37.data.UserData2;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -56,7 +57,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-public class NewProductActivity extends Activity {
+public class NewProductActivity extends BackActivity {
 
         private static final String TAG = NewProductActivity.class.getName();
 
@@ -98,7 +99,7 @@ public class NewProductActivity extends Activity {
         private ArrayList<String> imageList;
 
         @Override
-        protected void onCreate(Bundle savedInstanceState) {
+        public void onCreate(Bundle savedInstanceState) {
                 // TODO Auto-generated method stub
                 super.onCreate(savedInstanceState);
                 setContentView(R.layout.activity_new_product);
@@ -233,7 +234,7 @@ public class NewProductActivity extends Activity {
                         // params.add(new BasicNameValuePair("image",
                         // imagepath));
                         params.add(new BasicNameValuePair("image", imageList.get(0)));
-                        params.add(new BasicNameValuePair("user_id", UserData.user_id.toString()));
+                        params.add(new BasicNameValuePair("user_id", UserData2.user_id.toString()));
                         // params.add(new BasicNameValuePair("user_id", "60"));
                         params.add(new BasicNameValuePair("type", productType));
 

@@ -26,6 +26,8 @@ public class OrganizationApiService {
 
         private static String uri_types = organizationsTypeApi;
 
+        private static String uri_near = organizationsNearApi;
+
         public static String getAllOrganizationData() {
                 Log.v(TAG, "getAllOrganizationData");
 
@@ -74,8 +76,6 @@ public class OrganizationApiService {
         public static String getOrganizationTypes() {
                 Log.v(TAG, "getOrganizationTypes");
 
-                // 若線上資料為單筆資料，則使用JSONObject
-                // JSONObject jsonObj = null;
                 String strResult = null;
 
                 // 透過HTTP連線取得回應
@@ -83,6 +83,26 @@ public class OrganizationApiService {
                         // for port 80 requests!
                         HttpClient httpclient = new DefaultHttpClient();
                         HttpGet httpget = new HttpGet(uri_types);
+                        HttpResponse response = httpclient.execute(httpget);
+
+                        /* 取出回應字串 */
+                        strResult = EntityUtils.toString(response.getEntity(), "UTF-8");
+                } catch (Exception e) {
+                        e.printStackTrace();
+                }
+                return strResult;
+        }
+
+        public static String getNearOrganization(String lat, String lng) {
+                Log.v(TAG, "getNearOrganization");
+
+                String strResult = null;
+
+                // 透過HTTP連線取得回應
+                try {
+                        // for port 80 requests!
+                        HttpClient httpclient = new DefaultHttpClient();
+                        HttpGet httpget = new HttpGet(uri_near + lat + "/" + lng);
                         HttpResponse response = httpclient.execute(httpget);
 
                         /* 取出回應字串 */

@@ -61,16 +61,16 @@ public class SuppliesHelpFragment extends Fragment {
         /** 是否為簡易模式(即首頁的顯示狀態) **/
         private boolean index_view = false;
 
-        private ListView mListView;
-
         private TextView tv_supplies_total;
+
+        private ListView mListView;
 
         private SuppliesListAdapter mSuppliesListAdapter;
 
         private Handler mHandler;
 
         private int pref_order = 0;
-
+        /** 物資類別的代碼 **/
         private int pref_category = 0;
 
         private double test_lng = 121.4584833;
@@ -117,10 +117,16 @@ public class SuppliesHelpFragment extends Fragment {
         /** Organization Fragment **/
         private OrganizationFragment mOrganizationFragment;
 
-        /** Spinner Object **/
+        /** 物資排序 Spinner **/
         private Spinner sp_order;
 
+        /** 物資類別 Spinner **/
         private Spinner sp_category;
+
+        /**
+         * 目的:顯示該機構的物資需求資料. 從OrganizationFragment bundle過來的機構名稱資料,判別是否用機構名稱來篩選資料
+         **/
+        private String org_name;
 
         public SuppliesHelpFragment() {
                 super();
@@ -133,8 +139,14 @@ public class SuppliesHelpFragment extends Fragment {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
                 mContext = getActivity();
+                try {
+                        Bundle bundle = getActivity().getIntent().getExtras();
+                        org_name = bundle.getString("org_name", null);
+                        Log.e(TAG, "Get org_name : " + org_name);
+                } catch (Exception e) {
+                        Log.e(TAG, "Get org_name Exception");
+                }
 
                 checkPreferStatus();
 
@@ -161,13 +173,13 @@ public class SuppliesHelpFragment extends Fragment {
 
         public void findView(View view) {
                 tv_supplies_total = (TextView) view.findViewById(R.id.tv_supplies_total);
-                // new Wifi ListView
+                // new ListView
                 mListView = (ListView) view.findViewById(android.R.id.list);
-                // new Wifi ListView Adapter
+                // new ListView Adapter
                 mSuppliesListAdapter = new SuppliesListAdapter(getActivity());
                 // 設定是否為首頁顯示
                 mSuppliesListAdapter.setIndexView(index_view);
-                // 配適Wifi ListView Adapter
+                // 配適 ListView Adapter
                 mListView.setAdapter(mSuppliesListAdapter);
 
                 mListView.setOnItemClickListener(new OnItemClickListener() {
@@ -623,30 +635,33 @@ public class SuppliesHelpFragment extends Fragment {
                 /**
                  * ListView 顯示用的資料,從db中取得資料(依距離)
                  **/
-                ArrayList<SupplyData> mList = DBControlSupplies.getSuppliesDataForDistance(mContext, wifi_longitude, wifi_latitude);
+                ArrayList<SupplyData> mList = DBControlSupplies.getSuppliesDataForDistance(mContext, wifi_longitude, wifi_latitude, false);
 
                 ArrayList<SupplyData> mList_select = new ArrayList<SupplyData>();
 
                 ArrayList<SupplyData> mList_index = new ArrayList<SupplyData>();
 
+                /** 篩選類別代號!=0的物資 **/
                 if (pref_category != 0) {
                         for (int i = 0; i < mList.size(); i++) {
                                 Log.i(TAG, "Category : " + mList.get(i).category + ", pref_category : " + pref_category);
+                                /** 如果該物品的類別跟目前篩選的類別是一致的 **/
                                 if (mList.get(i).category.equals(String.valueOf(pref_category))) {
                                         Log.i(TAG, "mList_select Add !");
                                         mList_select.add(mList.get(i));
                                 }
                         }
                 } else {
+                        /** 顯示全部類別的物資 **/
                         mList_select = mList;
                 }
 
                 Log.i(TAG, "mList_select : " + mList_select.size());
 
-                /** 以機構名稱篩選 **/
-                if (SelectingData.mOrganizationData != null) {
+                /** 顯示該機構的所有物資 **/
+                if (org_name != null) {
                         for (int i = 0; i < mList_select.size(); i++) {
-                                if (mList_select.get(i).organization_name.equals(SelectingData.mOrganizationData.org_name)) {
+                                if (mList_select.get(i).organization_name.equals(org_name)) {
                                         mList_index.add(mList_select.get(i));
                                 }
                         }
@@ -655,12 +670,32 @@ public class SuppliesHelpFragment extends Fragment {
                 } else {
                         /** 首頁顯示,最多三筆資料 **/
                         if (index_view) {
-                                if (mList_select.size() > 2) { // 假設資料多餘三筆
-                                        for (int i = 0; i < 3; i++) {
-                                                mList_index.add(mList_select.get(i));
+                                mList.clear();
+                                mList_select.clear();
+                                mList_index.clear();
+                                mList = DBControlSupplies.getSuppliesDataForDistance(mContext, wifi_longitude, wifi_latitude, true);
+
+                                /** 篩選類別代號!=0的物資 **/
+                                if (pref_category != 0) {
+                                        for (int i = 0; i < mList.size(); i++) {
+                                                Log.i(TAG, "Category : " + mList.get(i).category + ", pref_category : " + pref_category);
+                                                /** 如果該物品的類別跟目前篩選的類別是一致的 **/
+                                                if (mList.get(i).category.equals(String.valueOf(pref_category))) {
+                                                        Log.i(TAG, "mList_select Add !");
+                                                        mList_select.add(mList.get(i));
+                                                }
                                         }
-                                        mList_select.clear();
-                                        mList_select = mList_index;
+                                } else {
+                                        /** 顯示全部類別的物資 **/
+                                        mList_select = mList;
+                                }
+
+                                /** 首頁最多只顯示三筆資料 **/
+                                int count = mList_select.size();
+                                if (count > 3) {
+                                        while (mList_select.size() > 3) {
+                                                mList_select.remove(3);
+                                        }
                                 }
                         }
                 }
@@ -678,7 +713,7 @@ public class SuppliesHelpFragment extends Fragment {
                 /**
                  * ListView 顯示用的資料,從db中取得資料(依時間)
                  **/
-                ArrayList<SupplyData> mList = DBControlSupplies.getSuppliesDataForTime(mContext);
+                ArrayList<SupplyData> mList = DBControlSupplies.getSuppliesDataForTime(mContext, false);
 
                 ArrayList<SupplyData> mList_select = new ArrayList<SupplyData>();
 
@@ -699,9 +734,9 @@ public class SuppliesHelpFragment extends Fragment {
                 Log.i(TAG, "mList_select : " + mList_select.size());
 
                 /** 以機構名稱篩選 **/
-                if (SelectingData.mOrganizationData != null) {
+                if (org_name != null) {
                         for (int i = 0; i < mList_select.size(); i++) {
-                                if (mList_select.get(i).organization_name.equals(SelectingData.mOrganizationData.org_name)) {
+                                if (mList_select.get(i).organization_name.equals(org_name)) {
                                         mList_index.add(mList_select.get(i));
                                 }
                         }
@@ -710,12 +745,32 @@ public class SuppliesHelpFragment extends Fragment {
                 } else {
                         /** 首頁顯示,最多三筆資料 **/
                         if (index_view) {
-                                if (mList_select.size() > 2) { // 假設資料多餘三筆
-                                        for (int i = 0; i < 3; i++) {
-                                                mList_index.add(mList_select.get(i));
+                                mList.clear();
+                                mList_select.clear();
+                                mList_index.clear();
+                                mList = DBControlSupplies.getSuppliesDataForTime(mContext, true);
+
+                                /** 篩選類別代號!=0的物資 **/
+                                if (pref_category != 0) {
+                                        for (int i = 0; i < mList.size(); i++) {
+                                                Log.i(TAG, "Category : " + mList.get(i).category + ", pref_category : " + pref_category);
+                                                /** 如果該物品的類別跟目前篩選的類別是一致的 **/
+                                                if (mList.get(i).category.equals(String.valueOf(pref_category))) {
+                                                        Log.i(TAG, "mList_select Add !");
+                                                        mList_select.add(mList.get(i));
+                                                }
                                         }
-                                        mList_select.clear();
-                                        mList_select = mList_index;
+                                } else {
+                                        /** 顯示全部類別的物資 **/
+                                        mList_select = mList;
+                                }
+
+                                /** 首頁最多只顯示三筆資料 **/
+                                int count = mList_select.size();
+                                if (count > 3) {
+                                        while (mList_select.size() > 3) {
+                                                mList_select.remove(3);
+                                        }
                                 }
                         }
                 }

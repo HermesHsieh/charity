@@ -31,7 +31,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
-import tw.org.by37.data.UserData;
+import tw.org.by37.data.RegisterData;
+import tw.org.by37.data.UserData2;
 import tw.org.by37.productsell.NewProductActivity;
 import android.app.ProgressDialog;
 import android.net.Uri;
@@ -61,14 +62,14 @@ public class UsersApiService {
                  * Post運作傳送變數必須用NameValuePair[]陣列儲存
                  */
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("name", UserData.name));
-                if (UserData.password.length() > 0) {
-                        params.add(new BasicNameValuePair("password", UserData.password));
+                params.add(new BasicNameValuePair("name", UserData2.name));
+                if (UserData2.password.length() > 0) {
+                        params.add(new BasicNameValuePair("password", UserData2.password));
                 } else {
                         params.add(new BasicNameValuePair("password", "test1"));
                 }
-                params.add(new BasicNameValuePair("source", UserData.source));
-                params.add(new BasicNameValuePair("email", UserData.email));
+                params.add(new BasicNameValuePair("source", UserData2.source));
+                params.add(new BasicNameValuePair("email", UserData2.email));
 
                 try {
 
@@ -102,18 +103,14 @@ public class UsersApiService {
                  * Post運作傳送變數必須用NameValuePair[]陣列儲存
                  */
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("name", UserData.name));
-                params.add(new BasicNameValuePair("password", UserData.password));
-                params.add(new BasicNameValuePair("source", UserData.source));
-                params.add(new BasicNameValuePair("email", UserData.email));
-                if (UserData.image.length() > 0) {
-                        params.add(new BasicNameValuePair("image", UserData.image));
+                params.add(new BasicNameValuePair("email", RegisterData.email));
+                params.add(new BasicNameValuePair("password", RegisterData.password));
+                params.add(new BasicNameValuePair("source", RegisterData.source));
+                params.add(new BasicNameValuePair("name", RegisterData.name));
+                if (RegisterData.image != null) {
+                        params.add(new BasicNameValuePair("image", RegisterData.image));
                 }
-                Log.i(TAG, "name : " + UserData.name);
-                Log.i(TAG, "password : " + UserData.password);
-                Log.i(TAG, "source : " + UserData.source);
-                Log.i(TAG, "email : " + UserData.email);
-                Log.i(TAG, "Image Path : " + UserData.image);
+                Log.d(TAG, RegisterData.showData());
 
                 try {
                         // setup multipart entity
@@ -147,8 +144,11 @@ public class UsersApiService {
                 return result;
         }
 
-        public static String LoginUser() {
+        public static String LoginUser(String account, String pwd, String source) {
                 Log.i(TAG, "LoginUser");
+                Log.d(TAG, "account : " + account);
+                Log.d(TAG, "password : " + pwd);
+                Log.d(TAG, "source : " + source);
 
                 String result = null;
 
@@ -159,12 +159,9 @@ public class UsersApiService {
                  * Post運作傳送變數必須用NameValuePair[]陣列儲存
                  */
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("email", UserData.email));
-                params.add(new BasicNameValuePair("password", UserData.password));
-                params.add(new BasicNameValuePair("source", UserData.source));
-                Log.i(TAG, "email : " + UserData.email);
-                Log.i(TAG, "password : " + UserData.password);
-                Log.i(TAG, "source : " + UserData.source);
+                params.add(new BasicNameValuePair("email", account));
+                params.add(new BasicNameValuePair("password", pwd));
+                params.add(new BasicNameValuePair("source", source));
 
                 try {
 
@@ -176,7 +173,7 @@ public class UsersApiService {
                         if (httpResponse.getStatusLine().getStatusCode() == 200) {
                                 /* 取出回應字串 */
                                 result = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
-                                Log.i(TAG, "Data : " + result);
+                                Log.i(TAG, "Reslut : " + result);
                         }
 
                 } catch (Exception e) {
@@ -195,7 +192,7 @@ public class UsersApiService {
                 try {
                         // for port 80 requests!
                         HttpClient httpclient = new DefaultHttpClient();
-                        HttpGet httpget = new HttpGet(uriUserData + UserData.user_id);
+                        HttpGet httpget = new HttpGet(uriUserData + UserData2.user_id);
                         HttpResponse response = httpclient.execute(httpget);
 
                         /* 取出回應字串 */

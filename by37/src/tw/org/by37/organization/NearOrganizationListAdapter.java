@@ -1,4 +1,4 @@
-package tw.org.by37.supplieshelp;
+package tw.org.by37.organization;
 
 import java.util.ArrayList;
 
@@ -6,6 +6,7 @@ import tw.org.by37.MainActivity;
 import tw.org.by37.R;
 import tw.org.by37.data.SelectingData;
 import tw.org.by37.data.SupplyData;
+import tw.org.by37.supplieshelp.SuppliesHelpFragment;
 import tw.org.by37.util.FunctionUtil;
 import android.content.Context;
 import android.os.Handler;
@@ -21,15 +22,15 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class SuppliesListAdapter extends BaseAdapter {
+public class NearOrganizationListAdapter extends BaseAdapter {
 
-        private final static String TAG = "SuppliesListAdapter";
+        private final static String TAG = "NearOrganizationListAdapter";
 
         private Context mContext;
 
         private LayoutInflater infalter;
 
-        private ArrayList<SupplyData> data = new ArrayList<SupplyData>();
+        private ArrayList<OrganizationData> data = new ArrayList<OrganizationData>();
 
         private double mLongitude = SuppliesHelpFragment.wifi_longitude;
 
@@ -40,7 +41,7 @@ public class SuppliesListAdapter extends BaseAdapter {
 
         private boolean index_view = false;
 
-        public SuppliesListAdapter(Context context) {
+        public NearOrganizationListAdapter(Context context) {
                 this.infalter = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 this.mContext = context;
         }
@@ -56,7 +57,7 @@ public class SuppliesListAdapter extends BaseAdapter {
         }
 
         @Override
-        public SupplyData getItem(int position) {
+        public OrganizationData getItem(int position) {
                 return data.get(position);
         }
 
@@ -71,44 +72,44 @@ public class SuppliesListAdapter extends BaseAdapter {
                 ViewHolder holder;
 
                 if (view == null) {
-                        view = infalter.inflate(R.layout.item_supply, null);
+                        view = infalter.inflate(R.layout.item_organization, null);
 
                         holder = new ViewHolder();
 
                         holder.tv_name = (TextView) view.findViewById(R.id.tv_name);
-                        holder.tv_organization_name = (TextView) view.findViewById(R.id.tv_organization_name);
+                        holder.tv_type = (TextView) view.findViewById(R.id.tv_type);
                         holder.tv_distance = (TextView) view.findViewById(R.id.tv_distance);
                         holder.tv_category = (TextView) view.findViewById(R.id.tv_category);
 
                         /** 動態設定名稱欄位長度 **/
                         LayoutParams mNameText = (LayoutParams) holder.tv_name.getLayoutParams();
-                        mNameText.width = (MainActivity.myScreenWidth) * 2 / 7;
+                        mNameText.width = (MainActivity.myScreenWidth) * 3 / 8;
                         holder.tv_name.setLayoutParams(mNameText);
 
-                        /** 動態設定機構名稱長度 **/
-                        LayoutParams mText = (LayoutParams) holder.tv_organization_name.getLayoutParams();
+                        /** 動態設定類別欄位長度 **/
+                        LayoutParams mText = (LayoutParams) holder.tv_type.getLayoutParams();
                         mText.width = (MainActivity.myScreenWidth) * 4 / 10;
-                        holder.tv_organization_name.setLayoutParams(mText);
+                        holder.tv_type.setLayoutParams(mText);
 
-                        /** 動態設定機構名稱的Margin **/
-                        MarginLayoutParams marginParams = (MarginLayoutParams) holder.tv_organization_name.getLayoutParams();
+                        /** 動態設定類別欄位的Margin **/
+                        MarginLayoutParams marginParams = (MarginLayoutParams) holder.tv_type.getLayoutParams();
                         if (index_view) {
                                 marginParams.leftMargin = ((MainActivity.myScreenWidth) / 2) * 75 / 100;
                         } else {
                                 marginParams.leftMargin = ((MainActivity.myScreenWidth) / 2) * 4 / 5;
                         }
-                        holder.tv_organization_name.setLayoutParams(marginParams);
+                        holder.tv_type.setLayoutParams(marginParams);
 
                         view.setTag(holder);
                 } else {
                         holder = (ViewHolder) view.getTag();
                 }
 
-                holder.tv_name.setText(data.get(position).name);
-                holder.tv_organization_name.setText(data.get(position).organization_name);
+                holder.tv_name.setText(data.get(position).getName());
+                holder.tv_type.setText(data.get(position).getTitle());
 
-                double lat = data.get(position).organization_latitude;
-                double lng = data.get(position).organization_longitude;
+                double lat = Double.valueOf(data.get(position).getLatitude());
+                double lng = Double.valueOf(data.get(position).getLongitude());
 
                 int dst = (int) FunctionUtil.Distance(mLongitude, mLatitude, lng, lat);
 
@@ -121,12 +122,16 @@ public class SuppliesListAdapter extends BaseAdapter {
 
                 holder.tv_distance.setText(sDst);
 
-                holder.tv_category.setText("Category : " + data.get(position).category + ", Name : " + SelectingData.getGoodsTypesNameForId(data.get(position).category));
-
                 return view;
         }
 
-        public void setListData(ArrayList<SupplyData> data, Double lng, Double lat) {
+        private String DistanceToString(int dst) {
+                int meter = dst % 1000;
+                int km = dst / 1000;
+                return km + "." + meter;
+        }
+
+        public void setListData(ArrayList<OrganizationData> data) {
                 try {
                         this.data.clear();
                         this.data.addAll(data);
@@ -134,16 +139,10 @@ public class SuppliesListAdapter extends BaseAdapter {
                         e.printStackTrace();
                 }
 
-                if (lng > 0 && lat > 0) {
-                        this.mLongitude = lng;
-                        this.mLatitude = lat;
-                } else {
-                        Log.e(TAG, "set Lng and Lat error!!");
-                }
                 notifyDataSetChanged();
         }
 
-        public void addListData(ArrayList<SupplyData> data) {
+        public void addListData(ArrayList<OrganizationData> data) {
                 for (int i = 0; i < data.size(); i++) {
                         this.data.add(data.get(i));
                 }
@@ -151,14 +150,14 @@ public class SuppliesListAdapter extends BaseAdapter {
         }
 
         /** 取得所有ListData資料 **/
-        public ArrayList<SupplyData> getSuppliesListData() {
+        public ArrayList<OrganizationData> getSuppliesListData() {
                 return this.data;
         }
 
         /** 取得篩選的ListData資料 **/
-        public ArrayList<SupplyData> getSelectedListData() {
+        public ArrayList<OrganizationData> getSelectedListData() {
 
-                ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
+                ArrayList<OrganizationData> mList = new ArrayList<OrganizationData>();
 
                 for (int i = 0; i < data.size(); i++) {
                         if (data.get(i).selected)
@@ -169,19 +168,19 @@ public class SuppliesListAdapter extends BaseAdapter {
         }
 
         /** 取得物資需求ListView 對應 Position 的資料ID **/
-        public String getSuppliesDataId(int position) {
-                return data.get(position).id;
+        public String getOrganizationDataId(int position) {
+                return data.get(position).getId();
         }
 
-        /** 取得物資需求ListView 對應 Position 的資料OrganizationId **/
-        public String getSuppliesDataOrganizationId(int position) {
-                return data.get(position).organizationId;
+        /** 取得鄰近機構ListView 對應 Position 的資料OrganizationId **/
+        public String getOrganizationId(int position) {
+                return data.get(position).getOrganization_Id();
         }
 
         public class ViewHolder {
                 ImageView img_icon;
                 TextView tv_name;
-                TextView tv_organization_name;
+                TextView tv_type;
                 TextView tv_distance;
                 TextView tv_category;
         }

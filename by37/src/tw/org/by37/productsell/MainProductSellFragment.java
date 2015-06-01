@@ -196,11 +196,13 @@ public class MainProductSellFragment extends Fragment {
                                 mProductAmountTextView.setText(amount);
                                 mProductAmountTextView.setVisibility(View.VISIBLE);
 
-                                mLeftImageView.setImageBitmap(productList.get(0).getBmp());
-                                mRightImageView.setImageBitmap(productList.get(1).getBmp());
+                                if (productList.size() > 0) {
+                                        mLeftImageView.setImageBitmap(productList.get(0).getBmp());
+                                        mRightImageView.setImageBitmap(productList.get(1).getBmp());
 
-                                mLeftTextView.setText(productList.get(0).getName());
-                                mRightTextView.setText(productList.get(1).getName());
+                                        mLeftTextView.setText(productList.get(0).getName());
+                                        mRightTextView.setText(productList.get(1).getName());
+                                }
                         }
                 }
 
