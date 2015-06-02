@@ -7,6 +7,7 @@ import tw.org.by37.R.color;
 import tw.org.by37.SuppliesHelpActivity;
 import tw.org.by37.emergency.EmergencyFragment;
 import tw.org.by37.organization.OrganizationFragment;
+import tw.org.by37.productsell.AllProductActivity;
 import tw.org.by37.productsell.MainProductSellFragment;
 import tw.org.by37.search.SearchFragment;
 import tw.org.by37.supplieshelp.SuppliesHelpFragment;
@@ -114,6 +115,17 @@ public class MainFragment extends Fragment {
                                 return false;
                         }
                 });
+                
+                /**顯示全部產品**/
+                TextView showAllProdcutTv = (TextView)view.findViewById(R.id.tv_product_all);
+                showAllProdcutTv.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						gotoAllProductActivity();
+					}
+				});
         }
 
         /** 動態設定三個fragment的高度,比例根據螢幕的高度 **/
@@ -290,6 +302,12 @@ public class MainFragment extends Fragment {
         /** Activity Bundle **/
         /** End of Activity Bundle **/
 
+        private void gotoAllProductActivity(){
+        	Intent i = new Intent();
+        	i.setClass(mContext,AllProductActivity.class);
+        	startActivity(i);
+        }
+        
         @Override
         public void onResume() {
                 super.onResume();

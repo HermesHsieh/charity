@@ -49,10 +49,9 @@
 
             <ImageView
                 android:id="@+id/fragment_main_product_left_imageview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleType="fitXY"
-                android:src="@drawable/emergency_sample" />
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -66,7 +65,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="台灣黑熊餅乾    88"
+                    android:text=""
                     android:textColor="@android:color/white" />
             </LinearLayout>
         </RelativeLayout>
@@ -75,15 +74,13 @@
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:background="#000000" >
+            android:layout_weight="1">
 
             <ImageView
                 android:id="@+id/fragment_main_product_right_imageview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:src="@drawable/emergency_sample" />
+                android:scaleType="centerCrop"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -97,7 +94,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="台灣黑熊餅乾    88"
+                    android:text=""
                     android:textColor="@android:color/white" />
             </LinearLayout>
         </RelativeLayout>

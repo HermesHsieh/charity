@@ -79,6 +79,9 @@ public class SysConfig {
 
         /** 物資類別資料 **/
         public static final String goodsTypesApi = ApiServer + "goodsTypes";
+        
+        /** 取的所有商品 **/
+        public static final String getAllgoods = ApiServer+"getAllGoods";
 
         /** 廣播參數 **/
         public static final String MAIN_BROADCAST_STRING = "MainBroadcast";

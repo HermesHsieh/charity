@@ -16,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import tw.org.by37.R;
+import tw.org.by37.config.SysConfig;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -141,7 +142,7 @@ public class MainProductSellFragment extends Fragment {
                         try {
                                 // for port 80 requests!
                                 HttpClient httpclient = new DefaultHttpClient();
-                                HttpGet httpget = new HttpGet("http://charity.gopagoda.io/getAllGoods");
+                                HttpGet httpget = new HttpGet(SysConfig.getAllgoods);
                                 HttpResponse response = httpclient.execute(httpget);
 
                                 /* 取出回應字串 */
