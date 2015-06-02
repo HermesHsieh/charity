@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import tw.org.by37.MainActivity;
 import tw.org.by37.R;
 import tw.org.by37.config.SysConfig;
 import android.graphics.Bitmap;
@@ -83,8 +84,8 @@ public class MainProductSellFragment extends Fragment {
                 for (int i = 0; i < tabTitles.length; i++) {
                         String title = tabTitles[i];
                         LinearLayout.LayoutParams p = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                        p.width = getScreenWidth() / 3;
-                        p.height = 130;
+                        p.width = MainActivity.myScreenWidth / 3;
+                        p.height = MainActivity.myScreenHeight / 15;
                         TextView tv = new TextView(getActivity());
                         tv.setText(title);
                         tv.setTextSize(18);
@@ -106,7 +107,7 @@ public class MainProductSellFragment extends Fragment {
                                                 if (tag.equals(v.getTag())) {
                                                         tv.setBackgroundColor(Color.YELLOW);
                                                 } else {
-                                                        tv.setBackgroundColor(Color.GRAY);
+                                                        tv.setBackgroundColor(0x00000000);
                                                 }
                                         }
                                 }
@@ -196,11 +197,13 @@ public class MainProductSellFragment extends Fragment {
                                 mProductAmountTextView.setText(amount);
                                 mProductAmountTextView.setVisibility(View.VISIBLE);
 
-                                mLeftImageView.setImageBitmap(productList.get(0).getBmp());
-                                mRightImageView.setImageBitmap(productList.get(1).getBmp());
+                                if (productList.size() > 0) {
+                                        mLeftImageView.setImageBitmap(productList.get(0).getBmp());
+                                        mRightImageView.setImageBitmap(productList.get(1).getBmp());
 
-                                mLeftTextView.setText(productList.get(0).getName());
-                                mRightTextView.setText(productList.get(1).getName());
+                                        mLeftTextView.setText(productList.get(0).getName());
+                                        mRightTextView.setText(productList.get(1).getName());
+                                }
                         }
                 }
 

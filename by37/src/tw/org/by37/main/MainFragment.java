@@ -1,11 +1,14 @@
 package tw.org.by37.main;
 
-import static tw.org.by37.config.RequestCode.SUPPLIESHELP_ACTIVITY_CODE;
+import static tw.org.by37.config.RequestCode.*;
 import tw.org.by37.MainActivity;
+import tw.org.by37.NearOrganizationActivity;
 import tw.org.by37.R;
 import tw.org.by37.R.color;
 import tw.org.by37.SuppliesHelpActivity;
+import tw.org.by37.config.SysConfig;
 import tw.org.by37.emergency.EmergencyFragment;
+import tw.org.by37.organization.NearOrganizationFragment;
 import tw.org.by37.organization.OrganizationFragment;
 import tw.org.by37.productsell.AllProductActivity;
 import tw.org.by37.productsell.MainProductSellFragment;
@@ -53,9 +56,14 @@ public class MainFragment extends Fragment {
 
         /** ProductSell Fragment **/
         private MainProductSellFragment mMainProductSellFragment;
+
         private TestFragment mTestFragment;
 
-        private ListView mListView;
+        private NearOrganizationFragment mNearOrganizationFragment;
+
+        private TextView tv_supplies_all;
+
+        private TextView tv_organization_all;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -73,6 +81,8 @@ public class MainFragment extends Fragment {
 
                 switchSuppliesHelpFragment();
 
+                switchNearOrganizationFragment();
+
                 switchProductSellFragment();
 
                 ScrollView mScrollView = (ScrollView) view.findViewById(R.id.scrollView);
@@ -89,13 +99,13 @@ public class MainFragment extends Fragment {
 
         public void findView(View view) {
                 /** 顯示全部物資 **/
-                TextView textView = (TextView) view.findViewById(R.id.tv_supplies_all);
+                tv_supplies_all = (TextView) view.findViewById(R.id.tv_supplies_all);
                 /** 字體加底線 **/
                 SpannableString content = new SpannableString(getString(R.string.view_all));
                 content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
-                textView.setText(content);
+                tv_supplies_all.setText(content);
 
-                textView.setOnClickListener(new OnClickListener() {
+                tv_supplies_all.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
                                 // goto View All SuppliesHelp Data
@@ -103,16 +113,16 @@ public class MainFragment extends Fragment {
                         }
                 });
 
-                textView.setOnTouchListener(new OnTouchListener() {
+                /** 顯示全部物資 **/
+                tv_organization_all = (TextView) view.findViewById(R.id.tv_organization_all);
+                /** 字體加底線 **/
+                tv_organization_all.setText(content);
+
+                tv_organization_all.setOnClickListener(new OnClickListener() {
                         @Override
-                        public boolean onTouch(View v, MotionEvent event) {
-                                switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                                case MotionEvent.ACTION_DOWN:
-                                        break;
-                                case MotionEvent.ACTION_UP:
-                                        break;
-                                }
-                                return false;
+                        public void onClick(View v) {
+                                // goto View All Near Organization Data
+                                gotoNearOrganizationActivity();
                         }
                 });
                 
@@ -131,26 +141,31 @@ public class MainFragment extends Fragment {
         /** 動態設定三個fragment的高度,比例根據螢幕的高度 **/
         public void setFragmentHeight(View view) {
                 Log.i(TAG, "setFragmentHeight");
-                FrameLayout mEmergency = (FrameLayout) view.findViewById(R.id.fragment_emergency);
-                FrameLayout mSuppliesHelps = (FrameLayout) view.findViewById(R.id.fragment_supplieshelp);
-                FrameLayout mProductSell = (FrameLayout) view.findViewById(R.id.fragment_productsell);
+                FrameLayout mEF = (FrameLayout) view.findViewById(R.id.fragment_emergency);
+                FrameLayout mSF = (FrameLayout) view.findViewById(R.id.fragment_supplieshelp);
+                FrameLayout mNF = (FrameLayout) view.findViewById(R.id.fragment_near_organization);
+                FrameLayout mPF = (FrameLayout) view.findViewById(R.id.fragment_productsell);
 
-                LayoutParams mEMGParams = (LayoutParams) mEmergency.getLayoutParams();
-                LayoutParams mSPHParams = (LayoutParams) mSuppliesHelps.getLayoutParams();
-                LayoutParams mPDSParams = (LayoutParams) mProductSell.getLayoutParams();
+                LayoutParams mEL = (LayoutParams) mEF.getLayoutParams();
+                LayoutParams mSL = (LayoutParams) mSF.getLayoutParams();
+                LayoutParams mNL = (LayoutParams) mNF.getLayoutParams();
+                LayoutParams mPL = (LayoutParams) mPF.getLayoutParams();
 
-                mEMGParams.height = (MainActivity.myScreenHeight) * 15 / 100;
-                mSPHParams.height = (MainActivity.myScreenHeight) * 30 / 100;
-                mPDSParams.height = (MainActivity.myScreenHeight) * 35 / 100;
+                mEL.height = (MainActivity.myScreenHeight) * 15 / 100;
+                mSL.height = (MainActivity.myScreenHeight) * 30 / 100;
+                mNL.height = (MainActivity.myScreenHeight) * 30 / 100;
+                mPL.height = (MainActivity.myScreenHeight) * 35 / 100;
 
                 Log.i(TAG, "Screen Height : " + MainActivity.myScreenHeight);
-                Log.i(TAG, "mEmergency Height : " + mEMGParams.height);
-                Log.i(TAG, "mSuppliesHelps Height : " + mSPHParams.height);
-                Log.i(TAG, "mProductSell Height : " + mPDSParams.height);
+                Log.i(TAG, "mEmergency Height : " + mEL.height);
+                Log.i(TAG, "mSuppliesHelps Height : " + mSL.height);
+                Log.i(TAG, "mNearOrganization Height : " + mNL.height);
+                Log.i(TAG, "mProductSell Height : " + mPL.height);
 
-                mEmergency.setLayoutParams(mEMGParams);
-                mSuppliesHelps.setLayoutParams(mSPHParams);
-                mProductSell.setLayoutParams(mPDSParams);
+                mEF.setLayoutParams(mEL);
+                mSF.setLayoutParams(mSL);
+                mNF.setLayoutParams(mNL);
+                mPF.setLayoutParams(mPL);
         }
 
         /**
@@ -258,6 +273,29 @@ public class MainFragment extends Fragment {
         }
 
         /**
+         * switchNearOrganizationFragment 介面
+         */
+        public void switchNearOrganizationFragment() {
+                Log.i(TAG, "switchNearOrganizationFragment");
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                Fragment fragment = manager.findFragmentById(R.id.fragment_near_organization);
+
+                FragmentTransaction ft = manager.beginTransaction();
+
+                if (mNearOrganizationFragment == null)
+                        mNearOrganizationFragment = new NearOrganizationFragment();
+
+                mNearOrganizationFragment.setIndexView(true);
+
+                if (fragment == null) {
+                        ft.add(R.id.fragment_near_organization, mNearOrganizationFragment);
+                } else {
+                        ft.replace(R.id.fragment_near_organization, mNearOrganizationFragment);
+                }
+                ft.commit();
+        }
+
+        /**
          * switchProductSellFragment 介面
          */
         public void switchProductSellFragment() {
@@ -295,6 +333,13 @@ public class MainFragment extends Fragment {
                 intent.setClass(mContext, SuppliesHelpActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent, SUPPLIESHELP_ACTIVITY_CODE);
+        }
+
+        public void gotoNearOrganizationActivity() {
+                Intent intent = new Intent();
+                intent.setClass(mContext, NearOrganizationActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivityForResult(intent, NEAR_ORGANIZATION_ACTIVITY_CODE);
         }
 
         /** End of GotoActivity **/

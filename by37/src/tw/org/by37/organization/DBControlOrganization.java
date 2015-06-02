@@ -5,7 +5,6 @@ import static tw.org.by37.organization.DBConstantsOrganization.*;
 
 import java.util.ArrayList;
 
-import tw.org.by37.data.OrganizationData;
 import tw.org.by37.data.SupplyData;
 import android.content.ContentValues;
 import android.content.Context;

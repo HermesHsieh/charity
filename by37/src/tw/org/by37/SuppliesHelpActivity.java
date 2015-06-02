@@ -1,9 +1,5 @@
 package tw.org.by37;
 
-import static tw.org.by37.config.RequestCode.FBLOGIN_REQUEST_CODE;
-import tw.org.by37.R;
-import tw.org.by37.data.SelectingData;
-import tw.org.by37.data.SupplyData;
 import tw.org.by37.member.LoginFragment;
 import tw.org.by37.menu.BottomMenuFragment;
 import tw.org.by37.menu.RightMenuFragment;
@@ -11,12 +7,10 @@ import tw.org.by37.menu.SlidingMenuFragment;
 import tw.org.by37.organization.OrganizationFragment;
 import tw.org.by37.search.SearchFragment;
 import tw.org.by37.supplieshelp.SuppliesHelpFragment;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -24,14 +18,11 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnCloseListener;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenListener;
-import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
-public class SuppliesHelpActivity extends SlidingFragmentActivity {
+public class SuppliesHelpActivity extends BackActivity {
 
         private Context mContext;
 
@@ -72,8 +63,6 @@ public class SuppliesHelpActivity extends SlidingFragmentActivity {
                 setContentView(R.layout.activity_supplieshelp);
 
                 setTitle(R.string.title_supplieshelp);
-
-                initSlidingMenu();
 
                 switchSuppliesHelpFragment();
 
@@ -262,30 +251,4 @@ public class SuppliesHelpActivity extends SlidingFragmentActivity {
                 Log.v(TAG, "Result Code : " + resultCode);
 
         }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-                switch (item.getItemId()) {
-                case android.R.id.home:
-                        toggle();
-                        return true;
-                case R.id.action_person:
-                        switchMemberLoginFragment();
-                        return true;
-                case R.id.action_search:
-                        switchSearchFragment();
-                        return true;
-                case R.id.action_back:
-                        this.finish();
-                        return true;
-                }
-                return super.onOptionsItemSelected(item);
-        }
-
-        @Override
-        public boolean onCreateOptionsMenu(Menu menu) {
-                getSupportMenuInflater().inflate(R.menu.organization, menu);
-                return true;
-        }
-
 }

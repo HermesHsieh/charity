@@ -7,6 +7,7 @@ public class RequestCode {
         public final static int SIGNUP_ACTIVITY_CODE = 2001;
         public final static int ORGANIZATION_ACTIVITY_CODE = 3001;
         public final static int SUPPLIESHELP_ACTIVITY_CODE = 4001;
+        public final static int NEAR_ORGANIZATION_ACTIVITY_CODE = 5001;
 
         public final static int REGISTER_SUCCESS_CODE = 1002;
         public final static int LOGIN_SUCCESS_CODE = 1003;

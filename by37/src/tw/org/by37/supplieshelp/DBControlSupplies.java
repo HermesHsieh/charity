@@ -200,13 +200,17 @@ public class DBControlSupplies {
                 return mList;
         }
 
-        /** 取得所有資料，以距離遞增排序 **/
-        public ArrayList<SupplyData> getDataForDistance(Double lng, Double lat) {
+        /** 取得所有資料，以距離遞增排序 (orgSingle = 資料是否有重複機構) **/
+        public ArrayList<SupplyData> getDataForDistance(Double lng, Double lat, boolean orgSingle) {
                 Log.v(TAG, "getDataForDistance , lng : " + lng + "lat : " + lat);
 
                 SQLiteDatabase db = mDBHelper.getReadableDatabase();
-                Cursor cursor = db.rawQuery("SELECT * ,(((organization_longitude-" + lng + ")*(organization_longitude-" + lng + ") + (organization_latitude-" + lat + ")*(organization_latitude-" + lat + "))) AS distance FROM " + TABLE_NAME + " ORDER BY distance ASC", null);
-
+                Cursor cursor = null;
+                if (!orgSingle) {
+                        cursor = db.rawQuery("SELECT * ,(((organization_longitude-" + lng + ")*(organization_longitude-" + lng + ") + (organization_latitude-" + lat + ")*(organization_latitude-" + lat + "))) AS distance FROM " + TABLE_NAME + " ORDER BY distance ASC", null);
+                } else {
+                        cursor = db.rawQuery("SELECT * ,(((organization_longitude-" + lng + ")*(organization_longitude-" + lng + ") + (organization_latitude-" + lat + ")*(organization_latitude-" + lat + "))) AS distance FROM " + TABLE_NAME + " GROUP BY organizationId ORDER BY distance ASC", null);
+                }
                 Log.v(TAG, "getCount : " + cursor.getCount());
                 Log.v(TAG, "getColumnCount : " + cursor.getColumnCount());
 
@@ -219,13 +223,17 @@ public class DBControlSupplies {
 
                 return mList;
         }
-        
+
         /** 取得所有資料，以時間遞減排序 **/
-        public ArrayList<SupplyData> getDataForTime() {
+        public ArrayList<SupplyData> getDataForTime(boolean orgSingle) {
 
                 SQLiteDatabase db = mDBHelper.getReadableDatabase();
-                Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY id ASC", null);
-
+                Cursor cursor = null;
+                if (!orgSingle) {
+                        cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY id ASC", null);
+                } else {
+                        cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " GROUP BY organizationId ORDER BY id ASC", null);
+                }
                 Log.v(TAG, "getCount : " + cursor.getCount());
                 Log.v(TAG, "getColumnCount : " + cursor.getColumnCount());
 
@@ -360,21 +368,21 @@ public class DBControlSupplies {
         }
 
         /** 取得db中所有資料, 以距離(經緯度)遞增排序 **/
-        public static ArrayList<SupplyData> getSuppliesDataForDistance(Context context, Double lng, Double lat) {
+        public static ArrayList<SupplyData> getSuppliesDataForDistance(Context context, Double lng, Double lat, boolean orgSingle) {
                 ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
                 DBControlSupplies db = new DBControlSupplies(context);
                 db.openDatabase();
-                mList = db.getDataForDistance(lng, lat);
+                mList = db.getDataForDistance(lng, lat, orgSingle);
                 db.closeDatabase();
                 return mList;
         }
-        
+
         /** 取得db中所有資料, 以時間遞減排序 **/
-        public static ArrayList<SupplyData> getSuppliesDataForTime(Context context) {
+        public static ArrayList<SupplyData> getSuppliesDataForTime(Context context, boolean orgSingle) {
                 ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
                 DBControlSupplies db = new DBControlSupplies(context);
                 db.openDatabase();
-                mList = db.getDataForTime();
+                mList = db.getDataForTime(orgSingle);
                 db.closeDatabase();
                 return mList;
         }

@@ -90,7 +90,7 @@
                     android:orientation="horizontal" >
 
                     <CheckBox
-                        android:id="@+id/checkBox"
+                        android:id="@+id/ckb_remember_me"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"

@@ -7,9 +7,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import tw.org.by37.MainActivity;
 import tw.org.by37.R;
-import tw.org.by37.data.UserData;
-import tw.org.by37.util.FunctionUtil;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -61,9 +60,7 @@ public class MemberFragment extends Fragment {
 
                 findView(view);
 
-                loadUserAvatar();
-
-                loadUserData();
+                getUserAvatar();
 
                 return view;
         }
@@ -111,7 +108,7 @@ public class MemberFragment extends Fragment {
                 public void onClick(View v) {
                         switch (v.getId()) {
                         case R.id.btn_logout:
-                                UserData.clearUserData(mContext);
+                                MainActivity.mUserApplication.LogoutUser();
                                 LogoutSuccess();
                                 break;
                         case R.id.btn_trade:
@@ -136,9 +133,20 @@ public class MemberFragment extends Fragment {
                 }
         };
 
-        private void loadUserAvatar() {
-                Log.d(TAG, "User Image : " + UserData.image);
-                if (UserData.image.length() > 0) {
+        /** 獲取使用者大頭照 **/
+        private void getUserAvatar() {
+                Log.i(TAG, "getUserAvatar");
+                /** 手機內存的大頭照 **/
+                String image_catch = mContext.getExternalCacheDir() + "/image.jpg";
+                Log.d(TAG, "User Image Catch : " + image_catch);
+                Bitmap mBitmap = BitmapFactory.decodeFile(image_catch);
+                if (mBitmap != null) {
+                        img_avatar.setImageBitmap(mBitmap);
+                }
+
+                String image = MainActivity.mUserApplication.userData.getUser().getInfo().getImage();
+                Log.d(TAG, "User Image : " + image);
+                if (image != null) {
                         new AsyncTask<String, Void, Bitmap>() {
                                 @Override
                                 protected Bitmap doInBackground(String... params) {
@@ -149,7 +157,7 @@ public class MemberFragment extends Fragment {
                                 @Override
                                 protected void onPostExecute(Bitmap result) {
                                         super.onPostExecute(result);
-                                        psDialog.dismiss();
+                                        Log.d(TAG, "Avatar Result : " + result);
                                         if (result != null) {
                                                 img_avatar.setImageBitmap(result);
                                         }
@@ -158,16 +166,9 @@ public class MemberFragment extends Fragment {
                                 @Override
                                 protected void onPreExecute() {
                                         super.onPreExecute();
-                                        psDialog = ProgressDialog.show(mContext, "", "讀取中，請稍候...");
                                 }
-                        }.execute(UserData.image);
+                        }.execute(image);
                 }
-        }
-
-        private void loadUserData() {
-                String data = UserData.showUserData();
-                if (tv_info != null)
-                        tv_info.setText(data);
         }
 
         // 讀取網路圖片，型態為Bitmap

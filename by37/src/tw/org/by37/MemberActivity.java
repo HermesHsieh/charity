@@ -2,7 +2,7 @@ package tw.org.by37;
 
 import static tw.org.by37.config.RequestCode.*;
 
-import tw.org.by37.data.UserData;
+import tw.org.by37.data.UserData2;
 import tw.org.by37.member.LoginFragment;
 import tw.org.by37.member.MemberFragment;
 import tw.org.by37.member.SignupFragment;
@@ -75,14 +75,14 @@ public class MemberActivity extends SlidingFragmentActivity {
 
                 initSlidingMenu();
 
-                // 會員的登入狀態
-                if (UserData.userStatus) {
-                        // 登入 -> 會員中心的Fragment
+                // 判別會員的登入狀態
+                if (MainActivity.mUserApplication.userData != null) {
+                        // 登入狀態 -> 會員中心的Fragment
                         setTitle(R.string.title_member);
                         switchMemberFragment();
                 } else {
                         setTitle(R.string.title_member_login);
-                        // 未登入 -> 登入的Fragment
+                        // 未登入狀態 -> 登入的Fragment
                         switchLoginFragment();
                 }
         }

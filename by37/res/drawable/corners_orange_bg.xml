@@ -4,6 +4,6 @@
 
     <corners android:radius="@dimen/corner_small_radius" />
 
-    <solid android:color="@color/titlebar_titletext_orangelight" />
+    <solid android:color="@color/member_light_orange_color" />
 
 </shape>

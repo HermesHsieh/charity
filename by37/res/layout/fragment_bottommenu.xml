@@ -23,7 +23,7 @@
             android:drawableLeft="@drawable/ic_sell"
             android:drawablePadding="@dimen/tv_drawable_padding"
             android:text="@string/sell_product"
-            android:textColor="@color/border_line_white"
+            android:textColor="@android:color/white"
             android:textSize="@dimen/fragment_title_text_size" />
     </RelativeLayout>
 
@@ -45,7 +45,7 @@
             android:drawableLeft="@drawable/ic_news"
             android:drawablePadding="@dimen/tv_drawable_padding"
             android:text="@string/news"
-            android:textColor="@color/border_line_white"
+            android:textColor="@android:color/white"
             android:textSize="@dimen/fragment_title_text_size" />
     </RelativeLayout>
 

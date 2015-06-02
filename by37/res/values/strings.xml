@@ -24,6 +24,7 @@
     <string name="title_test">測試</string>
     <string name="title_supplieshelp">物資需求</string>
     <string name="title_organization">機構簡介</string>
+    <string name="title_near_organization">鄰近機構</string>
     <string name="title_test_get">Test Get</string>
     <string name="title_test_post">Test Post</string>
     <string name="title_test_imageView">ImageView</string>
@@ -87,7 +88,6 @@
     <string name="supplies_phone_empty">目前沒有電話</string>
     <string name="supplies_mail_empty">目前沒有E-mail</string>
     <string name="string_empty">無</string>
-    <string name="photo_source">選擇照片來源</string>
     <string name="ok">確定</string>
     <string name="cancle">取消</string>
     <string name="trade_history">交易查詢</string>
@@ -98,6 +98,9 @@
     <string name="edit_member_data">修改會員資料</string>
     <string name="edit_favorite_org">公益機構偏好設定</string>
     <string name="edit_position">位置設定</string>
+    <string name="photo_source">選取照片來源</string>
+    <string name="camera">相機</string>
+    <string name="album">相簿</string>
 
     <!-- Sliding Menu Item -->
     <string-array name="sliding_menu_item">
@@ -111,6 +114,13 @@
         <item>聯絡建議</item>
         <item>分享APP</item>
         <item>使用條款</item>
+    </string-array>
+
+    <!-- Source Array -->
+    <string-array name="source_type">
+        <item>by37</item>
+        <item>facebook</item>
+        <item>google</item>
     </string-array>
 
     <!-- Buttom Menu Title -->

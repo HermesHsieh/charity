@@ -9,12 +9,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import tw.org.by37.MainActivity;
 import tw.org.by37.R;
-import tw.org.by37.data.UserData;
+import tw.org.by37.data.RegisterData;
+import tw.org.by37.data.UserData2;
 import tw.org.by37.service.UsersApiService;
 import tw.org.by37.util.FunctionUtil;
 import android.app.Activity;
@@ -27,6 +33,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -44,6 +51,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class SignupFragment extends Fragment {
@@ -54,7 +62,7 @@ public class SignupFragment extends Fragment {
 
         private Button btn_signup;
 
-        private EditText edt_account, edt_password, edt_nick_name;
+        private EditText edt_account, edt_password, edt_name;
 
         private TextView tv_info;
 
@@ -63,18 +71,19 @@ public class SignupFragment extends Fragment {
         /** 動態新增 機構類別 的Layout **/
         private LinearLayout ll_org_type;
 
+        /** 會員的大頭照 **/
         private ImageView img_avatar;
         private TextView tv_avatar_edit;
-        /** 設定大頭照的大小 **/
-        private final static float AVATAR_SIZE = 200;
-        private Uri imageUri;
+
+        /** 機構類別名稱陣列 **/
+        private String[] mOrgType;
+        /** 機構類別名稱勾選狀態陣列 **/
+        private boolean[] mOrgTypeStatus;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
                 mContext = getActivity();
-
-                UserData.clearUserData(mContext);
 
                 View view = inflater.inflate(R.layout.fragment_signup, container, false);
 
@@ -84,22 +93,12 @@ public class SignupFragment extends Fragment {
 
                 initAvatar(view);
 
-                Log.i(TAG, "DIRECTORY_PICTURES : " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
-                Log.i(TAG, "DIRECTORY_DCIM : " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM));
-                Log.i(TAG, "DIRECTORY_DOWNLOADS : " + Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS));
-                Log.i(TAG, "getDownloadCacheDirectory : " + Environment.getDownloadCacheDirectory());
-                Log.i(TAG, "getRootDirectory : " + Environment.getRootDirectory());
-                Log.i(TAG, "isExternalStorageEmulated : " + Environment.isExternalStorageEmulated());
-                Log.i(TAG, "isExternalStorageRemovable : " + Environment.isExternalStorageRemovable());
-                Log.i(TAG, "---");
-                Log.i(TAG, "getDataDirectory : " + Environment.getDataDirectory());
-                Log.i(TAG, "getDataDirectory getPath : " + Environment.getDataDirectory().getPath());
-                Log.i(TAG, "getExternalStorageDirectory : " + Environment.getExternalStorageDirectory());
-                Log.i(TAG, "getExternalStorageDirectory getAbsolutePath : " + Environment.getExternalStorageDirectory().getAbsolutePath());
-                Log.i(TAG, "---");
-                Log.i(TAG, "getFilesDir : " + mContext.getFilesDir());
-                Log.i(TAG, "getCacheDir : " + mContext.getCacheDir());
-                Log.i(TAG, "getExternalCacheDir : " + mContext.getExternalCacheDir());
+                if (RegisterData.source != null) {
+                        if (RegisterData.source.equals("facebook") || RegisterData.source.equals("google")) {
+                                InvisiblePassword(view);
+                                setRegisterData();
+                        }
+                }
 
                 return view;
         }
@@ -115,18 +114,20 @@ public class SignupFragment extends Fragment {
                         @Override
                         public void onClick(View v) {
                                 /** set User Data **/
-                                UserData.name = edt_nick_name.getText().toString();
-                                UserData.email = edt_account.getText().toString();
-                                UserData.password = edt_password.getText().toString();
-                                UserData.source = "by37";
-                                UserData.showUserData();
-                                new RegisterUserAsyncTask().execute(null, null, null);
+                                RegisterData.email = edt_account.getText().toString();
+                                RegisterData.name = edt_name.getText().toString();
+                                RegisterData.password = edt_password.getText().toString();
+                                if (RegisterData.source == null) {
+                                        RegisterData.source = "by37";
+                                }
+                                MainActivity.mUserApplication.setRegisterData();
+                                new RegisterUserAsyncTask().execute();
                         }
                 });
 
                 edt_account = (EditText) view.findViewById(R.id.edt_account);
                 edt_password = (EditText) view.findViewById(R.id.edt_password);
-                edt_nick_name = (EditText) view.findViewById(R.id.edt_nick_name);
+                edt_name = (EditText) view.findViewById(R.id.edt_name);
                 tv_info = (TextView) view.findViewById(R.id.tv_info);
         }
 
@@ -152,9 +153,85 @@ public class SignupFragment extends Fragment {
                 }
         }
 
+        private void InvisiblePassword(View view) {
+                /** 隱藏密碼欄位 **/
+                View mView1 = (View) view.findViewById(R.id.fragment_password);
+                View mView2 = (View) view.findViewById(R.id.fragment_password_confirm);
+                mView1.setVisibility(View.GONE);
+                mView2.setVisibility(View.GONE);
+        }
+
+        private void setRegisterData() {
+                if (edt_account != null && RegisterData.email != null) {
+                        edt_account.setText(RegisterData.email);
+                        edt_account.setFocusable(false);
+                }
+
+                if (img_avatar != null && RegisterData.image != null) {
+                        getUserAvatar(RegisterData.image);
+                }
+
+                if (edt_name != null && RegisterData.name != null) {
+                        edt_name.setText(RegisterData.name);
+                }
+        }
+
+        private void getUserAvatar(String image) {
+                Log.i(TAG, "getUserAvatar");
+                Log.d(TAG, "User Image : " + image);
+                if (image != null) {
+                        new AsyncTask<String, Void, Bitmap>() {
+                                @Override
+                                protected Bitmap doInBackground(String... params) {
+                                        String url = params[0];
+                                        return getBitmapFromURL(url);
+                                }
+
+                                @Override
+                                protected void onPostExecute(Bitmap result) {
+                                        super.onPostExecute(result);
+                                        psDialog.dismiss();
+                                        if (result != null) {
+                                                img_avatar.setImageBitmap(result);
+                                                saveImage(result);
+                                        }
+                                }
+
+                                @Override
+                                protected void onPreExecute() {
+                                        super.onPreExecute();
+                                        psDialog = ProgressDialog.show(mContext, "", "讀取中，請稍候...");
+                                }
+                        }.execute(image);
+                }
+        }
+
+        // 讀取網路圖片，型態為Bitmap
+        private static Bitmap getBitmapFromURL(String imageUrl) {
+                Log.i(TAG, "getBitmapFromURL");
+                try {
+                        URL url = new URL(imageUrl);
+                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                        connection.setDoInput(true);
+                        connection.connect();
+
+                        BitmapFactory.Options opt = new BitmapFactory.Options();
+                        opt.inPreferredConfig = Bitmap.Config.RGB_565;
+                        opt.inPurgeable = true;
+                        opt.inInputShareable = true;
+
+                        InputStream input = connection.getInputStream();
+                        Bitmap bitmap = BitmapFactory.decodeStream(input, null, opt);
+                        return bitmap;
+                } catch (IOException e) {
+                        e.printStackTrace();
+                        return null;
+                }
+        }
+
         private void pickPhotoDialog() {
                 // Be a Design Button Event
-                final String[] choseSourceFromList = { "相機拍攝", "從相簿中挑選" };
+                final String[] choseSourceFromList = { getString(R.string.camera), getString(R.string.album) };
 
                 AlertDialog.Builder mDialog = new AlertDialog.Builder(mContext);
                 // 建立標題
@@ -192,12 +269,7 @@ public class SignupFragment extends Fragment {
                 mDialog.show();
         }
 
-        /** 機構類別名稱陣列 **/
-        private String[] mOrgType;
-        /** 機構類別名稱勾選狀態陣列 **/
-        private boolean[] mOrgTypeStatus;
-
-        /** 動態設定 機構類別 的資料 **/
+        /** 動態設定 填寫偏好機構類別設定的物件 **/
         private void setOrgType(View view) {
                 ll_org_type = (LinearLayout) view.findViewById(R.id.ll_org_type);
                 ll_org_type.removeAllViews();
@@ -291,11 +363,9 @@ public class SignupFragment extends Fragment {
                         super.onPostExecute(result);
 
                         if (result != null) {
-                                int checkReg = result.indexOf("<html");
-                                String mReg = "";
-                                String status = "";
-
-                                if (checkReg >= 0) {
+                                String mReg;
+                                String status;
+                                if (FunctionUtil.isSleepServer(result)) {
                                         mReg = "Register Info : server has been sleep." + "\n\n";
                                 } else {
                                         mReg = "Register Info : " + result + "\n\n";
@@ -307,7 +377,15 @@ public class SignupFragment extends Fragment {
                                         status = mJObj.getString("status");
 
                                         if (status.equals("success")) {
-                                                UserData.setUserData(mContext, result);
+                                                /** 儲存使用者資料於手機內存 **/
+                                                MainActivity.mUserApplication.putUserLogin();
+                                                /** 儲存使用者結果資料於手機內存 **/
+                                                MainActivity.mUserApplication.putUserResult(result);
+                                                /** 刷新使用者資料 **/
+                                                MainActivity.mUserApplication.updateUserResult();
+                                                /** 刷新使用者大頭照資料 **/
+                                                MainActivity.mUserApplication.updateUser_Image();
+
                                                 RegisterSuccess();
                                         } else {
                                                 if (status.equals("fail")) {
@@ -371,12 +449,13 @@ public class SignupFragment extends Fragment {
                 }
         }
 
+        /** 儲存大頭照照片,從相機或相簿使用之 **/
         private void saveImage(Bitmap bitmap) {
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-                String path = mContext.getExternalCacheDir() + "/image.jpg";
-                UserData.image = path;
-                Log.d(TAG, "path = " + path);
+                String path = MainActivity.mUserApplication.tmp_avatar_img;
+                RegisterData.image = path;
+                Log.d(TAG, "Avatar Path = " + path);
 
                 try {
                         File f = new File(path);

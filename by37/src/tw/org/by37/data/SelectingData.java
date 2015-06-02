@@ -1,8 +1,10 @@
 package tw.org.by37.data;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import tw.org.by37.MainActivity;
+import tw.org.by37.organization.OrganizationData;
 
 import android.R;
 import android.util.Log;
@@ -10,9 +12,9 @@ import android.util.Log;
 public class SelectingData {
         private final static String TAG = "SelectingData";
 
-        public static String suppliesId = "";
+        public static String suppliesId = null;
 
-        public static String organizationId = "";
+        public static String organizationId = null;
 
         public static SupplyData mSupplyData = null;
 
@@ -21,6 +23,12 @@ public class SelectingData {
         public static ArrayList<TypesData> mGoodsTypes = new ArrayList<TypesData>();
 
         public static ArrayList<TypesData> mOrganizationTypes = new ArrayList<TypesData>();
+
+        public static ArrayList<OrganizationData> mNearOrganizationData = null;
+
+        public static void setNearOrganizationDataList(ArrayList<OrganizationData> data) {
+                mNearOrganizationData = data;
+        }
 
         /** 確認是否有物資資料 **/
         public static boolean checkSupplyData() {
