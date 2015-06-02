@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import tw.org.by37.BackActivity;
 import tw.org.by37.R;
 import tw.org.by37.config.SysConfig;
 import android.app.Activity;
@@ -20,7 +21,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.GridView;
 
-public class AllProductActivity extends Activity {
+public class AllProductActivity extends BackActivity {
 
 	private static final String TAG = AllProductActivity.class.getName();
 	private ArrayList<String> imageList;
@@ -36,7 +37,7 @@ public class AllProductActivity extends Activity {
 	private AllProductAdapter adapter;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_all_product);
 		new GetAllProducts().execute();
