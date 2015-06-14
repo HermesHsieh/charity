@@ -63,7 +63,12 @@ public class UserData {
 
                 }
                 try {
-                        sb.append("message = " + message);
+                        sb.append("message = " + message).append(", ");
+                } catch (Exception e) {
+
+                }
+                try {
+                        sb.append("user = " + user.toString());
                 } catch (Exception e) {
 
                 }

@@ -15,6 +15,12 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+/**
+ * 獲取鄰近機構資訊, 傳入參數 param[0] = lat, param[1] = lng
+ * 
+ * @author Tellasy
+ * 
+ */
 public class GetNearOrganizationAsyncTask extends AsyncTask<String, Void, String> {
 
         private final static String TAG = "GetNearOrganizationAsyncTask";

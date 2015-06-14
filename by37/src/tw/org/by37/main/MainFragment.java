@@ -15,6 +15,7 @@ import tw.org.by37.productsell.MainProductSellFragment;
 import tw.org.by37.search.SearchFragment;
 import tw.org.by37.supplieshelp.SuppliesHelpFragment;
 import tw.org.by37.test.TestFragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -38,7 +39,9 @@ import android.widget.TextView;
 
 public class MainFragment extends Fragment {
 
-        private final static String TAG = "MainFragment";
+        private final static String TAG = MainFragment.class.getName();
+
+        private ProgressDialog psDialog;
 
         private Context mContext;
 
@@ -65,11 +68,23 @@ public class MainFragment extends Fragment {
 
         private TextView tv_organization_all;
 
+        private static MainFragment mMainFragment;
+
+        /**
+         * Static function that creates instance of Fragment
+         * 
+         * @return instance of MainFragment class
+         */
+        public static MainFragment getInstance() {
+                return mMainFragment;
+        }
+
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
                 Log.i(TAG, "onCreateView");
-
+                mMainFragment = this;
                 mContext = getActivity();
+                psDialog = ProgressDialog.show(mContext, "", getString(R.string.loading));
 
                 View view = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -125,17 +140,16 @@ public class MainFragment extends Fragment {
                                 gotoNearOrganizationActivity();
                         }
                 });
-                
-                /**顯示全部產品**/
-                TextView showAllProdcutTv = (TextView)view.findViewById(R.id.tv_product_all);
+
+                /** 顯示全部產品 **/
+                TextView showAllProdcutTv = (TextView) view.findViewById(R.id.tv_product_all);
                 showAllProdcutTv.setOnClickListener(new OnClickListener() {
-					
-					@Override
-					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						gotoAllProductActivity();
-					}
-				});
+                        @Override
+                        public void onClick(View v) {
+                                // TODO Auto-generated method stub
+                                gotoAllProductActivity();
+                        }
+                });
         }
 
         /** 動態設定三個fragment的高度,比例根據螢幕的高度 **/
@@ -347,12 +361,19 @@ public class MainFragment extends Fragment {
         /** Activity Bundle **/
         /** End of Activity Bundle **/
 
-        private void gotoAllProductActivity(){
-        	Intent i = new Intent();
-        	i.setClass(mContext,AllProductActivity.class);
-        	startActivity(i);
+        /** 關閉提示對話框 **/
+        public void closeProgressDialog() {
+                if (psDialog != null) {
+                        psDialog.dismiss();
+                }
         }
-        
+
+        private void gotoAllProductActivity() {
+                Intent i = new Intent();
+                i.setClass(mContext, AllProductActivity.class);
+                startActivity(i);
+        }
+
         @Override
         public void onResume() {
                 super.onResume();
@@ -381,6 +402,7 @@ public class MainFragment extends Fragment {
         public void onDestroy() {
                 super.onDestroy();
                 Log.i(TAG, "onDestroy");
+                mMainFragment = null;
         }
 
 }

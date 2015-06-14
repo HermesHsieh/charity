@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <fragment
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="com.google.android.gms.maps.SupportMapFragment" />
+
+    <include
+        android:id="@+id/rl_search_bar"
+        layout="@layout/item_search_bar" />
+
+    <Button
+        android:id="@+id/btn_my_position_submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/img_position"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:alpha=".85"
+        android:background="@drawable/selector_main_blue"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:text="@string/my_position_submit" />
+
+    <ImageView
+        android:id="@+id/img_position"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/marker_hint" />
+
+    <Button
+        android:id="@+id/btn_my_position_update"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/selector_my_position"
+        android:contentDescription="@string/app_name" />
+
+    <RelativeLayout
+        android:id="@+id/rl_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="60dp"
+        android:alpha=".85"
+        android:background="@drawable/corners_main_bg"
+        android:padding="15dp" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/position_hint_desc"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:id="@+id/img_hint_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/ic_action_remove"
+            android:contentDescription="@string/app_name" />
+    </RelativeLayout>
+
+</RelativeLayout>

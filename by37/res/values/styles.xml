@@ -44,6 +44,7 @@
         <item name="android:maxLines">1</item>
     </style>
 
+    <!-- 首頁Fragment的Title Style -->
     <style name="TitleTextView_1" parent="android:Widget">
         <item name="android:paddingBottom">10dp</item>
         <item name="android:paddingLeft">10dp</item>
@@ -51,6 +52,15 @@
         <item name="android:paddingTop">10dp</item>
         <item name="android:textColor">@color/title_gray_color</item>
         <item name="android:textSize">20sp</item>
+    </style>
+
+    <!-- 首頁Fragment的查看全部Style -->
+    <style name="TextView_blueblod" parent="android:Widget">
+        <item name="android:gravity">right</item>
+        <item name="android:text">@string/view_all</item>
+        <item name="android:textColor">@color/btn_blue_color</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="HighLightTextView_1" parent="android:Widget">

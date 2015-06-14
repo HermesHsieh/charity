@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:alpha=".85"
+    android:background="@android:color/white" >
+
+    <EditText
+        android:id="@+id/edt_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:singleLine="true"
+        android:layout_toLeftOf="@+id/img_clean"
+        android:drawableLeft="@drawable/ic_action_search_dark"
+        android:hint="@string/search_hint" />
+
+    <ImageView
+        android:id="@+id/img_clean"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/btn_search"
+        android:background="@drawable/ic_action_remove"
+        android:contentDescription="@string/app_name"
+        android:padding="10dp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btn_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:text="@string/search" />
+
+</RelativeLayout>

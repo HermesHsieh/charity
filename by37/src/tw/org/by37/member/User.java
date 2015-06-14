@@ -115,7 +115,12 @@ public class User {
 
                 }
                 try {
-                        sb.append("password = " + password);
+                        sb.append("password = " + password).append(", ");
+                } catch (Exception e) {
+
+                }
+                try {
+                        sb.append("info = " + info.toString());
                 } catch (Exception e) {
 
                 }

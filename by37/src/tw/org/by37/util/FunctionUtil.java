@@ -6,6 +6,7 @@ import java.io.File;
 
 import tw.org.by37.R;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +17,8 @@ import android.graphics.Paint;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 public class FunctionUtil {
@@ -143,6 +146,27 @@ public class FunctionUtil {
                         return true;
                 } else {
                         return false;
+                }
+        }
+
+        /** 開啟鍵盤 **/
+        public static void openInputKeyBoard(Context context, View view) {
+                if (context != null && view != null) {
+                        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+                }
+        }
+
+        /** 收起鍵盤 **/
+        public static void closeInputKeyBoard(Context context, Activity activity) {
+                if (context != null && activity != null) {
+                        try {
+                                // 收起鍵盤
+                                InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+                                inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                        } catch (Exception e) {
+
+                        }
                 }
         }
 }

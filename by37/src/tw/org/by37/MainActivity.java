@@ -15,7 +15,9 @@ import tw.org.by37.member.UserLoginAsyncTask;
 import tw.org.by37.menu.BottomMenuFragment;
 import tw.org.by37.menu.RightMenuFragment;
 import tw.org.by37.menu.SlidingMenuFragment;
+import tw.org.by37.organization.MapFragment;
 import tw.org.by37.organization.OrganizationFragment;
+import tw.org.by37.position.PositionFragment;
 import tw.org.by37.productsell.MainProductSellFragment;
 import tw.org.by37.search.SearchFragment;
 import tw.org.by37.supplieshelp.SuppliesHelpFragment;
@@ -52,7 +54,7 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
 public class MainActivity extends SlidingFragmentActivity {
 
-        private final static String TAG = "MainActivity";
+        private final static String TAG = MainActivity.class.getName();
 
         private Context mContext;
 
@@ -105,7 +107,7 @@ public class MainActivity extends SlidingFragmentActivity {
 
         private ListView mListView;
 
-        private MainActivity mMainActivity;
+        private PositionFragment mPositionFragment;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -113,18 +115,11 @@ public class MainActivity extends SlidingFragmentActivity {
                 setContentView(R.layout.activity_main);
                 FunctionUtil.createFileRoot();
                 getDisplayMetrics();
-                mMainActivity = this;
                 mContext = this;
                 mUserApplication = (UserApplication) mContext.getApplicationContext();
 
                 /** 登入使用者(手機內存資料) **/
-                new Thread(new Runnable() {
-                        public void run() {
-                                new UserLoginAsyncTask().execute();
-                        }
-                }).start();
-                /** End of 登入使用者(手機內存資料) **/
-
+                new UserLoginAsyncTask().execute();
 
                 initSlidingMenu();
 
@@ -249,6 +244,9 @@ public class MainActivity extends SlidingFragmentActivity {
                                 break;
                         case 6:
                                 switchOrganizationFragment();
+                                break;
+                        case 7:
+                                switchPositionFragment();
                                 break;
                         default:
                                 break;
@@ -549,6 +547,26 @@ public class MainActivity extends SlidingFragmentActivity {
                         ft.add(R.id.main_content, mMainProductSellFragment);
                 } else {
                         ft.replace(R.id.main_content, mMainProductSellFragment);
+                }
+                ft.commit();
+        }
+
+        /**
+         * switchPositionFragment 介面
+         */
+        public void switchPositionFragment() {
+                FragmentManager manager = getSupportFragmentManager();
+                Fragment fragment = manager.findFragmentById(R.id.main_content);
+
+                FragmentTransaction ft = manager.beginTransaction();
+
+                if (mPositionFragment == null)
+                        mPositionFragment = new PositionFragment();
+
+                if (fragment == null) {
+                        ft.add(R.id.main_content, mPositionFragment);
+                } else {
+                        ft.replace(R.id.main_content, mPositionFragment);
                 }
                 ft.commit();
         }

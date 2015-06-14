@@ -42,6 +42,8 @@ public class SysConfig {
         public final static String k_Supplies_Types_Data_UpdateTime = "SuppliesTypesDataUpdateTime";
         /** Preferences Key Value : 基購資料更新時間 **/
         public final static String k_Organization_Data_UpdateTime = "OrganizationDataUpdateTime";
+        /** Preferences Key Value : 確認我的位置的提示訊息 **/
+        public final static String k_My_Position_Hint = "MyPositionHint";
         /** End of Preferences Key Values **/
 
         /** External Storage Path - SD Card **/
@@ -60,7 +62,7 @@ public class SysConfig {
         public final static String SD_TEMP_PIC_PATH = SD_PIC_PATH + "/temp";
 
         static final String ApiServer = "http://charity.gopagoda.io/";
-        /** User 註冊, 登入, 更新, 推播的DeviceID **/
+        /** User 註冊 **/
         public static final String usersApi = ApiServer + "addUser";
         /** User 登入 **/
         public static final String usersLoginApi = ApiServer + "checkUser";

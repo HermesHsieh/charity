@@ -5,6 +5,8 @@
     <color name="sliding_menu_background_2">#21b0c3</color>
     <color name="bottom_menu_background">#A2D8D7</color>
     <color name="corners_solid_background">#DDDDDD</color>
+    <color name="dark_blue_background">#A2D8D7</color>
+    <color name="light_blue_background">#bef2f2</color>
     <color name="dark_gray_background">#CDCDCD</color>
     <color name="light_gray_background">#E7E7E7</color>
     <color name="org_pass_purple_color">#653565</color>

@@ -13,7 +13,6 @@ import java.net.URL;
 import tw.org.by37.data.RegisterData;
 import tw.org.by37.member.UserData;
 import android.app.Application;
-import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -26,9 +25,9 @@ import com.google.gson.Gson;
 
 public class UserApplication extends Application {
 
-        private final static String TAG = "UserApplication";
+        private final static String TAG = UserApplication.class.getName();
 
-        public UserApplication userApplication;
+        public static UserApplication userApplication;
 
         public UserData userData;
 
@@ -38,7 +37,7 @@ public class UserApplication extends Application {
 
         public String tmp_avatar_img = PIC_PATH + "image.jpg";
 
-        public UserApplication getInstance() {
+        public static UserApplication getInstance() {
                 return userApplication;
         }
 
@@ -207,10 +206,11 @@ public class UserApplication extends Application {
                 } catch (Exception e) {
                         Log.e(TAG, "SharedPreferences UserData Exception");
                 }
+                Log.d(TAG, "getUserResult : " + result);
                 return result;
         }
 
-        /** 儲存使用者結果資料於手機內存,清除註冊類別資料(RegisterData clean) **/
+        /** 儲存使用者結果資料於手機內存, 清除註冊類別資料(RegisterData clean) **/
         public void putUserResult(String result) {
                 RegisterData.clean();
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);

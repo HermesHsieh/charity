@@ -76,18 +76,22 @@
             android:text="@string/org_info_main"
             android:textSize="16sp" />
 
+        <TextView
+            android:id="@+id/tv_info_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/org_info_vertical"
+            android:paddingTop="@dimen/org_info_vertical"
+            android:text="Content"
+            android:visibility="visible" />
+
         <LinearLayout
             android:id="@+id/ll_org_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:paddingBottom="@dimen/org_info_vertical"
             android:paddingTop="@dimen/org_info_vertical" >
-
-            <TextView
-                android:id="@+id/tv_info_content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Content" />
         </LinearLayout>
     </LinearLayout>
 

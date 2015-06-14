@@ -43,10 +43,13 @@ public class UsersApiService {
 
         private final static String TAG = "UsersApi";
 
+        /** User Register (addUser) **/
         private static String uri = usersApi;
 
+        /** User Login (checkUser) **/
         private static String uriLogin = usersLoginApi;
 
+        /** User Data **/
         private static String uriUserData = usersDataApi;
 
         /* Post User To Server */

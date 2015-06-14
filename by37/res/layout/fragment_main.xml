@@ -30,42 +30,33 @@
 
             <TextView
                 android:id="@+id/tv_supplies_all"
+                style="@style/TextView_blueblod"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:text="@string/view_all"
-                android:textColor="@color/btn_blue_color"
-                android:textStyle="bold" />
-            
+                android:layout_height="wrap_content" />
+
             <FrameLayout
                 android:id="@+id/fragment_near_organization"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
             </FrameLayout>
-            
+
             <TextView
                 android:id="@+id/tv_organization_all"
+                style="@style/TextView_blueblod"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:text="@string/view_all"
-                android:textColor="@color/btn_blue_color"
-                android:textStyle="bold" />
+                android:layout_height="wrap_content" />
 
             <FrameLayout
                 android:id="@+id/fragment_productsell"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
             </FrameLayout>
-            
-             <TextView
+
+            <TextView
                 android:id="@+id/tv_product_all"
+                style="@style/TextView_blueblod"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:text="@string/view_all"
-                android:textColor="@color/btn_blue_color"
-                android:textStyle="bold" />
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </ScrollView>
 

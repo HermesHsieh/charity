@@ -14,11 +14,16 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
+import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
+import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -44,7 +49,7 @@ import android.widget.Toast;
 
 public class MapFragment extends Fragment {
 
-        private final static String TAG = "MapFragment";
+        private final static String TAG = MapFragment.class.getName();
 
         private Context mContext;
 
@@ -93,6 +98,11 @@ public class MapFragment extends Fragment {
 
         /** End of Destination Guide Param **/
 
+        private String org_lat;
+        private String org_lng;
+        private String org_name;
+        private String org_title;
+
         public MapFragment() {
                 super();
         }
@@ -107,16 +117,6 @@ public class MapFragment extends Fragment {
 
                 initialMyLocationFunction();
 
-                Log.v(TAG, "wifi_latitude : " + wifi_latitude);
-                Log.v(TAG, "wifi_longitude : " + wifi_longitude);
-                Log.v(TAG, "gps_latitude : " + gps_latitude);
-                Log.v(TAG, "gps_longitude : " + gps_longitude);
-
-                // SDK version under 8
-                FragmentManager myFragmentManager = getActivity().getSupportFragmentManager();
-                SupportMapFragment mySupportMapFragment = (SupportMapFragment) myFragmentManager.findFragmentById(R.id.map);
-                map = mySupportMapFragment.getMap();
-
                 initMap();
 
                 userPosition = new LatLng(wifi_latitude, wifi_longitude);
@@ -124,18 +124,89 @@ public class MapFragment extends Fragment {
                 // 將 Camera 移動到使用者當前位置
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(userPosition, 16));
 
+                map.setOnMapClickListener(mMapListener);
+
+                map.setOnMyLocationChangeListener(new OnMyLocationChangeListener() {
+                        @Override
+                        public void onMyLocationChange(Location arg0) {
+                                // TODO Auto-generated method stub
+                                Log.d(TAG, "onMyLocationChange Location : " + arg0);
+                        }
+                });
+
+                map.setOnCameraChangeListener(new OnCameraChangeListener() {
+                        @Override
+                        public void onCameraChange(CameraPosition arg0) {
+                                // TODO Auto-generated method stub
+                                Log.d(TAG, "onCameraChange Position : " + arg0);
+                        }
+                });
+
+                lms.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 20, mLocationListener);
+
                 return view;
         }
+
+        /** 點擊Map事件監聽 **/
+        private GoogleMap.OnMapClickListener mMapListener = new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng position) {
+                        // TODO Auto-generated method stub
+                        Log.d(TAG, "onMapClick Position : " + position);
+
+                        // CameraPosition cameraPosition = new
+                        // CameraPosition.Builder().target(position).zoom(16).build();
+                        // CameraUpdate cameraUpdate =
+                        // CameraUpdateFactory.newCameraPosition(cameraPosition);
+                        // map.animateCamera(cameraUpdate);
+                }
+        };
+
+        /** 位置事件監聽 **/
+        private LocationListener mLocationListener = new LocationListener() {
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+                        // TODO Auto-generated method stub
+                        Log.d(TAG, "StatusChanged provider : " + provider + ", Status : " + status + ", extras : " + extras);
+
+                }
+
+                @Override
+                public void onProviderEnabled(String provider) {
+                        // TODO Auto-generated method stub
+                        Log.d(TAG, "Enabled provider : " + provider);
+
+                }
+
+                @Override
+                public void onProviderDisabled(String provider) {
+                        // TODO Auto-generated method stub
+                        Log.d(TAG, "Disabled provider : " + provider);
+
+                }
+
+                @Override
+                public void onLocationChanged(Location location) {
+                        // TODO Auto-generated method stub
+                        Log.d(TAG, "onLocationChanged Location : " + location);
+                }
+        };
 
         /**
          * 初始化地圖設定
          */
         public void initMap() {
+                // SDK version under 8
+                FragmentManager myFragmentManager = getActivity().getSupportFragmentManager();
+                SupportMapFragment mySupportMapFragment = (SupportMapFragment) myFragmentManager.findFragmentById(R.id.map);
+                map = mySupportMapFragment.getMap();
+
                 if (map != null) {
                         try {
-                                // 設置在地圖上顯示我的位置
+                                // 設置在地圖上顯示我目前的位置
                                 map.setMyLocationEnabled(true);
-                                // 關閉我的位置按鈕
+                                // 關閉刷新我的位置按鈕
                                 map.getUiSettings().setMyLocationButtonEnabled(false);
                                 // 設置室內地圖是否開啟
                                 map.setIndoorEnabled(true);
@@ -155,7 +226,21 @@ public class MapFragment extends Fragment {
                 }
         }
 
-        public void setOrganizationMarker(String org_lat, String org_lng, String org_name, String org_title) {
+        /** 將機構需要的資料設定至MapFragment **/
+        public void setOrganizationData(String org_lat, String org_lng, String org_name, String org_title) {
+                Double lat = Double.valueOf(org_lat);
+                Double lng = Double.valueOf(org_lng);
+                if (lat != null && lng != null) {
+                        if (lat > 0 && lng > 0) {
+                                this.org_lat = org_lat;
+                                this.org_lng = org_lng;
+                                this.org_name = org_name;
+                                this.org_title = org_title;
+                        }
+                }
+        }
+
+        public void setOrganizationMarker() {
                 Log.i(TAG, "setOrganizationMarker");
                 // 如果有基構的資料,即進入基構簡介
 
@@ -307,6 +392,7 @@ public class MapFragment extends Fragment {
                         mid = countmidPosition(start, end);
 
                         String url = getDirectionsUrl(start, end);
+                        Log.d(TAG, "Url : " + url);
                         new mapRouteDataFromUserAsyncTask().execute(url, null, null);
                 } else {
                         Log.e(TAG, "userPosition : " + userPosition);
@@ -428,9 +514,9 @@ public class MapFragment extends Fragment {
 
                                 // map.addMarker(new
                                 // MarkerOptions().position(userPosition).title("我的位置"));
-
-                                map.addMarker(new MarkerOptions().position(orgPosition).title(SelectingData.mOrganizationData.org_name).snippet(getSubtitleForDisTime(totaldistance, totaltime)));
-
+                                if (orgPosition != null && org_name != null) {
+                                        map.addMarker(new MarkerOptions().position(orgPosition).title(org_name).snippet(getSubtitleForDisTime(totaldistance, totaltime)));
+                                }
                                 Log.i(TAG, "moveCamera mid : " + mid + ", ZoomLevel : " + zoomLevel);
                                 // 定位到兩點距離之中點，縮放至合適的ZoomLevle
                                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(mid, zoomLevel));
@@ -639,7 +725,12 @@ public class MapFragment extends Fragment {
         @Override
         public void onResume() {
                 super.onResume();
-                Log.i(TAG, "onResume");
+
+                // 回到頁面時開啟監聽
+                if (getService) {
+                        lms.requestLocationUpdates(LocationManager.GPS_PROVIDER, updateTime, updateDst, gll);
+                        lms.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, updateTime, updateDst, wll);
+                }
         }
 
         @Override
@@ -655,6 +746,10 @@ public class MapFragment extends Fragment {
         @Override
         public void onPause() {
                 super.onPause();
+                if (getService) {
+                        lms.removeUpdates(gll);// 離開頁面時GPS停止更新
+                        lms.removeUpdates(wll);// 離開頁面時WIFI停止更新
+                }
         }
 
         @Override

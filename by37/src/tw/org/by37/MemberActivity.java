@@ -34,7 +34,7 @@ public class MemberActivity extends SlidingFragmentActivity {
 
         private Context mContext;
 
-        private final static String TAG = "MemberActivity";
+        private final static String TAG = MemberActivity.class.getName();
 
         /** 滑動Menu **/
         private SlidingMenu mSlidingMenu;

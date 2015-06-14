@@ -101,6 +101,28 @@
     <string name="photo_source">選取照片來源</string>
     <string name="camera">相機</string>
     <string name="album">相簿</string>
+    <string name="org_uri">機構網址：</string>
+    <string name="org_email">電子郵件：</string>
+    <string name="org_phone">聯絡電話：</string>
+    <string name="org_donation_link">捐款連結：</string>
+    <string name="notification">提醒</string>
+    <string name="check_url">確認連結至</string>
+    <string name="check_mail">確認寫信至</string>
+    <string name="check_phone">確認撥出</string>
+    <string name="symbol_confuse">？</string>
+    <string name="symbol_notice">！</string>
+    <string name="my_position_submit">確認我的位置</string>
+    <string name="search">搜尋</string>
+    <string name="position_hint_desc">請設定您的位置。\n您可以直接使用系統為您抓取的位置\n或任意選擇地標\n如：\n公車站牌、公園、景點、商店、公司等\n當作預設位置。</string>
+    <string name="delete_my_position_setting">是否刪除我的位置：</string>
+    <string name="clean_finish">刪除完成！</string>
+    <string name="my_setting_position">我設定的位置</string>
+    <string name="move_setting_position">可以滑動地圖以重新設定位置</string>
+    <string name="search_address_error">搜尋不到此地址，請重新嘗試設定其他位置</string>
+    <string name="address_empty">請輸入地址</string>
+    <string name="address_short">搜尋地址過短，請重新輸入</string>
+    <string name="search_hint">搜尋地址或關鍵字</string>
+    <string name="send">送出</string>
 
     <!-- Sliding Menu Item -->
     <string-array name="sliding_menu_item">
@@ -149,6 +171,7 @@
         <item>SuppliesHelp</item>
         <item>ProductSell</item>
         <item>Organization</item>
+        <item>Map</item>
     </string-array>
 
     <!-- GoodTypes Initial -->
@@ -182,6 +205,8 @@
     <!-- ProgressDialog Message -->
     <string name="msg">訊息</string>
     <string name="loading">資料讀取中，請稍候…</string>
+    <string name="searching">搜尋中，請稍候…</string>
+    <string name="search_result">搜尋結果</string>
 
     <!-- Organization Type -->
     <string-array name="org_type">

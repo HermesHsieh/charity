@@ -1,6 +1,7 @@
 package tw.org.by37.member;
 
 import static tw.org.by37.config.RequestCode.LOGOUT_SUCCESS_CODE;
+import static tw.org.by37.config.RequestCode.POSITION_ACTIVITY_CODE;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,6 +9,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import tw.org.by37.MainActivity;
+import tw.org.by37.MemberActivity;
+import tw.org.by37.PositionActivity;
 import tw.org.by37.R;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -28,7 +31,7 @@ import android.widget.TextView;
 
 public class MemberFragment extends Fragment {
 
-        private final static String TAG = "MemberFragment";
+        private final static String TAG = MemberFragment.class.getName();
 
         private Context mContext;
 
@@ -92,9 +95,15 @@ public class MemberFragment extends Fragment {
                 btn_edit_position.setOnClickListener(mButtonListener);
 
                 img_avatar = (ImageView) view.findViewById(R.id.img_avatar);
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_personal);
+                final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_personal);
                 if (img_avatar != null && bitmap != null) {
-                        img_avatar.setImageBitmap(bitmap);
+                        img_avatar.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                        // TODO Auto-generated method stub
+                                        img_avatar.setImageBitmap(bitmap);
+                                }
+                        });
                 }
 
                 tv_info = (TextView) view.findViewById(R.id.tv_info);
@@ -126,6 +135,7 @@ public class MemberFragment extends Fragment {
                         case R.id.btn_edit_favorite_org:
                                 break;
                         case R.id.btn_edit_position:
+                                gotoPositionActivity();
                                 break;
                         default:
                                 break;
@@ -139,9 +149,15 @@ public class MemberFragment extends Fragment {
                 /** 手機內存的大頭照 **/
                 String image_catch = mContext.getExternalCacheDir() + "/image.jpg";
                 Log.d(TAG, "User Image Catch : " + image_catch);
-                Bitmap mBitmap = BitmapFactory.decodeFile(image_catch);
+                final Bitmap mBitmap = BitmapFactory.decodeFile(image_catch);
                 if (mBitmap != null) {
-                        img_avatar.setImageBitmap(mBitmap);
+                        img_avatar.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                        // TODO Auto-generated method stub
+                                        img_avatar.setImageBitmap(mBitmap);
+                                }
+                        });
                 }
 
                 String image = MainActivity.mUserApplication.userData.getUser().getInfo().getImage();
@@ -209,6 +225,13 @@ public class MemberFragment extends Fragment {
                 Intent intent = getActivity().getIntent();
                 getActivity().setResult(LOGOUT_SUCCESS_CODE, intent); // 回傳RESULT_OK
                 getActivity().finish();
+        }
+
+        public void gotoPositionActivity() {
+                Intent intent = new Intent();
+                intent.setClass(mContext, PositionActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivityForResult(intent, POSITION_ACTIVITY_CODE);
         }
 
         /** End of GotoActivity **/

@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/item_click"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_action_make_available_offline" />
+        android:src="@drawable/ic_action_directions" />
 
     <ImageButton
         android:id="@+id/img_btn_favorite"

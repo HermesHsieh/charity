@@ -55,7 +55,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_margin="@dimen/member_button_margin"
-                        android:background="@drawable/item_btn"
+                        android:background="@drawable/selector_gray_btn"
                         android:text="@string/trade_history" />
 
                     <TextView
@@ -83,7 +83,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_margin="@dimen/member_button_margin"
-                        android:background="@drawable/item_btn"
+                        android:background="@drawable/selector_gray_btn"
                         android:text="@string/heart_money_history" />
 
                     <TextView
@@ -113,7 +113,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/member_button_margin"
                     android:layout_weight="1"
-                    android:background="@drawable/item_btn"
+                    android:background="@drawable/selector_gray_btn"
                     android:text="@string/edit_product" />
 
                 <Button
@@ -122,7 +122,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/member_button_margin"
                     android:layout_weight="1"
-                    android:background="@drawable/item_btn"
+                    android:background="@drawable/selector_gray_btn"
                     android:text="@string/my_market" />
             </LinearLayout>
 
@@ -137,7 +137,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/member_button_margin"
                     android:layout_weight="1"
-                    android:background="@drawable/item_btn"
+                    android:background="@drawable/selector_gray_btn"
                     android:text="@string/like_history" />
 
                 <Button
@@ -146,7 +146,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/member_button_margin"
                     android:layout_weight="1"
-                    android:background="@drawable/item_btn"
+                    android:background="@drawable/selector_gray_btn"
                     android:text="@string/edit_member_data" />
             </LinearLayout>
 
@@ -167,7 +167,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/member_button_margin"
                     android:layout_weight="1"
-                    android:background="@drawable/item_btn"
+                    android:background="@drawable/selector_gray_btn"
                     android:text="@string/edit_favorite_org" />
 
                 <Button
@@ -176,7 +176,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/member_button_margin"
                     android:layout_weight="1"
-                    android:background="@drawable/item_btn"
+                    android:background="@drawable/selector_gray_btn"
                     android:text="@string/edit_position" />
             </LinearLayout>
 

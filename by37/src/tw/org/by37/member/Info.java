@@ -1,7 +1,7 @@
 package tw.org.by37.member;
 
 /**
- * 使用者的細部資料 user_id,address,only,organization_ids,birthday,image,about_me
+ * 使用者的細部資料 user_id, address, only, organization_ids, birthday, image, about_me
  * 
  * @author Tellasy
  * 
@@ -20,6 +20,9 @@ public class Info {
         private String image;
         /** 關於我 **/
         private String about_me;
+        /** 經緯度 **/
+        private String lng;
+        private String lat;
 
         public void setUser_Id(String user_id) {
                 this.user_id = user_id;
@@ -77,6 +80,22 @@ public class Info {
                 return organization_ids;
         }
 
+        public void setLat(String lat) {
+                this.lat = lat;
+        }
+
+        public String getLat() {
+                return lat;
+        }
+
+        public void setLng(String lng) {
+                this.lng = lng;
+        }
+
+        public String getLng() {
+                return lng;
+        }
+
         @Override
         public String toString() {
                 StringBuffer sb = new StringBuffer();
@@ -112,7 +131,17 @@ public class Info {
 
                 }
                 try {
-                        sb.append("organization_ids = " + organization_ids);
+                        sb.append("organization_ids = " + organization_ids).append(", ");
+                } catch (Exception e) {
+
+                }
+                try {
+                        sb.append("lat = " + lat).append(", ");
+                } catch (Exception e) {
+
+                }
+                try {
+                        sb.append("lng = " + lng);
                 } catch (Exception e) {
 
                 }

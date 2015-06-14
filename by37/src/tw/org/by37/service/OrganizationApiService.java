@@ -24,6 +24,7 @@ public class OrganizationApiService {
 
         private static String uri = organizationsIdApi;
 
+        /** 機構類別資料 unused **/
         private static String uri_types = organizationsTypeApi;
 
         private static String uri_near = organizationsNearApi;
@@ -73,6 +74,7 @@ public class OrganizationApiService {
                 return strResult;
         }
 
+        @SuppressWarnings("unused")
         public static String getOrganizationTypes() {
                 Log.v(TAG, "getOrganizationTypes");
 

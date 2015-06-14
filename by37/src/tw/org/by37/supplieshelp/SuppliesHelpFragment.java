@@ -224,13 +224,26 @@ public class SuppliesHelpFragment extends Fragment {
                 sp_order.setSelection(pref_order);
                 sp_order.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
                         public void onItemSelected(AdapterView adapterView, View view, int position, long id) {
-
                                 pref_order = position;
 
                                 savePreferences(mContext, pref_order, pref_category);
 
                                 Log.i(TAG, "savePreferences pref_order = " + pref_order);
 
+                                showSuppliesDataToListView();
+                        }
+
+                        public void onNothingSelected(AdapterView arg0) {
+                                Toast.makeText(mContext, "您沒有選擇任何項目", Toast.LENGTH_LONG).show();
+                        }
+                });
+        }
+
+        /** 將物資資料根據排序規則及篩選結果輸出至ListView **/
+        private void showSuppliesDataToListView() {
+                getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
                                 // 依照距離排序
                                 if (sp_order.getSelectedItemPosition() == 0) {
                                         orderSuppliesDataForDst();
@@ -243,10 +256,6 @@ public class SuppliesHelpFragment extends Fragment {
                                         }
                                 }
                         }
-
-                        public void onNothingSelected(AdapterView arg0) {
-                                Toast.makeText(mContext, "您沒有選擇任何項目", Toast.LENGTH_LONG).show();
-                        }
                 });
         }
 
@@ -255,6 +264,8 @@ public class SuppliesHelpFragment extends Fragment {
                 Log.i(TAG, "getSuppliesData");
                 // 獲取上次更新的時間
                 data_updateTime = getDataUpdateTimePreferences(mContext);
+                
+                new getSuppliesTotalAsyncTask().execute();
 
                 new getSuppliesDataAsyncTask().execute();
 
@@ -297,6 +308,7 @@ public class SuppliesHelpFragment extends Fragment {
         }
 
         /** 獲取物資需求類別資料 **/
+        @SuppressWarnings("unused")
         private void getOrganizationTypesData() {
                 Log.i(TAG, "getOrganizationTypesData");
                 OrganizationTypesText mData = new OrganizationTypesText();
@@ -499,17 +511,7 @@ public class SuppliesHelpFragment extends Fragment {
                                 Log.e(TAG, "SuppliesData Result == null, (getSuppliesDataAsyncTask) ");
                         }
 
-                        // 依照距離排序
-                        if (sp_order.getSelectedItemPosition() == 0) {
-                                orderSuppliesDataForDst();
-                        } else {
-                                // 依照時間排序
-                                if (sp_order.getSelectedItemPosition() == 1) {
-                                        orderSuppliesDataForTime();
-                                } else {
-                                        Log.e(TAG, "Set Supplies Data error !!");
-                                }
-                        }
+                        showSuppliesDataToListView();
 
                         new getSuppliesTotalAsyncTask().execute();
                 }
@@ -807,17 +809,7 @@ public class SuppliesHelpFragment extends Fragment {
 
                                         Log.i(TAG, "savePreferences pref_category = " + pref_category);
 
-                                        // 依照距離排序
-                                        if (sp_order.getSelectedItemPosition() == 0) {
-                                                orderSuppliesDataForDst();
-                                        } else {
-                                                // 依照時間排序
-                                                if (sp_order.getSelectedItemPosition() == 1) {
-                                                        orderSuppliesDataForTime();
-                                                } else {
-                                                        Log.e(TAG, "Set Supplies Data error !!");
-                                                }
-                                        }
+                                        showSuppliesDataToListView();
                                 }
 
                                 public void onNothingSelected(AdapterView arg0) {
