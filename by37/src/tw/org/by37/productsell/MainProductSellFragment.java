@@ -163,24 +163,37 @@ public class MainProductSellFragment extends Fragment {
                                 try {
                                         JSONArray newArray = new JSONArray(strResult);
                                         amount = "" + newArray.length();
-                                        for (int i = 0; i < newArray.length(); i++) {
-                                                JSONObject obj = newArray.getJSONObject(i);
-                                                name = obj.getString("name");
-                                                imageUrl = obj.getString("image");
-                                                ProductData mProductData = new ProductData();
-                                                mProductData.setName(name);
-                                                mProductData.setImage(imageUrl);
+                                        
+                                        int i = newArray.length();
+                                        while(i>=0){
+                                        	
+                                        	JSONObject obj = newArray.getJSONObject(i-1);
+                                        	Log.d(TAG, "obj = "+obj);
+                                            name = obj.getString("name");
+                                            try{
+                                            	 JSONArray imageArray = obj.getJSONArray("images");
+                                                 JSONObject imageObj = imageArray.getJSONObject(0);
+                                                 imageUrl = imageObj.getString("image");
+                                                 ProductData mProductData = new ProductData();
+                                                 mProductData.setName(name);
+                                                 mProductData.setImage(imageUrl);
 
-                                                if (!imageUrl.equals("null") && productList.size() < 2) {
-                                                        bmp = getBitmapFromURL(imageUrl);
-                                                        mProductData.setBmp(bmp);
-                                                        productList.add(mProductData);
-                                                }
-
+                                                 if (!imageUrl.equals("null") && productList.size() < 2) {
+                                                         bmp = getBitmapFromURL(imageUrl);
+                                                         mProductData.setBmp(bmp);
+                                                         productList.add(mProductData);
+                                                 }
+                                            }catch(Exception e){
+                                            	
+                                            }
+                                            i--;
                                         }
+                                        
+                                       
                                         Log.d(TAG, "count = " + newArray.length());
                                 } catch (JSONException e) {
                                         // TODO Auto-generated catch block
+                                	Log.e(TAG, e.toString());
                                         e.printStackTrace();
                                 }
                         }

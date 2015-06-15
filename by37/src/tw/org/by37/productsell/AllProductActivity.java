@@ -50,90 +50,98 @@ public class AllProductActivity extends BackActivity {
 
 		this.adapter.cancelAllTasks();
 	}
-	
+
 	private class GetAllProducts extends AsyncTask<Void, Boolean, Boolean> {
 
-        private String strResult = null;
-        private ArrayList<ProductData>dataList;
-        private ProgressDialog progDailog;
+		private String strResult = null;
+		private ArrayList<ProductData> dataList;
+		private ProgressDialog progDailog;
 
-        @Override
-        protected void onPreExecute() {
-                // TODO Auto-generated method stub
-                super.onPreExecute();
-                imageList = new ArrayList<String>();
-                dataList = new ArrayList<ProductData>();
-                progDailog = new ProgressDialog(AllProductActivity.this);
-                progDailog.setMessage("更新中...");
-                progDailog.setIndeterminate(false);
-                progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progDailog.setCancelable(true);
-                progDailog.show();
-        }
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+			imageList = new ArrayList<String>();
+			dataList = new ArrayList<ProductData>();
+			progDailog = new ProgressDialog(AllProductActivity.this);
+			progDailog.setMessage("更新中...");
+			progDailog.setIndeterminate(false);
+			progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+			progDailog.setCancelable(true);
+			progDailog.show();
+		}
 
-        @Override
-        protected Boolean doInBackground(Void... params) {
-                // TODO Auto-generated method stub
+		@Override
+		protected Boolean doInBackground(Void... params) {
+			// TODO Auto-generated method stub
 
-                boolean flag = false;
+			boolean flag = false;
 
-                // 透過HTTP連線取得回應
-                try {
-                        // for port 80 requests!
-                        HttpClient httpclient = new DefaultHttpClient();
-                        HttpGet httpget = new HttpGet(SysConfig.getAllgoods);
-                        Log.d(TAG, "api="+SysConfig.getAllgoods);
-                        
-                        HttpResponse response = httpclient.execute(httpget);
+			// 透過HTTP連線取得回應
+			try {
+				// for port 80 requests!
+				HttpClient httpclient = new DefaultHttpClient();
+				HttpGet httpget = new HttpGet(SysConfig.getAllgoods);
+				Log.d(TAG, "api=" + SysConfig.getAllgoods);
 
-                        /* 取出回應字串 */
-                        strResult = EntityUtils.toString(response.getEntity(), "UTF-8");
+				HttpResponse response = httpclient.execute(httpget);
 
-                        Log.i(TAG, "getAllProducts Result : " + strResult);
-                        flag = true;
-                } catch (Exception e) {
-                        e.printStackTrace();
-                }
+				/* 取出回應字串 */
+				strResult = EntityUtils.toString(response.getEntity(), "UTF-8");
 
-                if (flag) {
-                        String name = "";
-                        String imageUrl = "";
-                        try {
-                                JSONArray newArray = new JSONArray(strResult);
-                                for (int i = 0; i < newArray.length(); i++) {
-                                        JSONObject obj = newArray.getJSONObject(i);
-                                        name = obj.getString("name");
-                                        imageUrl = obj.getString("image");
-                                        ProductData mProductData = new ProductData();
-                                        mProductData.setName(name);
-                                        mProductData.setImage(imageUrl);
-                                        dataList.add(mProductData);
-                                        imageList.add(imageUrl);
+				Log.i(TAG, "getAllProducts Result : " + strResult);
+				flag = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
-                                }
-                                Log.d(TAG, "count = " + imageList.size());
-                        } catch (JSONException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                        }
-                }
+			if (flag) {
+				String name = "";
+				String imageUrl = "";
+				try {
+					JSONArray newArray = new JSONArray(strResult);
+					for (int i = 0; i < newArray.length(); i++) {
+						JSONObject obj = newArray.getJSONObject(i);
+						name = obj.getString("name");
+						try {
+							JSONArray imageArray = obj.getJSONArray("images");
+							JSONObject imageObj = imageArray.getJSONObject(0);
+							imageUrl = imageObj.getString("image");
+							ProductData mProductData = new ProductData();
+							mProductData.setName(name);
+							mProductData.setImage(imageUrl);
+							dataList.add(mProductData);
+							imageList.add(imageUrl);
 
-                return flag;
-        }
+						} catch (Exception e) {
 
-        @Override
-        protected void onPostExecute(Boolean result) {
-                // TODO Auto-generated method stub
-                super.onPostExecute(result);
+						}
 
-                if (result) {
-                	mAllProductGridview = (GridView) findViewById(R.id.all_product_gridview);
-            		adapter = new AllProductAdapter(AllProductActivity.this, imageList,mAllProductGridview,dataList);
-            		mAllProductGridview.setAdapter(adapter);
-                }
-                progDailog.dismiss();
-        }
+					}
+					Log.d(TAG, "count = " + imageList.size());
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 
-}
+			return flag;
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+
+			if (result) {
+				mAllProductGridview = (GridView) findViewById(R.id.all_product_gridview);
+				adapter = new AllProductAdapter(AllProductActivity.this,
+						imageList, mAllProductGridview, dataList);
+				mAllProductGridview.setAdapter(adapter);
+			}
+			progDailog.dismiss();
+		}
+
+	}
 
 }
