@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import tw.org.by37.MainActivity;
 import tw.org.by37.R;
 import tw.org.by37.config.SysConfig;
+import tw.org.by37.main.MainFragment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -198,13 +199,20 @@ public class MainProductSellFragment extends Fragment {
                                 mProductAmountTextView.setVisibility(View.VISIBLE);
 
                                 if (productList.size() > 0) {
-                                        mLeftImageView.setImageBitmap(productList.get(0).getBmp());
-                                        mRightImageView.setImageBitmap(productList.get(1).getBmp());
+                                        getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                        mLeftImageView.setImageBitmap(productList.get(0).getBmp());
+                                                        mRightImageView.setImageBitmap(productList.get(1).getBmp());
 
-                                        mLeftTextView.setText(productList.get(0).getName());
-                                        mRightTextView.setText(productList.get(1).getName());
+                                                        mLeftTextView.setText(productList.get(0).getName());
+                                                        mRightTextView.setText(productList.get(1).getName());
+                                                }
+                                        });
                                 }
                         }
+
+                        MainFragment.getInstance().closeProgressDialog();
                 }
 
         }

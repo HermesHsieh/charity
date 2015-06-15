@@ -115,7 +115,8 @@
     <string name="search">搜尋</string>
     <string name="position_hint_desc">請設定您的位置。\n您可以直接使用系統為您抓取的位置\n或任意選擇地標\n如：\n公車站牌、公園、景點、商店、公司等\n當作預設位置。</string>
     <string name="delete_my_position_setting">是否刪除我的位置：</string>
-    <string name="clean_finish">刪除完成！</string>
+    <string name="setting_finish">設定完成</string>
+    <string name="clean_finish">刪除完成</string>
     <string name="my_setting_position">我設定的位置</string>
     <string name="move_setting_position">可以滑動地圖以重新設定位置</string>
     <string name="search_address_error">搜尋不到此地址，請重新嘗試設定其他位置</string>

@@ -65,7 +65,7 @@ public class MainActivity extends SlidingFragmentActivity {
         public static float myScreenDensityDpi = 0;
         /** End of Screen Param **/
 
-        public static UserApplication mUserApplication;
+        public static MyApplication mUserApplication;
 
         /** 滑動Menu **/
         private SlidingMenu mSlidingMenu;
@@ -116,7 +116,7 @@ public class MainActivity extends SlidingFragmentActivity {
                 FunctionUtil.createFileRoot();
                 getDisplayMetrics();
                 mContext = this;
-                mUserApplication = (UserApplication) mContext.getApplicationContext();
+                mUserApplication = (MyApplication) mContext.getApplicationContext();
 
                 /** 登入使用者(手機內存資料) **/
                 new UserLoginAsyncTask().execute();
