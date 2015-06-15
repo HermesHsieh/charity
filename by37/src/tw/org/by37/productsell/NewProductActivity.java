@@ -57,21 +57,22 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class NewProductActivity extends BackActivity {
 
 	private static final String TAG = NewProductActivity.class.getName();
 
-	private static final int PHOTO_PICKED_WITH_DATA = 3021;
-	private Button mSelectPictureBtn;
-	private ImageView mPictureImageView;
+	private ImageView mPictureImageView0;
+	private ImageView mPictureImageView1;
+	private ImageView mPictureImageView2;
+	private ImageView mCurrectImageView;
 	private Button mUploadProductBtn;
 
 	private int serverResponseCode = 0;
 	private ProgressDialog dialog = null;
 
 	private String upLoadServerUri = null;
-	private String imagepath = null;
 
 	private EditText mProductNameEdittext;
 	private EditText mProductAmountEdittext;
@@ -147,22 +148,36 @@ public class NewProductActivity extends BackActivity {
 		mProductLocationEdittext = (EditText) findViewById(R.id.new_product_location_edittext);
 		mProductKeyWordEdittext = (EditText) findViewById(R.id.new_product_keyword_edittext);
 
-		mSelectPictureBtn = (Button) findViewById(R.id.new_product_select_picture_btn);
-		mSelectPictureBtn.setOnClickListener(new Button.OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				showGetPictureView();
-			}
-		});
-
-		mPictureImageView = (ImageView) findViewById(R.id.new_product_picture_imageview);
-		mPictureImageView.setOnClickListener(new ImageView.OnClickListener() {
+		mPictureImageView0 = (ImageView) findViewById(R.id.new_product_picture_imageview0);
+		mPictureImageView0.setOnClickListener(new ImageView.OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
+				mCurrectImageView = mPictureImageView0;
+				showGetPictureView();
+			}
+		});
+		
+		mPictureImageView1 = (ImageView) findViewById(R.id.new_product_picture_imageview1);
+		mPictureImageView1.setOnClickListener(new ImageView.OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				mCurrectImageView = mPictureImageView1;
+				showGetPictureView();
+			}
+		});
+		
+		mPictureImageView2 = (ImageView) findViewById(R.id.new_product_picture_imageview2);
+		mPictureImageView2.setOnClickListener(new ImageView.OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				mCurrectImageView = mPictureImageView2;
 				showGetPictureView();
 			}
 		});
@@ -197,16 +212,22 @@ public class NewProductActivity extends BackActivity {
 		return cursor.getString(column_index);
 	}
 
-	class UpdateProductTask extends AsyncTask<Void, Void, Void> {
+	class UpdateProductTask extends AsyncTask<Void, Boolean, Boolean> {
 
 		private ProgressDialog progDailog;
 
 		@Override
-		protected void onPostExecute(Void result) {
+		protected void onPostExecute(Boolean result) {
 			// TODO Auto-generated method stub
 			super.onPostExecute(result);
+			if(result){
+				Toast.makeText(NewProductActivity.this, "上傳成功", Toast.LENGTH_SHORT).show();
+				finish();
+			}else{
+				Toast.makeText(NewProductActivity.this, "上傳失敗", Toast.LENGTH_SHORT).show();
+			}
 			progDailog.dismiss();
-			finish();
+			
 		}
 
 		@Override
@@ -223,9 +244,11 @@ public class NewProductActivity extends BackActivity {
 		}
 
 		@Override
-		protected Void doInBackground(Void... paramsss) {
+		protected Boolean doInBackground(Void... paramsss) {
 			// TODO Auto-generated method stub
+			boolean flag =false;
 			String result = null;
+			
 			HttpClient client = new DefaultHttpClient();
 
 			HttpPost post = new HttpPost("http://charity.gopagoda.io/addGoods");
@@ -237,28 +260,23 @@ public class NewProductActivity extends BackActivity {
 			params.add(new BasicNameValuePair("name", productName));
 			params.add(new BasicNameValuePair("description", productDescription));
 			params.add(new BasicNameValuePair("quantity", productAmount));
-			// params.add(new BasicNameValuePair("image",
-			// imagepath));
-			params.add(new BasicNameValuePair("image", imageList.get(0)));
-			params.add(new BasicNameValuePair("user_id", UserData2.user_id
-					.toString()));
-			// params.add(new BasicNameValuePair("user_id", "60"));
+			params.add(new BasicNameValuePair("user_id", UserData2.user_id.toString()));
+//			 params.add(new BasicNameValuePair("user_id", "60"));
 			params.add(new BasicNameValuePair("type", productType));
+			for (int i = 0; i < imageList.size(); i++) {
+				params.add(new BasicNameValuePair("images[" + i + "]",imageList.get(i)));
+			}
 
 			try {
 				// setup multipart entity
-				MultipartEntity entity = new MultipartEntity(
-						HttpMultipartMode.BROWSER_COMPATIBLE);
+				MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
 
 				for (int i = 0; i < params.size(); i++) {
 					// identify param type by Key
-					if (params.get(i).getName().equals("image")) {
-						entity.addPart(params.get(i).getName(), new FileBody(
-								new File(params.get(i).getValue())));
+					if (params.get(i).getName().contains("images")) {
+						entity.addPart(params.get(i).getName(), new FileBody(new File(params.get(i).getValue())));
 					} else {
-						entity.addPart(params.get(i).getName(),
-								new StringBody(params.get(i).getValue(),
-										Charset.forName("UTF-8")));
+						entity.addPart(params.get(i).getName(),new StringBody(params.get(i).getValue(),Charset.forName("UTF-8")));
 					}
 				}
 
@@ -268,19 +286,18 @@ public class NewProductActivity extends BackActivity {
 					// execute and get response
 					result = new String(client.execute(post,
 							new BasicResponseHandler()).getBytes(), HTTP.UTF_8);
+					Log.d(TAG, "result = "+result);
+					flag = true;
 
-					Log.i(TAG, "postUsers Result : " + result);
 				} catch (Exception e) {
 					e.printStackTrace();
 					Log.d(TAG, e.toString());
-					Log.e(TAG, "postUsers Result Exception!");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				Log.d(TAG, e.toString());
-				Log.e(TAG, "postUsers Exception");
 			}
-			return null;
+			return flag;
 		}
 
 	}
@@ -348,6 +365,7 @@ public class NewProductActivity extends BackActivity {
 		for (int i = 0; i < SelectingData.mGoodsTypes.size(); i++) {
 			category[i] = SelectingData.mGoodsTypes.get(i).name;
 		}
+		
 
 		ArrayAdapter<String> adapter_category = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, category);
@@ -376,8 +394,6 @@ public class NewProductActivity extends BackActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-		Log.d(TAG, "requestCode = " + requestCode);
-		Log.d(TAG, "resultCode = " + resultCode);
 
 		// 當使用者按下確定後
 		if (resultCode == RESULT_OK) {
@@ -385,8 +401,8 @@ public class NewProductActivity extends BackActivity {
 			case 0:
 				Bundle extras = data.getExtras();
 				Bitmap bmp = (Bitmap) extras.get("data");
-				mPictureImageView.setImageBitmap(bmp);
-				saveResizeImage(bmp, mPictureImageView.getId());
+				mCurrectImageView.setImageBitmap(bmp);
+				saveResizeImage(bmp, mCurrectImageView.getId());
 				break;
 			case 1:
 				Uri uri = data.getData();
@@ -395,20 +411,14 @@ public class NewProductActivity extends BackActivity {
 					// 由抽象資料接口轉換圖檔路徑為Bitmap
 					Bitmap bitmap = BitmapFactory.decodeStream(cr
 							.openInputStream(uri));
-					// 將Bitmap設定到ImageView
-					imagepath = getRealPathFromURI(uri);
-					imageList.add(imagepath);
-					mPictureImageView.setImageBitmap(getResizedBitmap(bitmap,
-							640, 480));
-					saveResizeImage(bitmap, mPictureImageView.getId());
+					mCurrectImageView.setImageBitmap(getResizedBitmap(bitmap,640, 480));
+					saveResizeImage(bitmap, mCurrectImageView.getId());
 				} catch (FileNotFoundException e) {
 					Log.e("Exception", e.getMessage(), e);
 				}
 				break;
 			}
 
-			mPictureImageView.setVisibility(View.VISIBLE);
-			mSelectPictureBtn.setVisibility(View.GONE);
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
@@ -426,30 +436,13 @@ public class NewProductActivity extends BackActivity {
 							startActivityForResult(intent_camera, 0);
 							break;
 						case 1:
-							Intent intent = new Intent();
-							intent.setType("image/*");
-							intent.setAction(Intent.ACTION_GET_CONTENT);
-							startActivityForResult(Intent.createChooser(intent,
-									"Complete action using"), 1);
-							break;
+                            Intent intent = new Intent(Intent.ACTION_PICK);
+                            intent.setType("image/*");
+                            startActivityForResult(intent, 1);
+                            break;
 						}
 					}
 				}).show();
-	}
-
-	private String getRealPathFromURI(Uri contentUri) {
-		String res = null;
-		String[] proj = { MediaStore.Images.Media.DATA };
-		Cursor cursor = getContentResolver().query(contentUri, proj, null,
-				null, null);
-		if (cursor.moveToFirst()) {
-			;
-			int column_index = cursor
-					.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-			res = cursor.getString(column_index);
-		}
-		cursor.close();
-		return res;
 	}
 
 	private String filePath = Environment.getExternalStorageDirectory()
@@ -464,7 +457,6 @@ public class NewProductActivity extends BackActivity {
 		String path = filePath + fileName;
 
 		checkFileExist(filePath);
-		Log.d(TAG, "path = " + path);
 
 		try {
 			File f = new File(path);
