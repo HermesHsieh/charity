@@ -209,24 +209,28 @@ public class PositionFragment extends Fragment {
 
         /** 獲取使用者原本設定的位置資訊 **/
         private void getUserSettingPosition() {
-                Log.d(TAG, MainActivity.mUserApplication.userData.getUser().getInfo().toString());
-                try {
-                        user_setting_lat = Double.valueOf(MainActivity.mUserApplication.userData.getUser().getInfo().getLat());
-                        user_setting_lng = Double.valueOf(MainActivity.mUserApplication.userData.getUser().getInfo().getLng());
-                        user_setting_address = MainActivity.mUserApplication.userData.getUser().getInfo().getAddress();
+                if (MainActivity.mUserApplication.userData != null) {
+                        Log.d(TAG, MainActivity.mUserApplication.userData.getUser().getInfo().toString());
+                        try {
+                                user_setting_lat = Double.valueOf(MainActivity.mUserApplication.userData.getUser().getInfo().getLat());
+                                user_setting_lng = Double.valueOf(MainActivity.mUserApplication.userData.getUser().getInfo().getLng());
+                                user_setting_address = MainActivity.mUserApplication.userData.getUser().getInfo().getAddress();
 
-                        // Log.d(TAG,
-                        // MainActivity.mUserApplication.userData.getUser().getInfo().toString());
-                        if (user_setting_lat != null && user_setting_lng != null && user_setting_lat > 0 && user_setting_lng > 0 && user_setting_address != null) {
-                                markerUserSettingPosition();
-                                moveCameraToUserSettingPosition();
+                                // Log.d(TAG,
+                                // MainActivity.mUserApplication.userData.getUser().getInfo().toString());
+                                if (user_setting_lat != null && user_setting_lng != null && user_setting_lat > 0 && user_setting_lng > 0 && user_setting_address != null) {
+                                        markerUserSettingPosition();
+                                        moveCameraToUserSettingPosition();
+                                }
+                        } catch (Exception e) {
+                                Log.e(TAG, "getUserDefaultPosition Exception");
+                                // 沒有使用者之前的資料, Camera移動到使用者當前的位置
+                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(wifi_latitude, wifi_longitude), 16));
                         }
-                } catch (Exception e) {
-                        Log.e(TAG, "getUserDefaultPosition Exception");
+                } else {
                         // 沒有使用者之前的資料, Camera移動到使用者當前的位置
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(wifi_latitude, wifi_longitude), 16));
                 }
-
         }
 
         /** 標示(Marker)使用者自己的位置 **/

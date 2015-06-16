@@ -241,22 +241,17 @@ public class SuppliesHelpFragment extends Fragment {
 
         /** 將物資資料根據排序規則及篩選結果輸出至ListView **/
         private void showSuppliesDataToListView() {
-                getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                                // 依照距離排序
-                                if (sp_order.getSelectedItemPosition() == 0) {
-                                        orderSuppliesDataForDst();
-                                } else {
-                                        // 依照時間排序
-                                        if (sp_order.getSelectedItemPosition() == 1) {
-                                                orderSuppliesDataForTime();
-                                        } else {
-                                                Log.e(TAG, "Set Supplies Data error !!");
-                                        }
-                                }
+                // 依照距離排序
+                if (sp_order.getSelectedItemPosition() == 0) {
+                        orderSuppliesDataForDst();
+                } else {
+                        // 依照時間排序
+                        if (sp_order.getSelectedItemPosition() == 1) {
+                                orderSuppliesDataForTime();
+                        } else {
+                                Log.e(TAG, "Set Supplies Data error !!");
                         }
-                });
+                }
         }
 
         /** 獲取物資需求資料 **/
@@ -264,7 +259,7 @@ public class SuppliesHelpFragment extends Fragment {
                 Log.i(TAG, "getSuppliesData");
                 // 獲取上次更新的時間
                 data_updateTime = getDataUpdateTimePreferences(mContext);
-                
+
                 new getSuppliesTotalAsyncTask().execute();
 
                 new getSuppliesDataAsyncTask().execute();

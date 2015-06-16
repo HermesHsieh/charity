@@ -9,7 +9,7 @@
     <string name="action_back">Back</string>
     <!-- mNB = AIzaSyB8Vr8zM-xcbOaW9a8bgLWkfZc8Hcfwrko -->
     <!-- mHome = AIzaSyBCpbIzDF7bEd09CLdSj2HxVoiuPOu5ifY -->
-    <string name="map_api_key">AIzaSyBCpbIzDF7bEd09CLdSj2HxVoiuPOu5ifY</string>
+    <string name="map_api_key">AIzaSyB8Vr8zM-xcbOaW9a8bgLWkfZc8Hcfwrko</string>
     <!-- Facebook App Id -->
     <string name="app_id">1435759036715618</string>
     <string name="fragment_member_login">Fragement Member Login</string>

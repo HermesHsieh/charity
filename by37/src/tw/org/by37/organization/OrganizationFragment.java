@@ -704,5 +704,7 @@ public class OrganizationFragment extends Fragment {
                 super.onDestroy();
                 SelectingData.clearOrganizationData();
                 SelectingData.suppliesId = null;
+                SelectingData.organizationId = null;
+                SelectingData.mSupplyData = null;
         }
 }
