@@ -84,7 +84,7 @@ public class MainFragment extends Fragment {
                 Log.i(TAG, "onCreateView");
                 mMainFragment = this;
                 mContext = getActivity();
-                psDialog = ProgressDialog.show(mContext, "", getString(R.string.loading));
+//                psDialog = ProgressDialog.show(mContext, "", getString(R.string.loading));
 
                 View view = inflater.inflate(R.layout.fragment_main, container, false);
 

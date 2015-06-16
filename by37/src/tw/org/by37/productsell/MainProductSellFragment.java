@@ -74,9 +74,9 @@ public class MainProductSellFragment extends Fragment {
 
         private void init() {
                 mTextViewAry = new ArrayList<TextView>();
-                productList = new ArrayList<ProductData>();
+                
 
-                new GetAllProducts().execute();
+                
         }
 
         private void initTabBar() {
@@ -131,6 +131,7 @@ public class MainProductSellFragment extends Fragment {
                 protected void onPreExecute() {
                         // TODO Auto-generated method stub
                         super.onPreExecute();
+                        productList = new ArrayList<ProductData>();
                 }
 
                 @Override
@@ -149,7 +150,6 @@ public class MainProductSellFragment extends Fragment {
                                 /* 取出回應字串 */
                                 strResult = EntityUtils.toString(response.getEntity(), "UTF-8");
 
-                                Log.i(TAG, "getAllProducts Result : " + strResult);
                                 flag = true;
                         } catch (Exception e) {
                                 e.printStackTrace();
@@ -167,7 +167,6 @@ public class MainProductSellFragment extends Fragment {
                                         while(i>=0){
                                         	
                                         	JSONObject obj = newArray.getJSONObject(i-1);
-                                        	Log.d(TAG, "obj = "+obj);
                                             name = obj.getString("name");
                                             try{
                                             	 JSONArray imageArray = obj.getJSONArray("images");
@@ -183,7 +182,7 @@ public class MainProductSellFragment extends Fragment {
                                                          productList.add(mProductData);
                                                  }
                                             }catch(Exception e){
-                                            	
+                                            	Log.e(TAG, e.toString());
                                             }
                                             i--;
                                         }
@@ -236,5 +235,15 @@ public class MainProductSellFragment extends Fragment {
                         return null;
                 }
         }
+
+		@Override
+		public void onResume() {
+			// TODO Auto-generated method stub
+			super.onResume();
+			Log.d(TAG, "onResume");
+			new GetAllProducts().execute();
+		}
+        
+        
 
 }
