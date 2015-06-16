@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 import tw.org.by37.R;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -67,6 +69,7 @@ public class AllProductAdapter extends ArrayAdapter<String> implements OnScrollL
     private boolean isFirstEnter = true;
     
     private ArrayList<ProductData>dataList;
+    private Context mContext;
 
     /**
      * 
@@ -77,6 +80,7 @@ public class AllProductAdapter extends ArrayAdapter<String> implements OnScrollL
     public AllProductAdapter( Context context, List<String> objects, GridView photoWall,ArrayList<ProductData>dataList  )
     {
         super( context, 0, objects );
+        this.mContext = context;
         this.photoURLs = objects;
         this.gridViewPhoto = photoWall;
         this.taskCollection = new HashSet<BitmapDownloadTask>();
@@ -122,6 +126,16 @@ public class AllProductAdapter extends ArrayAdapter<String> implements OnScrollL
         TextView name_tv = (TextView)view.findViewById(R.id.item_all_product_name_tv);
         name_tv.setText(data.getName());
         
+        photoView.setOnClickListener(new ImageView.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent i = new Intent();
+				i.setClass((Activity)mContext, ProductDetailActivity.class);
+				((Activity)mContext).startActivity(i);
+			}
+		});
 
         // 給圖片設置一個tag已保證在做非同步載入圖片時順序不會亂掉
 

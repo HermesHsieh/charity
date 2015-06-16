@@ -137,6 +137,7 @@
             android:name="tw.org.by37.productsell.NewProductActivity"
             android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
+        <activity android:name=".productsell.ProductDetailActivity"></activity>
     </application>
 
 </manifest>
