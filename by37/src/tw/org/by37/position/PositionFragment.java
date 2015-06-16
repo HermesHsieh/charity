@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 import tw.org.by37.MainActivity;
 import tw.org.by37.R;
-import tw.org.by37.UserApplication;
+import tw.org.by37.MyApplication;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -116,7 +116,6 @@ public class PositionFragment extends Fragment {
         private Double search_lng;
         private Double search_lat;
         private String search_address;
-        @SuppressWarnings("unused")
         private Marker search_result_marker;
         /** 暫存搜尋結果的Location ArrayList, 避免輸入一樣的地址重複搜尋 **/
         ArrayList<LocationResult> mLocationList;
@@ -253,18 +252,16 @@ public class PositionFragment extends Fragment {
         }
 
         /** 標示(Marker)搜尋結果的位置 **/
-        @SuppressWarnings("unused")
         private void markerSearchResultPosition() {
                 BitmapDescriptor bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.marker_search);
                 LatLng mLatLng = new LatLng(search_lat, search_lng);
                 // Add a marker in the map
-                search_result_marker = map.addMarker(new MarkerOptions().position(mLatLng).title(getString(R.string.my_setting_position)).snippet(search_address).icon(bitmapDescriptor));
+                search_result_marker = map.addMarker(new MarkerOptions().position(mLatLng).title(edt_search.getText().toString()).snippet(search_address).icon(bitmapDescriptor));
         }
 
         /** 將 Camera 移動到搜尋結果的位置 **/
-        @SuppressWarnings("unused")
         private void moveCameraToSearchResultPosition() {
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(search_lat, search_lng), 16));
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(search_lat, search_lng), 16));
                 // 隱藏設定位置的Marker, Button
                 isVisibleSubmitButton = false;
                 SubmitButtonAndMarkerShow(isVisibleSubmitButton);
@@ -283,9 +280,17 @@ public class PositionFragment extends Fragment {
         class MarkerInfoWindowClickListener implements OnInfoWindowClickListener {
                 @Override
                 public void onInfoWindowClick(Marker marker) {
-                        if (marker.getId().equals(user_setting_marker.getId())) {
-                                // 如果點擊到原本使用者預設的Marker, 詢問是否要刪除
-                                cleanUserSettingPositionDialog("", user_setting_address);
+                        if (user_setting_marker != null) {
+                                if (marker.getId().equals(user_setting_marker.getId())) {
+                                        // 如果點擊到原本使用者預設的Marker, 詢問是否要刪除
+                                        cleanUserSettingPositionDialog("", user_setting_address);
+                                }
+                        }
+                        if (search_result_marker != null) {
+                                if (marker.getId().equals(search_result_marker.getId())) {
+                                        // 如果是搜尋的Marker，則跳出設定完成的Dialog
+                                        submitUserPositionDialog();
+                                }
                         }
                 }
         }
@@ -444,19 +449,24 @@ public class PositionFragment extends Fragment {
                 }
         }
 
+        /**
+         * Log顯示搜尋結果選擇的地址與經緯度
+         */
         private void showMySearchResult() {
                 Log.i(TAG, "search_address : " + search_address + "search_lat : " + search_lat + ", search_lng : " + search_lng);
         }
 
-        /** SearchAddressResultDialog **/
+        /** 搜尋地址後，以此Dialog顯示結果資料，供使用者選擇地址 **/
         private void SearchAddressResultDialog(ArrayList<LocationResult> data) {
-                Dialog mDialog = new Dialog(mContext);
+                final Dialog mDialog = new Dialog(mContext);
                 // 指定自定義layout
                 mDialog.setContentView(R.layout.item_listview);
                 // 設定標題
                 mDialog.setTitle(getString(R.string.search_result));
-                // 是否可點擊Dialog區域外
+                // 是否可點擊Dialog區域外, true可以觸控外面, false不可以觸控外面
                 mDialog.setCanceledOnTouchOutside(true);
+                // 設定不能取消, true可以按返回鍵取消, false不可以按返回鍵取消
+                mDialog.setCancelable(true);
                 mDialog.setOnShowListener(new OnShowListener() {
                         @Override
                         public void onShow(DialogInterface dialog) {
@@ -478,11 +488,18 @@ public class PositionFragment extends Fragment {
                                 search_address = mLocationList.get(position).address;
 
                                 showMySearchResult();
+                                // 標記搜尋結果的Marker
+                                markerSearchResultPosition();
+                                // 移動畫面位置
+                                moveCameraToSearchResultPosition();
+                                // 關閉Dialog
+                                mDialog.dismiss();
 
-                                updateUserPositionData();
+                                // moveCamera(new LatLng(search_lat,
+                                // search_lng));
 
                                 // 結束當前Activity
-                                getActivity().finish();
+                                // getActivity().finish();
 
                         }
                 });
@@ -516,44 +533,33 @@ public class PositionFragment extends Fragment {
                 builder.setTitle(title);
                 // 設定Dialog的內容
                 builder.setMessage(address);
-                // 設定不能取消
+                // 設定不能取消, true可以按返回鍵取消, false不可以按返回鍵取消
                 builder.setCancelable(false);
                 // 設定Positive按鈕資料
                 builder.setPositiveButton(mContext.getResources().getString(R.string.cancle), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                                Log.d(TAG, "Positive+");
+
                         }
                 });
 
                 builder.setNegativeButton(mContext.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                                Log.d(TAG, "Negative+");
+                                // 跳出提示框提醒使用者設定完成
+                                submitUserPositionDialog();
 
-                                updateUserPositionData();
+                                // saveUserPositionData();
                                 // 結束當前Activity
-                                getActivity().finish();
+                                // getActivity().finish();
                         }
                 });
 
                 // create alert dialog
                 AlertDialog alertDialog = builder.create();
-                // cancle touch outside
-                alertDialog.setCanceledOnTouchOutside(true);
+                // cancle touch outside, true可以觸控外面, false不可以觸控外面
+                alertDialog.setCanceledOnTouchOutside(false);
                 // show it
                 alertDialog.show();
-        }
-
-        /** 儲存搜尋結果到手機內存使用者的資料 **/
-        private void updateUserPositionData() {
-                MainActivity.mUserApplication.userData.getUser().getInfo().setLat(String.valueOf(search_lat));
-                MainActivity.mUserApplication.userData.getUser().getInfo().setLng(String.valueOf(search_lng));
-                MainActivity.mUserApplication.userData.getUser().getInfo().setAddress(String.valueOf(search_address));
-
-                Gson gson = new Gson();
-                String data = gson.toJson(MainActivity.mUserApplication.userData);
-                Log.d(TAG, "updateUserPosition Data : " + data);
-                UserApplication.getInstance().putUserResult(data);
         }
 
         /** 當搜尋地址結果長度為零的時候 **/
@@ -564,7 +570,7 @@ public class PositionFragment extends Fragment {
                 builder.setTitle(title);
                 // 設定Dialog的內容
                 builder.setMessage(msg);
-                // 設定不能取消
+                // 設定不能取消, true可以按返回鍵取消, false不可以按返回鍵取消
                 builder.setCancelable(false);
                 // 設定Positive按鈕資料
                 builder.setPositiveButton(mContext.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
@@ -576,8 +582,8 @@ public class PositionFragment extends Fragment {
 
                 // create alert dialog
                 AlertDialog alertDialog = builder.create();
-                // cancle touch outside
-                alertDialog.setCanceledOnTouchOutside(true);
+                // cancle touch outside, true可以觸控外面, false不可以觸控外面
+                alertDialog.setCanceledOnTouchOutside(false);
                 // show it
                 alertDialog.show();
         }
@@ -589,7 +595,7 @@ public class PositionFragment extends Fragment {
                 builder.setTitle(title);
                 // 設定Dialog的內容
                 builder.setMessage(getString(R.string.delete_my_position_setting) + address);
-                // 設定不能取消
+                // 設定不能取消, true可以按返回鍵取消, false不可以按返回鍵取消
                 builder.setCancelable(false);
                 // 設定Positive按鈕資料
                 builder.setPositiveButton(mContext.getResources().getString(R.string.cancle), new DialogInterface.OnClickListener() {
@@ -616,7 +622,7 @@ public class PositionFragment extends Fragment {
 
                                 Gson gson = new Gson();
                                 String data = gson.toJson(MainActivity.mUserApplication.userData);
-                                UserApplication.getInstance().putUserResult(data);
+                                MyApplication.getInstance().putUserResult(data);
 
                                 Toast.makeText(mContext, getString(R.string.clean_finish), Toast.LENGTH_LONG).show();
                         }
@@ -624,10 +630,48 @@ public class PositionFragment extends Fragment {
 
                 // create alert dialog
                 AlertDialog alertDialog = builder.create();
-                // cancle touch outside
-                alertDialog.setCanceledOnTouchOutside(true);
+                // cancle touch outside, true可以觸控外面, false不可以觸控外面
+                alertDialog.setCanceledOnTouchOutside(false);
                 // show it
                 alertDialog.show();
+        }
+
+        /** 提醒使用者設定完成, 儲存使用者設定資料, 結束頁面 **/
+        private void submitUserPositionDialog() {
+                // 產生一個Builder物件
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                // 設定Dialog的內容
+                builder.setMessage(getString(R.string.setting_finish));
+                // 設定不能取消, true可以按返回鍵取消, false不可以按返回鍵取消
+                builder.setCancelable(false);
+                // 設定Negative按鈕資料
+                builder.setNegativeButton(mContext.getResources().getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                                // 更新使用者的定位設定
+                                saveUserPositionData();
+                                // 結束
+                                getActivity().finish();
+                        }
+                });
+
+                // create alert dialog
+                AlertDialog alertDialog = builder.create();
+                // cancle touch outside, true可以觸控外面, false不可以觸控外面
+                alertDialog.setCanceledOnTouchOutside(false);
+                // show it
+                alertDialog.show();
+        }
+
+        /** 儲存搜尋結果到手機內存使用者的資料 **/
+        private void saveUserPositionData() {
+                MainActivity.mUserApplication.userData.getUser().getInfo().setLat(String.valueOf(search_lat));
+                MainActivity.mUserApplication.userData.getUser().getInfo().setLng(String.valueOf(search_lng));
+                MainActivity.mUserApplication.userData.getUser().getInfo().setAddress(String.valueOf(search_address));
+
+                Gson gson = new Gson();
+                String data = gson.toJson(MainActivity.mUserApplication.userData);
+                Log.d(TAG, "saveUserPositionData Data : " + data);
+                MyApplication.getInstance().putUserResult(data);
         }
 
         private TextWatcher textWatcher = new TextWatcher() {
@@ -659,7 +703,7 @@ public class PositionFragment extends Fragment {
         };
 
         private void moveCamera(LatLng site) {
-                // 將 Camera 移動到使用者當前位置
+                // 將 Camera 移動到指定位置
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(site, 16));
         }
 

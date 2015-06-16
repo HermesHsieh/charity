@@ -176,7 +176,7 @@ public class UsersApiService {
                         if (httpResponse.getStatusLine().getStatusCode() == 200) {
                                 /* 取出回應字串 */
                                 result = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
-                                Log.i(TAG, "Reslut : " + result);
+                                Log.i(TAG, "LoginUser Reslut : " + result);
                         }
 
                 } catch (Exception e) {

@@ -23,11 +23,11 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
-public class UserApplication extends Application {
+public class MyApplication extends Application {
 
-        private final static String TAG = UserApplication.class.getName();
+        private final static String TAG = MyApplication.class.getName();
 
-        public static UserApplication userApplication;
+        public static MyApplication userApplication;
 
         public UserData userData;
 
@@ -37,7 +37,7 @@ public class UserApplication extends Application {
 
         public String tmp_avatar_img = PIC_PATH + "image.jpg";
 
-        public static UserApplication getInstance() {
+        public static MyApplication getInstance() {
                 return userApplication;
         }
 
