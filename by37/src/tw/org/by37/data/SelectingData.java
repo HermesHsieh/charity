@@ -16,8 +16,6 @@ public class SelectingData {
 
         public static String organizationId = null;
 
-        public static SupplyData mSupplyData = null;
-
         public static OrganizationData mOrganizationData = null;
 
         public static ArrayList<TypesData> mGoodsTypes = new ArrayList<TypesData>();
@@ -28,15 +26,6 @@ public class SelectingData {
 
         public static void setNearOrganizationDataList(ArrayList<OrganizationData> data) {
                 mNearOrganizationData = data;
-        }
-
-        /** 確認是否有物資資料 **/
-        public static boolean checkSupplyData() {
-
-                if (mSupplyData != null) {
-                        return true;
-                }
-                return false;
         }
 
         /** 確認是否有基構資料 **/

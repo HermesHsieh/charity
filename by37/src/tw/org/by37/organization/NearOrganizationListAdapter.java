@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import tw.org.by37.MainActivity;
 import tw.org.by37.R;
 import tw.org.by37.data.SelectingData;
-import tw.org.by37.data.SupplyData;
+import tw.org.by37.service.LocationService;
 import tw.org.by37.supplieshelp.SuppliesHelpFragment;
 import tw.org.by37.util.FunctionUtil;
 import android.content.Context;
@@ -31,10 +31,6 @@ public class NearOrganizationListAdapter extends BaseAdapter {
         private LayoutInflater infalter;
 
         private ArrayList<OrganizationData> data = new ArrayList<OrganizationData>();
-
-        private double mLongitude = SuppliesHelpFragment.wifi_longitude;
-
-        private double mLatitude = SuppliesHelpFragment.wifi_latitude;
 
         /** 動態設定機構TextView的參數 **/
         private boolean isMeasured = false;
@@ -111,17 +107,20 @@ public class NearOrganizationListAdapter extends BaseAdapter {
                 double lat = Double.valueOf(data.get(position).getLatitude());
                 double lng = Double.valueOf(data.get(position).getLongitude());
 
-                int dst = (int) FunctionUtil.Distance(mLongitude, mLatitude, lng, lat);
+                if (LocationService.checkLocationStatus()) {
+                        int dst = (int) FunctionUtil.Distance(LocationService.longitude, LocationService.latitude, lng, lat);
 
-                String sDst = "";
+                        String sDst = "";
 
-                if (dst < 1000)
-                        sDst = (dst / 1) + " M";
-                else
-                        sDst = (dst / 1000) + " KM";
+                        if (dst < 1000)
+                                sDst = (dst / 1) + " M";
+                        else
+                                sDst = (dst / 1000) + " KM";
 
-                holder.tv_distance.setText(sDst);
-
+                        holder.tv_distance.setText(sDst);
+                } else {
+                        holder.tv_distance.setText("");
+                }
                 return view;
         }
 

@@ -1,6 +1,7 @@
 package tw.org.by37.member;
 
 import static tw.org.by37.config.RequestCode.CROP_PHOTO;
+import static tw.org.by37.config.RequestCode.POSITION_ACTIVITY_CODE;
 import static tw.org.by37.config.RequestCode.REGISTER_SUCCESS_CODE;
 import static tw.org.by37.config.RequestCode.SOURCE_CAMERA;
 import static tw.org.by37.config.RequestCode.SOURCE_PHOTO;
@@ -13,14 +14,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import tw.org.by37.MainActivity;
+import tw.org.by37.MyApplication;
+import tw.org.by37.PositionActivity;
 import tw.org.by37.R;
 import tw.org.by37.data.RegisterData;
-import tw.org.by37.data.UserData2;
 import tw.org.by37.service.UsersApiService;
 import tw.org.by37.util.FunctionUtil;
 import android.app.Activity;
@@ -41,8 +44,10 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -56,13 +61,13 @@ import android.widget.TextView;
 
 public class SignupFragment extends Fragment {
 
-        private final static String TAG = SignupFragment.class.getName();;
+        private final static String TAG = SignupFragment.class.getName();
 
         private Context mContext;
 
-        private Button btn_signup;
+        private Button btn_signup, btn_ok, btn_cancel;
 
-        private EditText edt_account, edt_password, edt_name;
+        private EditText edt_account, edt_password, edt_name, edt_password_confirm, edt_position;
 
         private TextView tv_info;
 
@@ -77,29 +82,61 @@ public class SignupFragment extends Fragment {
 
         /** 機構類別名稱陣列 **/
         private String[] mOrgType;
-        /** 機構類別名稱勾選狀態陣列 **/
+        /** 機構類別勾選狀態陣列 **/
         private boolean[] mOrgTypeStatus;
+
+        /** 是否為編輯會員進入的 **/
+        private boolean isEdit = false;
+
+        /** 是否為編輯會員進入 **/
+        public void isEdit(boolean status) {
+                this.isEdit = status;
+        }
+
+        /** 取得Bundle過來的機構名稱 **/
+        private void getBundle_idEdit() {
+                try {
+                        Bundle bundle = getActivity().getIntent().getExtras();
+                        isEdit = bundle.getBoolean("user_isEdit", false);
+                        Log.e(TAG, "getBundle_idEdit : " + isEdit);
+                } catch (Exception e) {
+                        Log.e(TAG, "getBundle_idEdit Exception");
+                }
+        }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
                 mContext = getActivity();
-
-                View view = inflater.inflate(R.layout.fragment_signup, container, false);
-
-                findView(view);
-
-                setOrgType(view);
-
-                initAvatar(view);
-
-                if (RegisterData.source != null) {
-                        if (RegisterData.source.equals("facebook") || RegisterData.source.equals("google")) {
-                                InvisiblePassword(view);
-                                setRegisterData();
+                getBundle_idEdit();
+                View view = null;
+                if (!isEdit) {
+                        // 註冊
+                        view = inflater.inflate(R.layout.fragment_signup, container, false);
+                        findView(view);
+                        setFavoriteOrganization(view);
+                        initAvatar(view);
+                        if (RegisterData.source != null) {
+                                if (RegisterData.source.equals("facebook") || RegisterData.source.equals("google")) {
+                                        InvisiblePassword(view);
+                                        setRegisterData();
+                                }
                         }
-                }
+                } else {
+                        // 編輯
+                        getActivity().setTitle(getString(R.string.title_member_edit));
+                        view = inflater.inflate(R.layout.fragment_member_edit, container, false);
 
+                        findView(view);
+                        setFavoriteOrganization(view);
+                        initAvatar(view);
+                        if (MyApplication.getInstance().userData != null) {
+                                if (MyApplication.getInstance().userData.getUser().getSource().equals("facebook") || MyApplication.getInstance().userData.getUser().getSource().equals("google"))
+                                        InvisiblePassword(view);
+                        }
+
+                        loadUserData(MyApplication.getInstance().userData);
+                        getUserAvatar();
+                }
                 return view;
         }
 
@@ -108,25 +145,69 @@ public class SignupFragment extends Fragment {
                 super.onCreate(savedInstanceState);
         }
 
-        public void findView(View view) {
-                btn_signup = (Button) view.findViewById(R.id.btn_signup);
-                btn_signup.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                                /** set User Data **/
-                                RegisterData.email = edt_account.getText().toString();
-                                RegisterData.name = edt_name.getText().toString();
-                                RegisterData.password = edt_password.getText().toString();
-                                if (RegisterData.source == null) {
-                                        RegisterData.source = "by37";
+        private void loadUserData(UserData mData) {
+                if (mData != null) {
+                        edt_account.setFocusable(false);
+                        edt_account.setTextColor(getResources().getColor(R.color.black_gray_background));
+                        edt_account.setText(mData.getUser().getMail());
+                        edt_name.setText(mData.getUser().getName());
+
+                        if (MyApplication.getInstance().userData.getUser().getInfo().getAddress() != null) {
+                                if (MyApplication.getInstance().userData.getUser().getInfo().getAddress().length() > 0) {
+                                        edt_position.setText(MyApplication.getInstance().userData.getUser().getInfo().getAddress());
                                 }
-                                MainActivity.mUserApplication.setRegisterData();
-                                new RegisterUserAsyncTask().execute();
                         }
-                });
+
+                } else {
+                        Log.d(TAG, "loadUserData == null");
+                }
+        }
+
+        private void findView(View view) {
+                if (!isEdit) {
+                        btn_signup = (Button) view.findViewById(R.id.btn_signup);
+                        btn_signup.setOnClickListener(new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                        /** set User Data **/
+                                        RegisterData.email = edt_account.getText().toString();
+                                        RegisterData.name = edt_name.getText().toString();
+                                        RegisterData.password = edt_password.getText().toString();
+                                        if (RegisterData.source == null) {
+                                                RegisterData.source = "by37";
+                                        }
+                                        MainActivity.mUserApplication.setRegisterData();
+                                        new RegisterUserAsyncTask().execute();
+                                }
+                        });
+                } else {
+                        btn_ok = (Button) view.findViewById(R.id.btn_ok);
+                        btn_ok.setOnClickListener(new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                }
+                        });
+                        btn_cancel = (Button) view.findViewById(R.id.btn_cancel);
+                        btn_cancel.setOnClickListener(new OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                        getActivity().finish();
+                                }
+                        });
+                }
 
                 edt_account = (EditText) view.findViewById(R.id.edt_account);
                 edt_password = (EditText) view.findViewById(R.id.edt_password);
+                edt_password_confirm = (EditText) view.findViewById(R.id.edt_password_confirm);
+                edt_position = (EditText) view.findViewById(R.id.edt_position);
+                edt_position.setOnTouchListener(new OnTouchListener() {
+                        @Override
+                        public boolean onTouch(View v, MotionEvent event) {
+                                psDialog = ProgressDialog.show(mContext, "", "讀取中，請稍候...");
+                                gotoPositionActivity();
+                                return false;
+                        }
+                });
                 edt_name = (EditText) view.findViewById(R.id.edt_name);
                 tv_info = (TextView) view.findViewById(R.id.tv_info);
         }
@@ -150,6 +231,72 @@ public class SignupFragment extends Fragment {
                 Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_personal);
                 if (img_avatar != null && bitmap != null) {
                         img_avatar.setImageBitmap(bitmap);
+                }
+        }
+
+        /** 獲取使用者大頭照 **/
+        private void getUserAvatar() {
+                Log.i(TAG, "getUserAvatar");
+                /** 手機內存的大頭照 **/
+                String path = MainActivity.mUserApplication.tmp_avatar_path;
+                try {
+                        File file = new File(path);
+                        if (file.exists()) {
+                                Log.d(TAG, "User Image Cache : " + path);
+                                final Bitmap mBitmap = BitmapFactory.decodeFile(path);
+                                if (mBitmap != null) {
+                                        img_avatar.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                        // TODO Auto-generated
+                                                        // method stub
+                                                        img_avatar.setImageBitmap(mBitmap);
+                                                }
+                                        });
+                                }
+                        } else {
+                                String image = MainActivity.mUserApplication.userData.getUser().getInfo().getImage();
+                                Log.d(TAG, "User Image : " + image);
+                                if (image != null) {
+                                        new AsyncTask<String, Void, Bitmap>() {
+                                                @Override
+                                                protected Bitmap doInBackground(String... params) {
+                                                        String url = params[0];
+                                                        return getBitmapFromURL(url);
+                                                }
+
+                                                @Override
+                                                protected void onPostExecute(Bitmap result) {
+                                                        super.onPostExecute(result);
+                                                        Log.d(TAG, "Avatar Result : " + result);
+                                                        if (result != null) {
+                                                                img_avatar.setImageBitmap(result);
+                                                        }
+                                                }
+
+                                                @Override
+                                                protected void onPreExecute() {
+                                                        super.onPreExecute();
+                                                }
+                                        }.execute(image);
+                                } else {
+                                        final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_personal);
+                                        if (img_avatar != null && bitmap != null) {
+                                                img_avatar.post(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                                // TODO
+                                                                // Auto-generated
+                                                                // method stub
+                                                                img_avatar.setImageBitmap(bitmap);
+                                                        }
+                                                });
+                                        }
+                                }
+                        }
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.i(TAG, e.toString());
                 }
         }
 
@@ -265,36 +412,44 @@ public class SignupFragment extends Fragment {
                 };
 
                 mDialog.setItems(choseSourceFromList, list_Click);
-                mDialog.setNeutralButton(getString(R.string.cancle), cancle_Click);
+                mDialog.setNeutralButton(getString(R.string.cancel), cancle_Click);
                 mDialog.show();
         }
 
         /** 動態設定 填寫偏好機構類別設定的物件 **/
-        private void setOrgType(View view) {
+        private void setFavoriteOrganization(View view) {
                 ll_org_type = (LinearLayout) view.findViewById(R.id.ll_org_type);
                 ll_org_type.removeAllViews();
 
-                // 機構類別項目的名稱
+                // 資料項目 : 機構類別
                 Resources res = mContext.getResources();
                 mOrgType = res.getStringArray(R.array.org_type);
                 mOrgTypeStatus = new boolean[mOrgType.length];
+                // 初始化,全部為false
                 for (int i = 0; i < mOrgType.length; i++) {
                         mOrgTypeStatus[i] = false;
                 }
+                // 類別項目數量
                 int mOrgTypeItem = mOrgType.length;
+                // 計算項目數量為基數或偶數
                 int viewCount = mOrgTypeItem / 2;
+                // 如果是基數, 顯示幾列
                 if (mOrgTypeItem % 2 != 0) {
+                        // 加1
                         viewCount++;
                 }
                 Log.i(TAG, "OrgType Count : " + mOrgTypeItem);
                 Log.i(TAG, "OrgType View Count : " + viewCount);
 
                 int j = 0;
+                // 要增加幾列的for-Loop
                 for (int i = 0; i < viewCount; i++) {
                         if (j < mOrgTypeItem - 1) {
+                                // 不是最後一列,且總項目數量大於1個時
                                 ll_org_type.addView(createOrgTypeView(j, mOrgType[j], mOrgType[j + 1]));
                                 j += 2;
                         } else {
+                                // 最後一列,只有一個的時候
                                 ll_org_type.addView(createOrgTypeView(j, mOrgType[j], ""));
                         }
                 }
@@ -326,7 +481,15 @@ public class SignupFragment extends Fragment {
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                 // TODO Auto-generated method stub
                                 Log.i(TAG, "CheckBox Left Status : " + isChecked + ", Id : " + holder.checkBox_left.getId());
+
                                 mOrgTypeStatus[holder.checkBox_left.getId()] = isChecked;
+                                // 如果超過上限, 則選擇後再將他反選並儲存
+                                if (isMaxOrgTypeChoose()) {
+                                        Log.d(TAG, "選擇超過上限");
+                                        FunctionUtil.showToastMsg(mContext, getString(R.string.org_type_choose_max));
+                                        holder.checkBox_left.setChecked(!isChecked);
+                                        mOrgTypeStatus[holder.checkBox_left.getId()] = !isChecked;
+                                }
                         }
                 });
 
@@ -335,7 +498,16 @@ public class SignupFragment extends Fragment {
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                 // TODO Auto-generated method stub
                                 Log.i(TAG, "CheckBox Right Status : " + isChecked + ", Id : " + holder.checkBox_right.getId());
+
                                 mOrgTypeStatus[holder.checkBox_right.getId()] = isChecked;
+
+                                // 如果超過3個上限, 則選擇後再將他反選並儲存
+                                if (isMaxOrgTypeChoose()) {
+                                        Log.d(TAG, "選擇超過上限");
+                                        FunctionUtil.showToastMsg(mContext, getString(R.string.org_type_choose_max));
+                                        holder.checkBox_right.setChecked(!isChecked);
+                                        mOrgTypeStatus[holder.checkBox_right.getId()] = !isChecked;
+                                }
                         }
                 });
 
@@ -345,6 +517,23 @@ public class SignupFragment extends Fragment {
         private class ViewHolder {
                 CheckBox checkBox_left;
                 CheckBox checkBox_right;
+        }
+
+        /** 確認選擇機構的類別是否超過上限制 **/
+        private boolean isMaxOrgTypeChoose() {
+                ArrayList<Boolean> list = new ArrayList<Boolean>();
+                for (int i = 0; i < mOrgTypeStatus.length; i++) {
+                        if (mOrgTypeStatus[i]) {
+                                list.add(true);
+                        }
+                }
+
+                Log.d(TAG, "選擇 : " + list.size() + "個");
+
+                if (list.size() > 3)
+                        return true;
+                else
+                        return false;
         }
 
         class RegisterUserAsyncTask extends AsyncTask<String, Integer, String> {
@@ -444,6 +633,9 @@ public class SignupFragment extends Fragment {
                         break;
                 case CROP_PHOTO:
                         break;
+                case POSITION_ACTIVITY_CODE:
+                        loadUserData(MyApplication.getInstance().userData);
+                        break;
                 default:
                         break;
                 }
@@ -453,7 +645,7 @@ public class SignupFragment extends Fragment {
         private void saveImage(Bitmap bitmap) {
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-                String path = MainActivity.mUserApplication.tmp_avatar_img;
+                String path = MainActivity.mUserApplication.tmp_avatar_path;
                 RegisterData.image = path;
                 Log.d(TAG, "Avatar Path = " + path);
 
@@ -480,6 +672,13 @@ public class SignupFragment extends Fragment {
                 getActivity().finish();
         }
 
+        private void gotoPositionActivity() {
+                Intent intent = new Intent();
+                intent.setClass(mContext, PositionActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivityForResult(intent, POSITION_ACTIVITY_CODE);
+        }
+
         /** End of GotoActivity **/
 
         /** Activity Bundle **/
@@ -488,6 +687,8 @@ public class SignupFragment extends Fragment {
         @Override
         public void onResume() {
                 super.onResume();
+                if (psDialog != null)
+                        psDialog.dismiss();
         }
 
         @Override
@@ -503,10 +704,13 @@ public class SignupFragment extends Fragment {
         @Override
         public void onPause() {
                 super.onPause();
+                if (psDialog != null)
+                        psDialog.dismiss();
         }
 
         @Override
         public void onDestroy() {
                 super.onDestroy();
+                System.gc();
         }
 }

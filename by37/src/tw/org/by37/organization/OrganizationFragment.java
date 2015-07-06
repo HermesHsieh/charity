@@ -2,26 +2,14 @@ package tw.org.by37.organization;
 
 import static tw.org.by37.config.RequestCode.SUPPLIESHELP_ACTIVITY_CODE;
 import static tw.org.by37.config.SysConfig.k_Organization_Data_UpdateTime;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.google.gson.Gson;
-
-import tw.org.by37.MainActivity;
 import tw.org.by37.R;
 import tw.org.by37.SuppliesHelpActivity;
 import tw.org.by37.data.SelectingData;
-import tw.org.by37.data.SupplyData;
-import tw.org.by37.emergency.EmergencyFragment;
 import tw.org.by37.service.OrganizationApiService;
 import tw.org.by37.service.SuppliesApiService;
-import tw.org.by37.supplieshelp.DBControlSupplies;
-import tw.org.by37.supplieshelp.SuppliesHelpFragment;
+import tw.org.by37.supplieshelp.SupportData;
 import tw.org.by37.util.DialogUtil;
 import tw.org.by37.util.FunctionUtil;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -34,30 +22,25 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Html;
-import android.text.SpannableString;
-import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
-import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
 
 public class OrganizationFragment extends Fragment {
 
         private final static String TAG = OrganizationFragment.class.getName();
 
         private Context mContext;
-
-        private SupplyData mSupplyData = null;
-
-        private boolean db_modify = false;
 
         private float data_updateTime = 0;
 
@@ -92,15 +75,16 @@ public class OrganizationFragment extends Fragment {
         /** 開發階段用, 顯示機構資料與物資資料的TextView **/
         private boolean showInfo = false;
 
+        /** 機構內，儲存物資需求的物件，僅一筆 **/
+        private SupportData mData;
+
         /** 機構的資料物件 **/
         private OrganizationData mOrganizationData;
 
         /** 機構內容捐款與聯絡的動態外層Layout **/
         private LinearLayout ll_org_content;
 
-        public void setSupplyData(SupplyData data) {
-                this.mSupplyData = data;
-        }
+        private View mView;
 
         public OrganizationFragment() {
                 super();
@@ -113,14 +97,14 @@ public class OrganizationFragment extends Fragment {
 
                 View view = inflater.inflate(R.layout.fragment_organization, container, false);
 
-                Log.d(TAG, "Have SupplyData : " + SelectingData.checkSupplyData());
-
                 findView(view);
 
                 getOrganizationData();
 
                 switchMapFragment();
 
+                this.mView = view;
+                mView.setVisibility(View.GONE);
                 return view;
         }
 
@@ -196,177 +180,168 @@ public class OrganizationFragment extends Fragment {
         }
 
         /** 設置該機構的物資需求 **/
-        private void setSuppliesInfo() {
-                getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                                if (SelectingData.checkSupplyData()) {
-                                        if (SelectingData.mSupplyData.name.length() > 0) {
-                                                tv_name.setText(SelectingData.mSupplyData.name);
-                                        } else {
-                                                tv_name.setText(getString(R.string.supplies_name_empty));
-                                        }
+        private void setSuppliesInfo(SupportData mData) {
+                try {
+                        if (mData.getName().length() > 0) {
+                                tv_name.setText(mData.getName());
+                        } else {
+                                tv_name.setText(getString(R.string.supplies_name_empty));
+                        }
 
-                                        if (SelectingData.mSupplyData.description.length() > 0) {
-                                                tv_description.setText(SelectingData.mSupplyData.description);
-                                        } else {
-                                                tv_description.setText(getString(R.string.supplies_desc_empty));
-                                        }
+                        if (mData.getDescription().length() > 0) {
+                                tv_description.setText(mData.getDescription());
+                        } else {
+                                tv_description.setText(getString(R.string.supplies_desc_empty));
+                        }
 
-                                        if (SelectingData.mSupplyData.organization_phone.length() > 0) {
-                                                tv_phone.setText(SelectingData.mSupplyData.organization_phone);
-                                        } else {
-                                                tv_phone.setText(getString(R.string.supplies_phone_empty));
-                                        }
+                        if (mData.getOrganizationData().length > 0) {
+                                if (mData.getOrganizationData()[0].getPhone() != null && mData.getOrganizationData()[0].getPhone().length() > 0) {
+                                        tv_phone.setText(mData.getOrganizationData()[0].getPhone());
+                                } else {
+                                        tv_phone.setText(getString(R.string.supplies_phone_empty));
+                                }
 
-                                        if (SelectingData.mSupplyData.organization_email.length() > 0) {
-                                                tv_mail.setText(SelectingData.mSupplyData.organization_email);
-                                        } else {
-                                                tv_mail.setText(getString(R.string.supplies_mail_empty));
-                                        }
+                                if (mData.getOrganizationData()[0].getEmail() != null && mData.getOrganizationData()[0].getEmail().length() > 0) {
+                                        tv_mail.setText(mData.getOrganizationData()[0].getEmail());
+                                } else {
+                                        tv_mail.setText(getString(R.string.supplies_mail_empty));
                                 }
                         }
-                });
+                } catch (Exception e) {
+                        Log.d(TAG, e.getMessage());
+                }
         }
 
         /** 設定機構相關訊息(標題,內容,關鍵字) **/
-        @SuppressWarnings("unused")
         private void setOrganizationInfo(final String title) {
-                getActivity().runOnUiThread(new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                                tv_info_title.setText(title);
-                                Log.d(TAG, "mOrganizationData : " + mOrganizationData);
-                                if (mOrganizationData != null)
-                                        Log.d(TAG, "mOrganizationData To String : " + mOrganizationData.toString());
-                                if (tv_org_name != null && mOrganizationData != null) {
-                                        /** 機構名稱 **/
-                                        String name = mOrganizationData.getName();
-                                        Log.i(TAG, "Org : " + name);
-                                        // name = name.replace("中華民國", "");
-                                        Log.i(TAG, "Replace(1) : " + name);
-                                        // name = name.replace("財團法人", "");
-                                        Log.i(TAG, "Replace(2) : " + name);
-                                        /** 地圖下面顯示的機構名稱 **/
-                                        tv_org_name.setText(mOrganizationData.getName());
+                tv_info_title.setText(title);
+                Log.d(TAG, "mOrganizationData : " + mOrganizationData);
+                if (mOrganizationData != null)
+                        Log.d(TAG, "mOrganizationData To String : " + mOrganizationData.toString());
+                if (tv_org_name != null && mOrganizationData != null) {
+                        /** 機構名稱 **/
+                        String name = mOrganizationData.getName();
+                        Log.i(TAG, "Org : " + name);
+                        // name = name.replace("中華民國", "");
+                        Log.i(TAG, "Replace(1) : " + name);
+                        // name = name.replace("財團法人", "");
+                        Log.i(TAG, "Replace(2) : " + name);
+                        /** 地圖下面顯示的機構名稱 **/
+                        tv_org_name.setText(mOrganizationData.getName());
 
-                                        String content = getString(R.string.org_data_empty);
-                                        String keyword = getString(R.string.string_empty);
+                        String content = getString(R.string.org_data_empty);
+                        String keyword = getString(R.string.string_empty);
 
-                                        Log.d(TAG, "tv_org_name : " + mOrganizationData.getName());
-                                        Log.d(TAG, "content : " + mOrganizationData.getContent());
-                                        Log.d(TAG, "keyword : " + mOrganizationData.getKeyword());
+                        Log.d(TAG, "tv_org_name : " + mOrganizationData.getName());
+                        Log.d(TAG, "content : " + mOrganizationData.getContent());
+                        Log.d(TAG, "keyword : " + mOrganizationData.getKeyword());
 
-                                        // 物資需求下方機構資訊的區塊
+                        // 物資需求下方機構資訊的區塊
 
-                                        /** 設立宗旨 **/
-                                        if (title.equals(getString(R.string.org_info_main))) {
-                                                content = mOrganizationData.getContent();
-                                                keyword = mOrganizationData.getKeyword();
+                        /** 設立宗旨 **/
+                        if (title.equals(getString(R.string.org_info_main))) {
+                                content = mOrganizationData.getContent();
+                                keyword = mOrganizationData.getKeyword();
 
-                                                if (content.length() == 0) {
-                                                        content = getString(R.string.org_data_empty);
-                                                }
-
-                                                if (keyword.length() == 0) {
-                                                        keyword = getString(R.string.string_empty);
-                                                }
-
-                                                tv_info_content.setText(content + "\n\n關鍵字 : " + keyword);
-                                        }
-
-                                        /** 服務對象與項目 **/
-                                        if (title.equals(getString(R.string.org_info_service))) {
-                                                tv_info_content.setText(content + "\n\n關鍵字 : " + keyword);
-                                        }
-
-                                        /** 捐款與聯絡 **/
-                                        if (title.equals(getString(R.string.org_info_contact))) {
-                                                ll_org_content.removeAllViews();
-                                                String url = mOrganizationData.getUrl();
-                                                String mail = mOrganizationData.getEmail();
-                                                String phone = mOrganizationData.getPhone();
-                                                String link = null;
-
-                                                TextView tv_url = createTextStyle(getString(R.string.org_uri), mOrganizationData.getUrl(), R.color.btn_blue_color);
-                                                tv_url.setOnClickListener(new OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                                DialogUtil dialog = new DialogUtil(mContext);
-                                                                dialog.setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse(mOrganizationData.getUrl())));
-                                                                dialog.NotificationDialog(getString(R.string.notification), getString(R.string.check_url) + mOrganizationData.getUrl() + getString(R.string.symbol_confuse));
-                                                        }
-                                                });
-
-                                                TextView tv_mail = createTextStyle(getString(R.string.org_email), mOrganizationData.getEmail(), R.color.btn_blue_color);
-                                                tv_mail.setOnClickListener(new OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                                DialogUtil dialog = new DialogUtil(mContext);
-                                                                dialog.setIntent(new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + mOrganizationData.getEmail())));
-                                                                dialog.NotificationDialog(getString(R.string.notification), getString(R.string.check_mail) + mOrganizationData.getEmail() + getString(R.string.symbol_confuse));
-                                                        }
-                                                });
-
-                                                TextView tv_phone = createTextStyle(getString(R.string.org_phone), mOrganizationData.getPhone(), R.color.btn_blue_color);
-                                                tv_phone.setOnClickListener(new OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View v) {
-                                                                DialogUtil dialog = new DialogUtil(mContext);
-                                                                dialog.setIntent(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mOrganizationData.getPhone())));
-                                                                dialog.NotificationDialog(getString(R.string.notification), getString(R.string.check_phone) + mOrganizationData.getPhone() + getString(R.string.symbol_confuse));
-                                                        }
-                                                });
-
-                                                TextView tv_link = null;
-                                                if (link != null) {
-                                                        tv_link = createTextStyle(getString(R.string.org_donation_link), mOrganizationData.getPhone(), R.color.btn_blue_color);
-                                                        tv_link.setOnClickListener(new OnClickListener() {
-                                                                @Override
-                                                                public void onClick(View v) {
-                                                                }
-                                                        });
-                                                }
-                                                ll_org_content.addView(tv_url);
-                                                ll_org_content.addView(tv_mail);
-                                                ll_org_content.addView(tv_phone);
-
-                                                if (link != null) {
-                                                        ll_org_content.addView(tv_link);
-                                                }
-
-                                                /** 一定要在View之後進行設定，不然會出錯 **/
-                                                try {
-                                                        setViewMargin(tv_url);
-                                                        setViewMargin(tv_mail);
-                                                        setViewMargin(tv_phone);
-                                                } catch (Exception e) {
-                                                        Log.e(TAG, "setViewMargin Exception");
-                                                }
-
-                                                ll_org_content.setVisibility(View.VISIBLE);
-                                                tv_info_content.setVisibility(View.GONE);
-                                        } else {
-                                                ll_org_content.removeAllViews();
-                                                ll_org_content.setVisibility(View.GONE);
-                                                tv_info_content.setVisibility(View.VISIBLE);
-                                        }
+                                if (content.length() == 0) {
+                                        content = getString(R.string.org_data_empty);
                                 }
 
-                                /** 設定按壓下去後狀態的Background Color **/
-                                rl_1.setBackgroundResource(R.drawable.item_click);
-                                rl_2.setBackgroundResource(R.drawable.item_click);
-                                rl_3.setBackgroundResource(R.drawable.item_click);
-                                if (title.equals(getString(R.string.org_info_main)))
-                                        rl_1.setBackgroundColor(getResources().getColor(R.color.org_light_gray_color));
-                                if (title.equals(getString(R.string.org_info_service)))
-                                        rl_2.setBackgroundColor(getResources().getColor(R.color.org_light_gray_color));
-                                if (title.equals(getString(R.string.org_info_contact)))
-                                        rl_3.setBackgroundColor(getResources().getColor(R.color.org_light_gray_color));
+                                if (keyword.length() == 0) {
+                                        keyword = getString(R.string.string_empty);
+                                }
 
+                                tv_info_content.setText(content + "\n\n關鍵字 : " + keyword);
                         }
-                }));
 
+                        /** 服務對象與項目 **/
+                        if (title.equals(getString(R.string.org_info_service))) {
+                                tv_info_content.setText(content + "\n\n關鍵字 : " + keyword);
+                        }
+
+                        /** 捐款與聯絡 **/
+                        if (title.equals(getString(R.string.org_info_contact))) {
+                                ll_org_content.removeAllViews();
+                                String url = mOrganizationData.getUrl();
+                                String mail = mOrganizationData.getEmail();
+                                String phone = mOrganizationData.getPhone();
+                                String link = null;
+
+                                TextView tv_url = createTextStyle(getString(R.string.org_uri), mOrganizationData.getUrl(), R.color.btn_blue_color);
+                                tv_url.setOnClickListener(new OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                                DialogUtil dialog = new DialogUtil(mContext);
+                                                dialog.setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse(mOrganizationData.getUrl())));
+                                                dialog.NotificationDialog(getString(R.string.notification), getString(R.string.check_url) + mOrganizationData.getUrl() + getString(R.string.symbol_confuse));
+                                        }
+                                });
+
+                                TextView tv_mail = createTextStyle(getString(R.string.org_email), mOrganizationData.getEmail(), R.color.btn_blue_color);
+                                tv_mail.setOnClickListener(new OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                                DialogUtil dialog = new DialogUtil(mContext);
+                                                dialog.setIntent(new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + mOrganizationData.getEmail())));
+                                                dialog.NotificationDialog(getString(R.string.notification), getString(R.string.check_mail) + mOrganizationData.getEmail() + getString(R.string.symbol_confuse));
+                                        }
+                                });
+
+                                TextView tv_phone = createTextStyle(getString(R.string.org_phone), mOrganizationData.getPhone(), R.color.btn_blue_color);
+                                tv_phone.setOnClickListener(new OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                                DialogUtil dialog = new DialogUtil(mContext);
+                                                dialog.setIntent(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + mOrganizationData.getPhone())));
+                                                dialog.NotificationDialog(getString(R.string.notification), getString(R.string.check_phone) + mOrganizationData.getPhone() + getString(R.string.symbol_confuse));
+                                        }
+                                });
+
+                                TextView tv_link = null;
+                                if (link != null) {
+                                        tv_link = createTextStyle(getString(R.string.org_donation_link), mOrganizationData.getPhone(), R.color.btn_blue_color);
+                                        tv_link.setOnClickListener(new OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                }
+                                        });
+                                }
+                                ll_org_content.addView(tv_url);
+                                ll_org_content.addView(tv_mail);
+                                ll_org_content.addView(tv_phone);
+
+                                if (link != null) {
+                                        ll_org_content.addView(tv_link);
+                                }
+
+                                /** 一定要在View之後進行設定，不然會出錯 **/
+                                try {
+                                        setViewMargin(tv_url);
+                                        setViewMargin(tv_mail);
+                                        setViewMargin(tv_phone);
+                                } catch (Exception e) {
+                                        Log.e(TAG, "setViewMargin Exception");
+                                }
+
+                                ll_org_content.setVisibility(View.VISIBLE);
+                                tv_info_content.setVisibility(View.GONE);
+                        } else {
+                                ll_org_content.removeAllViews();
+                                ll_org_content.setVisibility(View.GONE);
+                                tv_info_content.setVisibility(View.VISIBLE);
+                        }
+                }
+
+                /** 設定按壓下去後狀態的Background Color **/
+                rl_1.setBackgroundResource(R.drawable.item_click_white);
+                rl_2.setBackgroundResource(R.drawable.item_click_white);
+                rl_3.setBackgroundResource(R.drawable.item_click_white);
+                if (title.equals(getString(R.string.org_info_main)))
+                        rl_1.setBackgroundColor(getResources().getColor(R.color.org_light_gray_color));
+                if (title.equals(getString(R.string.org_info_service)))
+                        rl_2.setBackgroundColor(getResources().getColor(R.color.org_light_gray_color));
+                if (title.equals(getString(R.string.org_info_contact)))
+                        rl_3.setBackgroundColor(getResources().getColor(R.color.org_light_gray_color));
         }
 
         /** 建立固定格式的TextView Style **/
@@ -398,6 +373,7 @@ public class OrganizationFragment extends Fragment {
         class getOrganizationDataForIdAsyncTask extends AsyncTask<String, Integer, String> {
                 @Override
                 protected String doInBackground(String... param) {
+                        Log.i(TAG, "SelectingData.organizationId : " + SelectingData.organizationId);
 
                         String result = OrganizationApiService.getAllOrganizationDataForId(SelectingData.organizationId);
 
@@ -411,9 +387,9 @@ public class OrganizationFragment extends Fragment {
                         super.onPostExecute(result);
 
                         if (result != null) {
-                                Gson gson = new Gson();
                                 if (!FunctionUtil.isSleepServer(result)) {
                                         try {
+                                                Gson gson = new Gson();
                                                 mOrganizationData = gson.fromJson(result, OrganizationData.class);
                                                 setOrganizationInfo(getString(R.string.org_info_main));
                                         } catch (Exception e) {
@@ -424,16 +400,12 @@ public class OrganizationFragment extends Fragment {
                                 Log.e(TAG, "OrganizationData Result == null");
                         }
 
-                        getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                        if (mMapFragment != null && mOrganizationData != null) {
-                                                mMapFragment.setOrganizationData(mOrganizationData.getLatitude(), mOrganizationData.getLongitude(), mOrganizationData.getName(), mOrganizationData.getTitle());
-                                                mMapFragment.setOrganizationMarker();
-                                        }
-                                }
-                        });
+                        if (mMapFragment != null && mOrganizationData != null) {
+                                mMapFragment.setOrganizationData(mOrganizationData.getLatitude(), mOrganizationData.getLongitude(), mOrganizationData.getName(), mOrganizationData.getTitle());
+                                mMapFragment.setOrganizationMarker();
+                        }
 
+                        mView.setVisibility(View.VISIBLE);
                         psDialog.dismiss();
                 }
 
@@ -453,16 +425,15 @@ public class OrganizationFragment extends Fragment {
         class getSuppliesDataForIdAsyncTask extends AsyncTask<String, Integer, String> {
                 @Override
                 protected String doInBackground(String... param) {
-                        Log.e(TAG, "getSuppliesDataForIdAsyncTask");
                         String result = null;
                         if (SelectingData.suppliesId != null) {
-                                Log.d(TAG, "SelectingData.suppliesId != null");
                                 /** 從物資需求點擊進入的,有物資的ID **/
                                 result = SuppliesApiService.getSuppliesDataForId(SelectingData.suppliesId);
+
+                                Log.d(TAG, "Selected Supply Id : " + SelectingData.suppliesId);
                         } else {
-                                Log.d(TAG, "SelectingData.suppliesId == null");
+                                /** 當沒有物資ID時 **/
                                 if (mOrganizationData != null) {
-                                        Log.d(TAG, "mOrganizationData != null");
                                         /** 從鄰近機構點擊進入的,有機構資料 **/
                                         String id = null;
                                         try {
@@ -470,15 +441,16 @@ public class OrganizationFragment extends Fragment {
                                                 id = mOrganizationData.getSupportData()[0].getId();
                                                 result = SuppliesApiService.getSuppliesDataForId(id);
 
-                                                Log.d(TAG, "Other Supply Id : " + mOrganizationData.getSupportData()[0].getId());
+                                                Log.d(TAG, "Selected Supply Id : " + id);
                                         } catch (Exception e) {
                                         }
                                 } else {
-                                        Log.d(TAG, "mOrganizationData== null");
+                                        Log.d(TAG, "mOrganizationData == null");
                                 }
+                                Log.d(TAG, "SelectingData.suppliesId == null");
                         }
 
-                        Log.d(TAG, "SuppliesData Result : " + result);
+                        Log.d(TAG, "getSuppliesDataForIdAsyncTask Result : " + result);
 
                         return result;
                 }
@@ -487,104 +459,125 @@ public class OrganizationFragment extends Fragment {
                 protected void onPostExecute(String result) {
                         super.onPostExecute(result);
 
-                        SupplyData mData = new SupplyData();
+                        // SupplyData mData = new SupplyData();
 
                         if (result != null) {
-                                try {
-                                        JSONObject mJsonObject = new JSONObject(result);
 
-                                        DBControlSupplies mDB = new DBControlSupplies(mContext);
-                                        /** 開啟資料庫 **/
-                                        mDB.openDatabase();
+                                mData = new SupportData();
+                                Gson gson = new Gson();
+                                mData = gson.fromJson(result, SupportData.class);
 
-                                        try {
-                                                mData.id = mJsonObject.getString("id");
-                                        } catch (JSONException e) {
-                                                e.printStackTrace();
-                                        }
-                                        try {
-                                                mData.name = mJsonObject.getString("name");
-                                        } catch (JSONException e) {
-                                                e.printStackTrace();
-                                        }
-                                        try {
-                                                mData.description = mJsonObject.getString("description");
-                                        } catch (JSONException e) {
-                                                e.printStackTrace();
-                                        }
-                                        try {
-                                                mData.organizationId = mJsonObject.getString("organizationId");
-                                        } catch (JSONException e) {
-                                                e.printStackTrace();
-                                        }
-                                        try {
-                                                mData.total = mJsonObject.getString("total");
-                                        } catch (JSONException e) {
-                                                e.printStackTrace();
-                                        }
-                                        try {
-                                                mData.created_at = mJsonObject.getString("created_at");
-                                        } catch (JSONException e) {
-                                                e.printStackTrace();
-                                        }
-                                        try {
-                                                mData.updated_at = mJsonObject.getString("updated_at");
-                                        } catch (JSONException e) {
-                                                e.printStackTrace();
-                                        }
-                                        try {
-                                                mData.category = mJsonObject.getString("goodsTypeId");
-                                        } catch (JSONException e) {
-                                                e.printStackTrace();
-                                        }
+                                setSuppliesInfo(mData);
 
-                                        Log.i(TAG, "Organization JSONArray length : " + mJsonObject.getJSONArray("organization").length());
-
-                                        for (int j = 0; j < mJsonObject.getJSONArray("organization").length(); j++) {
-                                                try {
-                                                        mData.organization_id = mJsonObject.getJSONArray("organization").getJSONObject(j).getString("id");
-                                                } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                }
-                                                try {
-                                                        mData.organization_name = mJsonObject.getJSONArray("organization").getJSONObject(j).getString("name");
-                                                } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                }
-                                                try {
-                                                        mData.organization_longitude = mJsonObject.getJSONArray("organization").getJSONObject(j).getDouble("longitude");
-                                                } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                }
-                                                try {
-                                                        mData.organization_latitude = mJsonObject.getJSONArray("organization").getJSONObject(j).getDouble("latitude");
-                                                } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                }
-                                        }
-
-                                        /** 將單一筆資料新增/更新至 supplies.db 中 **/
-                                        if (!mDB.searchIDResult(mData.id)) { // 比對db中是否已有此資料
-                                                // 如果沒有這筆資料,則新增資料
-                                                mDB.add(mData);
-                                        } else {
-                                                // 如果已經有這筆資料,則更新資料
-                                                mDB.update(mData.id, mData);
-                                        }
-
-                                        // 設定物資需求資料
-                                        SelectingData.mSupplyData = mData;
-
-                                        /** 關閉資料庫 **/
-                                        mDB.closeDatabase();
-                                } catch (JSONException e) {
-                                        e.printStackTrace();
-                                        mData = null;
-                                        Log.e(TAG, "mJsonObject error!!");
-                                        Log.e(TAG, "The SuppliesDataForId from Server == null!!");
-                                }
-
-                                setSuppliesInfo();
+                                // try {
+                                // JSONObject mJsonObject = new
+                                // JSONObject(result);
+                                // DBControlSupplies mDB = new
+                                // DBControlSupplies(mContext);
+                                // /** 開啟資料庫 **/
+                                // mDB.openDatabase();
+                                // try {
+                                // mData.id = mJsonObject.getString("id");
+                                // } catch (JSONException e) {
+                                // e.printStackTrace();
+                                // }
+                                // try {
+                                // mData.name = mJsonObject.getString("name");
+                                // } catch (JSONException e) {
+                                // e.printStackTrace();
+                                // }
+                                // try {
+                                // mData.description =
+                                // mJsonObject.getString("description");
+                                // } catch (JSONException e) {
+                                // e.printStackTrace();
+                                // }
+                                // try {
+                                // mData.organizationId =
+                                // mJsonObject.getString("organizationId");
+                                // } catch (JSONException e) {
+                                // e.printStackTrace();
+                                // }
+                                // try {
+                                // mData.total = mJsonObject.getString("total");
+                                // } catch (JSONException e) {
+                                // e.printStackTrace();
+                                // }
+                                // try {
+                                // mData.created_at =
+                                // mJsonObject.getString("created_at");
+                                // } catch (JSONException e) {
+                                // e.printStackTrace();
+                                // }
+                                // try {
+                                // mData.updated_at =
+                                // mJsonObject.getString("updated_at");
+                                // } catch (JSONException e) {
+                                // e.printStackTrace();
+                                // }
+                                // try {
+                                // mData.category =
+                                // mJsonObject.getString("goodsTypeId");
+                                // } catch (JSONException e) {
+                                // e.printStackTrace();
+                                // }
+                                //
+                                // Log.i(TAG, "Organization JSONArray length : "
+                                // +
+                                // mJsonObject.getJSONArray("organization").length());
+                                //
+                                // for (int j = 0; j <
+                                // mJsonObject.getJSONArray("organization").length();
+                                // j++) {
+                                // try {
+                                // mData.organization_id =
+                                // mJsonObject.getJSONArray("organization").getJSONObject(j).getString("id");
+                                // } catch (JSONException e) {
+                                // e.printStackTrace();
+                                // }
+                                // try {
+                                // mData.organization_name =
+                                // mJsonObject.getJSONArray("organization").getJSONObject(j).getString("name");
+                                // } catch (JSONException e) {
+                                // e.printStackTrace();
+                                // }
+                                // try {
+                                // mData.organization_longitude =
+                                // mJsonObject.getJSONArray("organization").getJSONObject(j).getDouble("longitude");
+                                // } catch (JSONException e) {
+                                // e.printStackTrace();
+                                // }
+                                // try {
+                                // mData.organization_latitude =
+                                // mJsonObject.getJSONArray("organization").getJSONObject(j).getDouble("latitude");
+                                // } catch (JSONException e) {
+                                // e.printStackTrace();
+                                // }
+                                // }
+                                //
+                                // /** 將單一筆資料新增/更新至 supplies.db 中 **/
+                                // if (!mDB.searchIDResult(mData.id)) { //
+                                // 比對db中是否已有此資料
+                                // // 如果沒有這筆資料,則新增資料
+                                // mDB.add(mData);
+                                // } else {
+                                // // 如果已經有這筆資料,則更新資料
+                                // mDB.update(mData.id, mData);
+                                // }
+                                //
+                                // // 設定物資需求資料
+                                // SelectingData.mSupplyData = mData;
+                                //
+                                // /** 關閉資料庫 **/
+                                // mDB.closeDatabase();
+                                // } catch (JSONException e) {
+                                // e.printStackTrace();
+                                // mData = null;
+                                // Log.e(TAG, "mJsonObject error!!");
+                                // Log.e(TAG,
+                                // "The SuppliesDataForId from Server == null!!");
+                                // }
+                                //
 
                         } else {
                                 Log.e(TAG, "SuppliesDataForId Result == null");
@@ -705,6 +698,5 @@ public class OrganizationFragment extends Fragment {
                 SelectingData.clearOrganizationData();
                 SelectingData.suppliesId = null;
                 SelectingData.organizationId = null;
-                SelectingData.mSupplyData = null;
         }
 }

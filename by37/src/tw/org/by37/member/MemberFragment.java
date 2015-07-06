@@ -2,7 +2,9 @@ package tw.org.by37.member;
 
 import static tw.org.by37.config.RequestCode.LOGOUT_SUCCESS_CODE;
 import static tw.org.by37.config.RequestCode.POSITION_ACTIVITY_CODE;
+import static tw.org.by37.config.RequestCode.SIGNUP_ACTIVITY_CODE;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -12,6 +14,7 @@ import tw.org.by37.MainActivity;
 import tw.org.by37.MemberActivity;
 import tw.org.by37.PositionActivity;
 import tw.org.by37.R;
+import tw.org.by37.SignupActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -131,6 +134,7 @@ public class MemberFragment extends Fragment {
                         case R.id.btn_like_history:
                                 break;
                         case R.id.btn_edit_member:
+                                gotoSignupActivity();
                                 break;
                         case R.id.btn_edit_favorite_org:
                                 break;
@@ -147,43 +151,65 @@ public class MemberFragment extends Fragment {
         private void getUserAvatar() {
                 Log.i(TAG, "getUserAvatar");
                 /** 手機內存的大頭照 **/
-                String image_catch = mContext.getExternalCacheDir() + "/image.jpg";
-                Log.d(TAG, "User Image Catch : " + image_catch);
-                final Bitmap mBitmap = BitmapFactory.decodeFile(image_catch);
-                if (mBitmap != null) {
-                        img_avatar.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                        // TODO Auto-generated method stub
-                                        img_avatar.setImageBitmap(mBitmap);
+                String path = MainActivity.mUserApplication.tmp_avatar_path;
+                try {
+                        File file = new File(path);
+                        if (file.exists()) {
+                                Log.d(TAG, "User Image Cache : " + path);
+                                final Bitmap mBitmap = BitmapFactory.decodeFile(path);
+                                if (mBitmap != null) {
+                                        img_avatar.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                        // TODO Auto-generated
+                                                        // method stub
+                                                        img_avatar.setImageBitmap(mBitmap);
+                                                }
+                                        });
                                 }
-                        });
-                }
+                        } else {
+                                String image = MainActivity.mUserApplication.userData.getUser().getInfo().getImage();
+                                Log.d(TAG, "User Image : " + image);
+                                if (image != null) {
+                                        new AsyncTask<String, Void, Bitmap>() {
+                                                @Override
+                                                protected Bitmap doInBackground(String... params) {
+                                                        String url = params[0];
+                                                        return getBitmapFromURL(url);
+                                                }
 
-                String image = MainActivity.mUserApplication.userData.getUser().getInfo().getImage();
-                Log.d(TAG, "User Image : " + image);
-                if (image != null) {
-                        new AsyncTask<String, Void, Bitmap>() {
-                                @Override
-                                protected Bitmap doInBackground(String... params) {
-                                        String url = params[0];
-                                        return getBitmapFromURL(url);
-                                }
+                                                @Override
+                                                protected void onPostExecute(Bitmap result) {
+                                                        super.onPostExecute(result);
+                                                        Log.d(TAG, "Avatar Result : " + result);
+                                                        if (result != null) {
+                                                                img_avatar.setImageBitmap(result);
+                                                        }
+                                                }
 
-                                @Override
-                                protected void onPostExecute(Bitmap result) {
-                                        super.onPostExecute(result);
-                                        Log.d(TAG, "Avatar Result : " + result);
-                                        if (result != null) {
-                                                img_avatar.setImageBitmap(result);
+                                                @Override
+                                                protected void onPreExecute() {
+                                                        super.onPreExecute();
+                                                }
+                                        }.execute(image);
+                                } else {
+                                        final Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_personal);
+                                        if (img_avatar != null && bitmap != null) {
+                                                img_avatar.post(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                                // TODO
+                                                                // Auto-generated
+                                                                // method stub
+                                                                img_avatar.setImageBitmap(bitmap);
+                                                        }
+                                                });
                                         }
                                 }
-
-                                @Override
-                                protected void onPreExecute() {
-                                        super.onPreExecute();
-                                }
-                        }.execute(image);
+                        }
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.i(TAG, e.toString());
                 }
         }
 
@@ -232,6 +258,16 @@ public class MemberFragment extends Fragment {
                 intent.setClass(mContext, PositionActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent, POSITION_ACTIVITY_CODE);
+        }
+
+        public void gotoSignupActivity() {
+                Intent intent = new Intent();
+                intent.setClass(mContext, SignupActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("user_isEdit", true);
+                intent.putExtras(bundle);
+                startActivityForResult(intent, SIGNUP_ACTIVITY_CODE);
         }
 
         /** End of GotoActivity **/

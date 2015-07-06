@@ -89,10 +89,12 @@ public class PositionActivity extends FragmentActivity {
                         }
 
                         if (distanceY > 80) {
-                                if (!PositionFragment.getInstance().isVisibleSubmitButton) {
-                                        // 如果搜尋過後,確認按鈕是消失的,則滑動大於10就讓他顯示
-                                        PositionFragment.getInstance().isVisibleSubmitButton = true;
-                                        PositionFragment.getInstance().SubmitButtonAndMarkerShow(PositionFragment.getInstance().isVisibleSubmitButton);
+                                if (mPositionFragment != null) {
+                                        if (!mPositionFragment.isVisibleSubmitButton) {
+                                                // 如果搜尋過後,確認按鈕是消失的,則滑動大於10就讓他顯示
+                                                mPositionFragment.isVisibleSubmitButton = true;
+                                                mPositionFragment.SubmitButtonAndMarkerShow(true);
+                                        }
                                 }
                         }
                         break;

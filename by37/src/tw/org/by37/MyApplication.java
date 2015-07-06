@@ -35,7 +35,7 @@ public class MyApplication extends Application {
         private String user_password;
         private String user_source;
 
-        public String tmp_avatar_img = PIC_PATH + "image.jpg";
+        public String tmp_avatar_path = PIC_PATH + "image.jpg";
 
         public static MyApplication getInstance() {
                 return userApplication;
@@ -44,7 +44,7 @@ public class MyApplication extends Application {
         @Override
         public void onCreate() {
                 super.onCreate();
-                Log.i(TAG, "onCreate");
+                Log.i(TAG, "onCreate --->");
                 userApplication = this;
 
                 new Thread(new Runnable() {
@@ -65,7 +65,7 @@ public class MyApplication extends Application {
                 setUserData(getUserResult());
         }
 
-        /** 設置使用者結果資料於 UserData 物件 **/
+        /** 設置使用者資料於 UserData 物件 **/
         private void setUserData(String result) {
                 Log.i(TAG, "setUserData");
                 if (result != null) {
@@ -73,8 +73,11 @@ public class MyApplication extends Application {
                         Gson gson = new Gson();
                         userData = gson.fromJson(result, UserData.class);
                         if (userData.getStatus().equals("success")) {
+                                Log.d(TAG, "User Login Status : success");
                                 /** 登入成功,改變使用者登入狀態 **/
                                 userData.setUserStatus(true);
+                                /** 更新使用者大頭貼 **/
+                                updateUser_Image();
                         }
                 } else {
                         // 沒有內存之前的資料
@@ -114,40 +117,43 @@ public class MyApplication extends Application {
 
         /** 更新使用者大頭照 **/
         public void updateUser_Image() {
-                String image = userData.getUser().getInfo().getImage();
-                if (image != null) {
-                        new AsyncTask<String, Void, Bitmap>() {
-                                @Override
-                                protected Bitmap doInBackground(String... params) {
-                                        String url = params[0];
-                                        return getBitmapFromURL(url);
-                                }
-
-                                @Override
-                                protected void onPostExecute(Bitmap result) {
-                                        super.onPostExecute(result);
-                                        Log.d(TAG, "download avatar finish.");
-                                        Log.d(TAG, "From : " + userData.getUser().getInfo().getImage());
-                                        Log.d(TAG, "To : " + tmp_avatar_img);
-                                        if (result != null) {
-                                                saveImage(result);
+                Log.i(TAG, "updateUser_Image");
+                if (userData != null) {
+                        String uri = userData.getUser().getInfo().getImage();
+                        if (uri != null && uri.length() > 0) {
+                                new AsyncTask<String, Void, Bitmap>() {
+                                        @Override
+                                        protected Bitmap doInBackground(String... params) {
+                                                return getBitmapFromURL(params[0]);
                                         }
-                                }
 
-                                @Override
-                                protected void onPreExecute() {
-                                        super.onPreExecute();
-                                }
-                        }.execute(image);
+                                        @Override
+                                        protected void onPostExecute(Bitmap bitmap) {
+                                                super.onPostExecute(bitmap);
+                                                Log.d(TAG, "download avatar finish.");
+                                                Log.d(TAG, "From : " + userData.getUser().getInfo().getImage());
+                                                Log.d(TAG, "To : " + tmp_avatar_path);
+                                                if (bitmap != null) {
+                                                        saveImage(bitmap);
+                                                }
+                                        }
+
+                                        @Override
+                                        protected void onPreExecute() {
+                                                super.onPreExecute();
+                                        }
+                                }.execute(uri);
+                        }
                 }
         }
 
         private void saveImage(Bitmap bitmap) {
+                Log.i(TAG, "saveImage");
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
 
                 try {
-                        File f = new File(tmp_avatar_img);
+                        File f = new File(tmp_avatar_path);
                         f.createNewFile();
                         FileOutputStream fo = new FileOutputStream(f);
                         fo.write(bytes.toByteArray());
@@ -155,6 +161,8 @@ public class MyApplication extends Application {
                 } catch (Exception e) {
                         e.printStackTrace();
                         Log.i(TAG, e.toString());
+                } finally {
+                        Log.i(TAG, "User Avatar Save Done");
                 }
         }
 

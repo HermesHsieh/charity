@@ -14,29 +14,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
-import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
-import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
-
 import tw.org.by37.R;
-import tw.org.by37.data.SelectingData;
+import tw.org.by37.service.LocationService;
 import tw.org.by37.util.FunctionUtil;
 import android.content.Context;
 import android.graphics.Color;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -46,6 +28,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 public class MapFragment extends Fragment {
 
@@ -59,35 +48,11 @@ public class MapFragment extends Fragment {
          * 使用者的當前位置
          */
         private LatLng userPosition;
-        private MarkerOptions mMarkerOption;
-        private Marker userMarker;
 
         /**
          * 基構的相關參數
          */
         private LatLng orgPosition;
-        private MarkerOptions orgMarkerOption;
-        private Marker orgMarker;
-
-        /** MyLocation Param **/
-        public static double wifi_latitude = -1;
-        public static double wifi_longitude = -1;
-        public static double gps_latitude = -1;
-        public static double gps_longitude = -1;
-
-        private LocationManager lms;
-        private gpsLocationListener gll;
-        private wifiLocationListener wll;
-        private boolean getService = false;
-        private Location gps_location;
-        private Location wifi_location;
-
-        /** Location Position 更新的時間限制,單位:毫秒 **/
-        private final static int updateTime = 60000;
-        /** Location Position 更新的距離限制,單位:米 **/
-        private final static int updateDst = 10;
-
-        /** End of MyLocation Param **/
 
         /** Destination Guide Param **/
         private String totaldistance = "0";
@@ -103,10 +68,6 @@ public class MapFragment extends Fragment {
         private String org_name;
         private String org_title;
 
-        public MapFragment() {
-                super();
-        }
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
@@ -115,83 +76,22 @@ public class MapFragment extends Fragment {
 
                 View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-                initialMyLocationFunction();
-
                 initMap();
 
-                userPosition = new LatLng(wifi_latitude, wifi_longitude);
+                if (LocationService.checkLocationStatus())
+                        userPosition = new LatLng(LocationService.latitude, LocationService.longitude);
 
                 // 將 Camera 移動到使用者當前位置
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(userPosition, 16));
 
-                map.setOnMapClickListener(mMapListener);
-
-                map.setOnMyLocationChangeListener(new OnMyLocationChangeListener() {
-                        @Override
-                        public void onMyLocationChange(Location arg0) {
-                                // TODO Auto-generated method stub
-                                Log.d(TAG, "onMyLocationChange Location : " + arg0);
-                        }
-                });
-
-                map.setOnCameraChangeListener(new OnCameraChangeListener() {
-                        @Override
-                        public void onCameraChange(CameraPosition arg0) {
-                                // TODO Auto-generated method stub
-                                Log.d(TAG, "onCameraChange Position : " + arg0);
-                        }
-                });
-
-                lms.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 20, mLocationListener);
+                // // Camera移動到使用者當前的位置
+                // if (LocationService.checkLocationStatus())
+                // map.moveCamera(CameraUpdateFactory.newLatLngZoom(new
+                // LatLng(LocationService.latitude, LocationService.longitude),
+                // 16));
 
                 return view;
         }
-
-        /** 點擊Map事件監聽 **/
-        private GoogleMap.OnMapClickListener mMapListener = new GoogleMap.OnMapClickListener() {
-                @Override
-                public void onMapClick(LatLng position) {
-                        // TODO Auto-generated method stub
-                        Log.d(TAG, "onMapClick Position : " + position);
-
-                        // CameraPosition cameraPosition = new
-                        // CameraPosition.Builder().target(position).zoom(16).build();
-                        // CameraUpdate cameraUpdate =
-                        // CameraUpdateFactory.newCameraPosition(cameraPosition);
-                        // map.animateCamera(cameraUpdate);
-                }
-        };
-
-        /** 位置事件監聽 **/
-        private LocationListener mLocationListener = new LocationListener() {
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-                        // TODO Auto-generated method stub
-                        Log.d(TAG, "StatusChanged provider : " + provider + ", Status : " + status + ", extras : " + extras);
-
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-                        // TODO Auto-generated method stub
-                        Log.d(TAG, "Enabled provider : " + provider);
-
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-                        // TODO Auto-generated method stub
-                        Log.d(TAG, "Disabled provider : " + provider);
-
-                }
-
-                @Override
-                public void onLocationChanged(Location location) {
-                        // TODO Auto-generated method stub
-                        Log.d(TAG, "onLocationChanged Location : " + location);
-                }
-        };
 
         /**
          * 初始化地圖設定
@@ -246,6 +146,7 @@ public class MapFragment extends Fragment {
 
                 Double lat = Double.valueOf(org_lat);
                 Double lng = Double.valueOf(org_lng);
+
                 if (lat != null && lng != null) {
                         if (lat > 0 && lng > 0) {
                                 orgPosition = new LatLng(lat, lng);
@@ -262,119 +163,6 @@ public class MapFragment extends Fragment {
                         Log.e(TAG, "Organization Location == null");
                 }
         }
-
-        /** Location Manager **/
-        public void initialMyLocationFunction() {
-                gll = new gpsLocationListener();
-                wll = new wifiLocationListener();
-
-                /** 取得系統定位服務 **/
-                LocationManager status = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-                if (status.isProviderEnabled(LocationManager.GPS_PROVIDER) || status.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                        // 如果GPS和網路定位開啟，呼叫locationServiceInitial()更新位置
-                        getService = true; // 確認開啟定位服務
-                        locationServiceInitial();
-                } else {
-                        Log.e(TAG, "LocationProvider Disable");
-                        // 開啟設定頁面
-                        // Toast.makeText(this, "請開啟定位服務",
-                        // Toast.LENGTH_LONG).show();
-                        // startActivity(new
-                        // Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                }
-
-        }
-
-        private void locationServiceInitial() {
-                lms = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE); // 嚙踝蕭嚙緻嚙緣嚙諄定嚙踝蕭A嚙踝蕭
-                gps_location = lms.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                wifi_location = lms.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                if (LocationManager.GPS_PROVIDER != null) {
-                        getGPSLocation(gps_location);
-                } else {
-                        Log.e(TAG, "LocationManager.GPS_PROVIDER == null");
-                }
-                if (LocationManager.NETWORK_PROVIDER != null) {
-                        getWiFiLLocation(wifi_location);
-                } else {
-                        Log.e(TAG, "LocationManager.NETWORK_PROVIDER == null");
-                }
-        }
-
-        private void getGPSLocation(Location gps_location) {
-                Log.v(TAG, "getGPSLocation");
-                if (gps_location != null) {
-                        gps_longitude = gps_location.getLongitude();
-                        gps_latitude = gps_location.getLatitude();
-                } else {
-                        Log.e(TAG, "GPSLocation == null");
-                }
-        }
-
-        private void getWiFiLLocation(Location wifi_location) {
-                Log.v(TAG, "getWiFiLLocation");
-                if (wifi_location != null) {
-                        wifi_longitude = wifi_location.getLongitude();
-                        wifi_latitude = wifi_location.getLatitude();
-                } else {
-                        Log.e(TAG, "WiFiLLocation == null");
-                }
-        }
-
-        class gpsLocationListener implements LocationListener {
-                @Override
-                public void onLocationChanged(Location gps_location) { // 當地點改變時
-                        // TODO Auto-generated method stub
-                        getGPSLocation(gps_location);
-                        Log.i(TAG, "GPS Location Change");
-                        Log.i(TAG, "gps_latitude : " + gps_latitude);
-                        Log.i(TAG, "gps_longitude : " + gps_longitude);
-                }
-
-                @Override
-                public void onProviderDisabled(String arg0) { // 當GPS定位功能關閉時
-                        // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void onProviderEnabled(String arg0) { // 當GPS定位功能開啟時
-                        // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void onStatusChanged(String arg0, int arg1, Bundle arg2) { // 定位狀態改變
-                        // TODO Auto-generated method stub
-                }
-        }
-
-        class wifiLocationListener implements LocationListener {
-
-                @Override
-                public void onLocationChanged(Location wifi_location) { // 當地點改變時
-                        // TODO Auto-generated method stub
-                        getWiFiLLocation(wifi_location);
-                        Log.i(TAG, "Wifi Location Change");
-                        Log.i(TAG, "wifi_latitude : " + wifi_latitude);
-                        Log.i(TAG, "wifi_longitude : " + wifi_longitude);
-                }
-
-                @Override
-                public void onProviderDisabled(String arg0) { // 當網路定位功能關閉時
-                        // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void onProviderEnabled(String arg0) { // 當網路定位功能開啟
-                        // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void onStatusChanged(String arg0, int arg1, Bundle arg2) { // 定位狀態改變
-                        // TODO Auto-generated method stub
-                }
-        }
-
-        /** End of Location Manager **/
 
         /** 取得導航訊息 **/
         public void getDestinationGuide() {
@@ -725,12 +513,6 @@ public class MapFragment extends Fragment {
         @Override
         public void onResume() {
                 super.onResume();
-
-                // 回到頁面時開啟監聽
-                if (getService) {
-                        lms.requestLocationUpdates(LocationManager.GPS_PROVIDER, updateTime, updateDst, gll);
-                        lms.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, updateTime, updateDst, wll);
-                }
         }
 
         @Override
@@ -746,10 +528,6 @@ public class MapFragment extends Fragment {
         @Override
         public void onPause() {
                 super.onPause();
-                if (getService) {
-                        lms.removeUpdates(gll);// 離開頁面時GPS停止更新
-                        lms.removeUpdates(wll);// 離開頁面時WIFI停止更新
-                }
         }
 
         @Override

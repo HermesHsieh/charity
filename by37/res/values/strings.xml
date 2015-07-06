@@ -9,7 +9,8 @@
     <string name="action_back">Back</string>
     <!-- mNB = AIzaSyB8Vr8zM-xcbOaW9a8bgLWkfZc8Hcfwrko -->
     <!-- mHome = AIzaSyBCpbIzDF7bEd09CLdSj2HxVoiuPOu5ifY -->
-    <string name="map_api_key">AIzaSyB8Vr8zM-xcbOaW9a8bgLWkfZc8Hcfwrko</string>
+    <!-- key = AIzaSyBfN45rwG_xyPWwmdBNIbaiyLgF0sy0pVw -->
+    <string name="map_api_key">AIzaSyBfN45rwG_xyPWwmdBNIbaiyLgF0sy0pVw</string>
     <!-- Facebook App Id -->
     <string name="app_id">1435759036715618</string>
     <string name="fragment_member_login">Fragement Member Login</string>
@@ -19,6 +20,7 @@
     <string name="title_member_login">會員登入</string>
     <string name="title_member_signup">會員註冊</string>
     <string name="title_member">會員中心</string>
+    <string name="title_member_edit">編輯會員</string>
     <string name="title_member_service">會員服務</string>
     <string name="title_search">搜尋</string>
     <string name="title_test">測試</string>
@@ -89,7 +91,7 @@
     <string name="supplies_mail_empty">目前沒有E-mail</string>
     <string name="string_empty">無</string>
     <string name="ok">確定</string>
-    <string name="cancle">取消</string>
+    <string name="cancel">取消</string>
     <string name="trade_history">交易查詢</string>
     <string name="heart_money_history">愛心點數查詢</string>
     <string name="edit_product">編輯商品</string>
@@ -112,6 +114,7 @@
     <string name="symbol_confuse">？</string>
     <string name="symbol_notice">！</string>
     <string name="my_position_submit">確認我的位置</string>
+    <string name="my_position_delete">刪除我的位置</string>
     <string name="search">搜尋</string>
     <string name="position_hint_desc">請設定您的位置。\n您可以直接使用系統為您抓取的位置\n或任意選擇地標\n如：\n公車站牌、公園、景點、商店、公司等\n當作預設位置。</string>
     <string name="delete_my_position_setting">是否刪除我的位置：</string>
@@ -124,6 +127,7 @@
     <string name="address_short">搜尋地址過短，請重新輸入</string>
     <string name="search_hint">搜尋地址或關鍵字</string>
     <string name="send">送出</string>
+    <string name="org_type_choose_max">選擇機構類別超過3個</string>
 
     <!-- Sliding Menu Item -->
     <string-array name="sliding_menu_item">
@@ -218,10 +222,6 @@
         <item>國際救援</item>
         <item>重大災難</item>
         <item>多元服務</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
     </string-array>
 
 </resources>

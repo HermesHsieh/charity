@@ -2,10 +2,7 @@
 
     <style name="AppBaseTheme" parent="android:Theme.Holo.Light"></style>
 
-    <!-- Application theme. -->
-    <style name="AppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-    </style>
+    <style name="AppTheme" parent="AppBaseTheme" />
 
     <!-- 首頁Fragment's margin -->
     <style name="main_fragment_margin" parent="android:Widget">
@@ -63,6 +60,7 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <!-- 訊息紅色框Style -->
     <style name="HighLightTextView_1" parent="android:Widget">
         <item name="android:layout_width">20dp</item>
         <item name="android:layout_height">20dp</item>

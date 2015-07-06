@@ -185,6 +185,11 @@ public class OrganizationData {
                 return this.supports;
         }
 
+        @Override
+        public String toString() {
+                return "OrganizationData = id : " + id + ", name : " + name + ", email : " + email + ", address : " + address + ", phone : " + phone + ", longitude : " + longitude + ", latitude : " + latitude + ", created_at : " + created_at + ", updated_at : " + updated_at + ", title : " + title + ", content : " + content + ", keyword : " + keyword + ", url : " + url + ", contact : " + contact + ", number : " + number + ", supports : [ " + supports.toString() + " ], organization_id : " + organization_id + ", organizationType_id : " + organizationType_id;
+        }
+
         // private Supports[] supports;
 
         public String _id = "";

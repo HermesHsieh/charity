@@ -13,7 +13,6 @@ import tw.org.by37.MainActivity;
 import tw.org.by37.R;
 import tw.org.by37.SignupActivity;
 import tw.org.by37.data.RegisterData;
-import tw.org.by37.data.UserData2;
 import tw.org.by37.service.UsersApiService;
 import tw.org.by37.util.FunctionUtil;
 import android.app.ProgressDialog;
@@ -62,7 +61,7 @@ import com.google.android.gms.plus.model.people.Person;
 
 public class LoginFragment extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener {
 
-        private final static String TAG = "LoginFragment";
+        private final static String TAG = LoginFragment.class.getName();
 
         private Context mContext;
 
@@ -108,8 +107,8 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
         /** 記住我 **/
         private CheckBox ckb_remember_me;
         /** 記住我的帳號 **/
-        private String rm_account;
-        private boolean remember_me = false;
+        private String mAccount;
+        private boolean isRememberMeAccount = false;
 
         public static String fb_name = null;
         public static String fb_email = null;
@@ -123,10 +122,11 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
                 View view = inflater.inflate(R.layout.fragment_login, container, false);
                 mContext = getActivity();
-                getRememberMe();
+                getRememberMeTag();
                 getUserRMAccount();
                 findView(view);
                 initGoogleSignInButton(view);
+                
                 return view;
         }
 
@@ -143,9 +143,9 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                 edt_account = (EditText) view.findViewById(R.id.edt_account);
                 edt_password = (EditText) view.findViewById(R.id.edt_password);
 
-                if (remember_me) {
-                        if (rm_account != null)
-                                edt_account.setText(rm_account);
+                if (isRememberMeAccount) {
+                        if (mAccount != null)
+                                edt_account.setText(mAccount);
                 }
 
                 edt_account.addTextChangedListener(new TextWatcher() {
@@ -161,29 +161,25 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                         @Override
                         public void afterTextChanged(Editable s) {
                                 // 假如記住我的選項有打勾
-                                if (remember_me) {
-                                        new Thread(new Runnable() {
-                                                public void run() {
-                                                        rm_account = edt_account.getText().toString();
-                                                        // 當輸入帳號時都將他的值儲存於手機內
-                                                        putUserRMAccount(rm_account);
-                                                }
-                                        }).start();
+                                if (isRememberMeAccount) {
+                                        mAccount = edt_account.getText().toString();
+                                        // 當輸入帳號時都將他的值儲存於手機內
+                                        putUserRMAccount(mAccount);
                                 }
                         }
                 });
 
                 ckb_remember_me = (CheckBox) view.findViewById(R.id.ckb_remember_me);
-                ckb_remember_me.setChecked(remember_me);
+                ckb_remember_me.setChecked(isRememberMeAccount);
                 ckb_remember_me.setOnCheckedChangeListener(new OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                 Log.d(TAG, "onCheckedChanged : " + isChecked);
-                                remember_me = isChecked;
+                                isRememberMeAccount = isChecked;
                                 putUserRememberMe();
-                                if (remember_me) {
-                                        rm_account = edt_account.getText().toString();
-                                        putUserRMAccount(rm_account);
+                                if (isRememberMeAccount) {
+                                        mAccount = edt_account.getText().toString();
+                                        putUserRMAccount(mAccount);
                                 } else {
                                         removeUserRMAccount();
                                 }
@@ -624,22 +620,22 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
         /** End of Activity Bundle **/
 
         /** Preferences **/
-        /** 獲取記住我資料 **/
-        public void getRememberMe() {
+        /** 獲取記住我(帳號)的Tag **/
+        public void getRememberMeTag() {
                 Log.i(TAG, "getRememberMe");
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
                 try {
-                        remember_me = sp.getBoolean(k_UserData_5, false);
+                        isRememberMeAccount = sp.getBoolean(k_UserData_5, false);
                 } catch (Exception e) {
                 }
-                Log.d(TAG, "remember_me : " + remember_me);
+                Log.d(TAG, "remember_me : " + isRememberMeAccount);
         }
 
         /** 儲存記住我資料 **/
         public void putUserRememberMe() {
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
                 SharedPreferences.Editor editor = sp.edit();
-                editor.putBoolean(k_UserData_5, remember_me);
+                editor.putBoolean(k_UserData_5, isRememberMeAccount);
                 editor.commit();
         }
 
@@ -648,10 +644,10 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                 Log.i(TAG, "getUserRMAccount");
                 SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
                 try {
-                        rm_account = sp.getString(k_UserData_6, null);
+                        mAccount = sp.getString(k_UserData_6, null);
                 } catch (Exception e) {
                 }
-                Log.d(TAG, "rm_account : " + rm_account);
+                Log.d(TAG, "rm_account : " + mAccount);
         }
 
         /** 儲存記住我的帳號資料 **/

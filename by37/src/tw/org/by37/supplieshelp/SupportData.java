@@ -86,4 +86,13 @@ public class SupportData {
                 return organization;
         }
 
+        @Override
+        public String toString() {
+                try {
+                        return "SupportData = id : " + id + ", name : " + name + ", description : " + description + ", organizationId : " + organizationId + ", total : " + total + ", created_at : " + created_at + ", updated_at : " + updated_at + ", goodsTypeId : " + goodsTypeId + ", organization : [ " + organization.toString() + " ]";
+                } catch (Exception e) {
+                        return "toString Exception";
+                }
+        }
+
 }

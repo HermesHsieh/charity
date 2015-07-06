@@ -10,6 +10,7 @@ import tw.org.by37.R;
 import tw.org.by37.config.SysConfig;
 import tw.org.by37.data.SelectingData;
 import tw.org.by37.emergency.EmergencyFragment.MainBroadcastReceiver;
+import tw.org.by37.service.LocationService;
 import tw.org.by37.supplieshelp.DBControlSupplies;
 import tw.org.by37.supplieshelp.SuppliesHelpFragment;
 import tw.org.by37.supplieshelp.SuppliesListAdapter;
@@ -30,7 +31,7 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class NearOrganizationFragment extends Fragment {
-        private final static String TAG = "NearOrganizationFragment";
+        private final static String TAG = NearOrganizationFragment.class.getName();
 
         private Context mContext;
 
@@ -52,6 +53,11 @@ public class NearOrganizationFragment extends Fragment {
 
         private ArrayList<OrganizationData> mNearOrganizationData;
 
+        /**
+         * 控制鄰近機構輪迴的Tag, 有GPS位置才去抓資料
+         */
+        private boolean isGpsAvailable = false;
+
         public NearOrganizationFragment() {
                 super();
         }
@@ -72,10 +78,33 @@ public class NearOrganizationFragment extends Fragment {
 
                 initBroadcast();
 
-                getNearOrganizationData();
+                mGetNearOrganizationDataThread.start();
+
+                // getNearOrganizationData();
 
                 return view;
         }
+
+        /**
+         * 取得鄰近機構資料, 以輪迴方式確認有GPS位置後才去抓資料
+         */
+        private Thread mGetNearOrganizationDataThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                        while (!isGpsAvailable) {
+                                Log.d(TAG, "isGpsAvailable : " + isGpsAvailable + ", checkLocationStatus : " + LocationService.checkLocationStatus());
+                                if (LocationService.checkLocationStatus()) {
+                                        getNearOrganizationData();
+                                        isGpsAvailable = true;
+                                }
+                                try {
+                                        Thread.sleep(100);
+                                } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                }
+                        }
+                }
+        });
 
         /** 廣播初始參數 **/
         private void initBroadcast() {
@@ -85,11 +114,11 @@ public class NearOrganizationFragment extends Fragment {
 
         private void getNearOrganizationData() {
                 Log.i(TAG, "getNearOrganizationData");
-                if (SuppliesHelpFragment.wifi_latitude > 0 && SuppliesHelpFragment.wifi_longitude > 0) {
-                        String[] mPosition = { String.valueOf(SuppliesHelpFragment.wifi_latitude), String.valueOf(SuppliesHelpFragment.wifi_longitude) };
+                if (LocationService.checkLocationStatus()) {
+                        String[] mPosition = { String.valueOf(LocationService.latitude), String.valueOf(LocationService.longitude) };
                         new GetNearOrganizationAsyncTask(mContext).execute(mPosition);
                 } else {
-                        Log.e(TAG, "Wifi Location < 0");
+                        Log.e(TAG, "Location Lat and Lng are unavailable");
                 }
         }
 
@@ -148,7 +177,12 @@ public class NearOrganizationFragment extends Fragment {
                 sp_category = (Spinner) view.findViewById(R.id.spinner_category);
         }
 
-        /** 設定收到廣播後的動作 **/
+        /**
+         * 設定收到廣播後的動作 from GetNearOrganizationAsyncTask
+         * 
+         * @author Tellasy
+         * 
+         */
         public class MainBroadcastReceiver extends BroadcastReceiver {
                 @Override
                 public void onReceive(Context context, Intent intent) {
@@ -190,6 +224,7 @@ public class NearOrganizationFragment extends Fragment {
         @Override
         public void onResume() {
                 super.onResume();
+                // 註冊廣播
                 getActivity().registerReceiver(mMainBroadcastReceiverr, mGetNearOrganizationIntentFilter);
         }
 
@@ -206,6 +241,7 @@ public class NearOrganizationFragment extends Fragment {
         @Override
         public void onPause() {
                 super.onPause();
+                // 離開時，註冊廣播
                 getActivity().unregisterReceiver(mMainBroadcastReceiverr);
         }
 

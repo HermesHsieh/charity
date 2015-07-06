@@ -1,7 +1,6 @@
 package tw.org.by37;
 
 import tw.org.by37.data.SelectingData;
-import tw.org.by37.data.SupplyData;
 import tw.org.by37.member.LoginFragment;
 import tw.org.by37.menu.BottomMenuFragment;
 import tw.org.by37.menu.RightMenuFragment;
@@ -27,7 +26,7 @@ public class OrganizationActivity extends BackActivity {
 
         private Context mContext;
 
-        private final static String TAG = "OrganizationActivity";
+        private final static String TAG = OrganizationActivity.class.getName();
 
         /** 滑動Menu **/
         private SlidingMenu mSlidingMenu;
@@ -64,7 +63,7 @@ public class OrganizationActivity extends BackActivity {
 
                 // initSlidingMenu();
 
-                switchOrganizationFragment(SelectingData.mSupplyData);
+                switchOrganizationFragment();
 
         }
 
@@ -239,7 +238,7 @@ public class OrganizationActivity extends BackActivity {
         /**
          * switchOrganizationFragment 介面
          */
-        public void switchOrganizationFragment(SupplyData mData) {
+        public void switchOrganizationFragment() {
                 FragmentManager manager = getSupportFragmentManager();
                 Fragment fragment = manager.findFragmentById(R.id.fragment_content);
 
@@ -247,8 +246,6 @@ public class OrganizationActivity extends BackActivity {
 
                 if (mOrganizationFragment == null)
                         mOrganizationFragment = new OrganizationFragment();
-
-                mOrganizationFragment.setSupplyData(mData);
 
                 if (fragment == null) {
                         ft.add(R.id.fragment_content, mOrganizationFragment);

@@ -25,6 +25,19 @@
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
         android:text="@string/my_position_submit" />
+    
+        <Button
+        android:id="@+id/btn_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:alpha=".85"
+        android:background="@drawable/selector_main_blue"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        android:text="@string/my_position_submit" />
 
     <ImageView
         android:id="@+id/img_position"

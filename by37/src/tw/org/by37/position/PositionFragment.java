@@ -5,8 +5,9 @@ import static tw.org.by37.config.SysConfig.k_My_Position_Hint;
 import java.util.ArrayList;
 
 import tw.org.by37.MainActivity;
-import tw.org.by37.R;
 import tw.org.by37.MyApplication;
+import tw.org.by37.R;
+import tw.org.by37.service.LocationService;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -16,8 +17,6 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.DialogInterface.OnShowListener;
 import android.content.SharedPreferences;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,7 +44,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
-import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMyLocationChangeListener;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -72,25 +70,6 @@ public class PositionFragment extends Fragment {
         private static PositionFragment mPositionFragment;
 
         private GoogleMap map;
-
-        /** MyLocation Param **/
-        public static double wifi_latitude = -1;
-        public static double wifi_longitude = -1;
-        public static double gps_latitude = -1;
-        public static double gps_longitude = -1;
-
-        private LocationManager lms;
-        private gpsLocationListener gll;
-        private wifiLocationListener wll;
-        private boolean getService = false;
-        private Location gps_location;
-        private Location wifi_location;
-
-        /** Location Position 更新的時間限制,單位:毫秒 **/
-        private final static int updateTime = 60 * 1000;
-        /** Location Position 更新的距離限制,單位:米 **/
-        private final static int updateDst = 10;
-        /** End of MyLocation Param **/
 
         /** 確認我的位置的按鈕 **/
         private Button btn_my_position_submit;
@@ -130,6 +109,9 @@ public class PositionFragment extends Fragment {
         private String user_setting_address;
         private Marker user_setting_marker;
 
+        /** 輔助刪除或新增位置的Button **/
+        private Button btn_hint;
+
         public static PositionFragment getInstance() {
                 return mPositionFragment;
         }
@@ -166,13 +148,9 @@ public class PositionFragment extends Fragment {
 
                 View view = inflater.inflate(R.layout.fragment_position, container, false);
 
-                initialMyLocationFunction();
-
                 initMap();
 
                 findView(view);
-
-                lms.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, updateTime, updateDst, mLocationListener);
 
                 map.setOnMyLocationChangeListener(new OnMyLocationChangeListener() {
                         @Override
@@ -209,27 +187,29 @@ public class PositionFragment extends Fragment {
 
         /** 獲取使用者原本設定的位置資訊 **/
         private void getUserSettingPosition() {
-                if (MainActivity.mUserApplication.userData != null) {
-                        Log.d(TAG, MainActivity.mUserApplication.userData.getUser().getInfo().toString());
-                        try {
-                                user_setting_lat = Double.valueOf(MainActivity.mUserApplication.userData.getUser().getInfo().getLat());
-                                user_setting_lng = Double.valueOf(MainActivity.mUserApplication.userData.getUser().getInfo().getLng());
-                                user_setting_address = MainActivity.mUserApplication.userData.getUser().getInfo().getAddress();
+                if (LocationService.checkLocationStatus()) {
+                        if (MyApplication.getInstance().userData != null) {
+                                Log.d(TAG, (MyApplication.getInstance().userData.getUser().getInfo().toString()));
+                                try {
+                                        user_setting_lat = Double.valueOf((MyApplication.getInstance().userData.getUser().getInfo().getLat()));
+                                        user_setting_lng = Double.valueOf((MyApplication.getInstance().userData.getUser().getInfo().getLng()));
+                                        user_setting_address = MyApplication.getInstance().userData.getUser().getInfo().getAddress();
 
-                                // Log.d(TAG,
-                                // MainActivity.mUserApplication.userData.getUser().getInfo().toString());
-                                if (user_setting_lat != null && user_setting_lng != null && user_setting_lat > 0 && user_setting_lng > 0 && user_setting_address != null) {
-                                        markerUserSettingPosition();
-                                        moveCameraToUserSettingPosition();
+                                        // Log.d(TAG,
+                                        // MainActivity.mUserApplication.userData.getUser().getInfo().toString());
+                                        if (user_setting_lat != null && user_setting_lng != null && user_setting_lat > 0 && user_setting_lng > 0 && user_setting_address != null) {
+                                                markerUserSettingPosition();
+                                                moveCameraToUserSettingPosition();
+                                        }
+                                } catch (Exception e) {
+                                        Log.e(TAG, "getUserDefaultPosition Exception");
+                                        // 沒有使用者之前的資料, Camera移動到使用者當前的位置
+                                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(LocationService.latitude, LocationService.longitude), 16));
                                 }
-                        } catch (Exception e) {
-                                Log.e(TAG, "getUserDefaultPosition Exception");
+                        } else {
                                 // 沒有使用者之前的資料, Camera移動到使用者當前的位置
-                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(wifi_latitude, wifi_longitude), 16));
+                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(LocationService.latitude, LocationService.longitude), 16));
                         }
-                } else {
-                        // 沒有使用者之前的資料, Camera移動到使用者當前的位置
-                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(wifi_latitude, wifi_longitude), 16));
                 }
         }
 
@@ -250,7 +230,7 @@ public class PositionFragment extends Fragment {
                 new Handler().postDelayed(new Runnable() {
                         public void run() {
                                 // 提示使用者可以滑動重新設定位置
-                                Toast.makeText(mContext, getString(R.string.move_setting_position), Toast.LENGTH_LONG).show();
+                                Toast.makeText(mContext, mContext.getString(R.string.move_setting_position), Toast.LENGTH_LONG).show();
                         }
                 }, 2500);
         }
@@ -308,15 +288,18 @@ public class PositionFragment extends Fragment {
                 edt_search = (EditText) view.findViewById(R.id.edt_search);
                 btn_search = (Button) view.findViewById(R.id.btn_search);
                 img_clean = (ImageView) view.findViewById(R.id.img_clean);
+                btn_hint = (Button) view.findViewById(R.id.btn_hint);
 
                 img_hint_close.setOnClickListener(mButtonClickListener);
                 btn_my_position_submit.setOnClickListener(mButtonClickListener);
                 btn_my_position_update.setOnClickListener(mButtonClickListener);
                 btn_search.setOnClickListener(mButtonClickListener);
                 img_clean.setOnClickListener(mButtonClickListener);
+                btn_hint.setOnClickListener(mButtonClickListener);
 
                 edt_search.addTextChangedListener(textWatcher);
 
+                btn_hint.setVisibility(View.GONE);
         }
 
         private void showHintLayout() {
@@ -345,7 +328,8 @@ public class PositionFragment extends Fragment {
                         case R.id.btn_my_position_update:
                                 isVisibleSubmitButton = true;
                                 SubmitButtonAndMarkerShow(isVisibleSubmitButton);
-                                moveCamera(new LatLng(wifi_latitude, wifi_longitude));
+                                if (LocationService.checkLocationStatus())
+                                        moveCamera(new LatLng(LocationService.latitude, LocationService.longitude));
                                 break;
                         case R.id.btn_search:
                                 isVisibleSubmitButton = false;
@@ -359,6 +343,8 @@ public class PositionFragment extends Fragment {
                                                 new GetPositionByAddressTask().execute();
                                         }
                                 }
+                                break;
+                        case R.id.btn_hint:
                                 break;
                         case R.id.img_clean:
                                 edt_search.setText("");
@@ -487,6 +473,13 @@ public class PositionFragment extends Fragment {
                 mListView.setOnItemClickListener(new OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
+                                map.clear();
+
+                                // // 顯示輔助按鈕
+                                // btn_hint.setVisibility(View.VISIBLE);
+                                // // 搜尋後, 是要確認我的位置
+                                // btn_hint.setText(getString(R.string.my_position_submit));
+
                                 search_lat = Double.valueOf(mLocationList.get(position).lat);
                                 search_lng = Double.valueOf(mLocationList.get(position).lng);
                                 search_address = mLocationList.get(position).address;
@@ -540,7 +533,7 @@ public class PositionFragment extends Fragment {
                 // 設定不能取消, true可以按返回鍵取消, false不可以按返回鍵取消
                 builder.setCancelable(false);
                 // 設定Positive按鈕資料
-                builder.setPositiveButton(mContext.getResources().getString(R.string.cancle), new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(mContext.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
@@ -602,7 +595,7 @@ public class PositionFragment extends Fragment {
                 // 設定不能取消, true可以按返回鍵取消, false不可以按返回鍵取消
                 builder.setCancelable(false);
                 // 設定Positive按鈕資料
-                builder.setPositiveButton(mContext.getResources().getString(R.string.cancle), new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(mContext.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                                 Log.d(TAG, "Positive+");
@@ -620,12 +613,12 @@ public class PositionFragment extends Fragment {
                                 user_setting_address = null;
                                 user_setting_marker = null;
 
-                                MainActivity.mUserApplication.userData.getUser().getInfo().setLat(null);
-                                MainActivity.mUserApplication.userData.getUser().getInfo().setLng(null);
-                                MainActivity.mUserApplication.userData.getUser().getInfo().setAddress("");
+                                MyApplication.getInstance().userData.getUser().getInfo().setLat(null);
+                                MyApplication.getInstance().userData.getUser().getInfo().setLng(null);
+                                MyApplication.getInstance().userData.getUser().getInfo().setAddress("");
 
                                 Gson gson = new Gson();
-                                String data = gson.toJson(MainActivity.mUserApplication.userData);
+                                String data = gson.toJson(MyApplication.getInstance().userData);
                                 MyApplication.getInstance().putUserResult(data);
 
                                 Toast.makeText(mContext, getString(R.string.clean_finish), Toast.LENGTH_LONG).show();
@@ -668,12 +661,12 @@ public class PositionFragment extends Fragment {
 
         /** 儲存搜尋結果到手機內存使用者的資料 **/
         private void saveUserPositionData() {
-                MainActivity.mUserApplication.userData.getUser().getInfo().setLat(String.valueOf(search_lat));
-                MainActivity.mUserApplication.userData.getUser().getInfo().setLng(String.valueOf(search_lng));
-                MainActivity.mUserApplication.userData.getUser().getInfo().setAddress(String.valueOf(search_address));
+                MyApplication.getInstance().userData.getUser().getInfo().setLat(String.valueOf(search_lat));
+                MyApplication.getInstance().userData.getUser().getInfo().setLng(String.valueOf(search_lng));
+                MyApplication.getInstance().userData.getUser().getInfo().setAddress(String.valueOf(search_address));
 
                 Gson gson = new Gson();
-                String data = gson.toJson(MainActivity.mUserApplication.userData);
+                String data = gson.toJson(MyApplication.getInstance().userData);
                 Log.d(TAG, "saveUserPositionData Data : " + data);
                 MyApplication.getInstance().putUserResult(data);
         }
@@ -711,52 +704,6 @@ public class PositionFragment extends Fragment {
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(site, 16));
         }
 
-        /** 點擊Map事件監聽 **/
-        private class MyMapClickListener implements OnMapClickListener {
-                @Override
-                public void onMapClick(LatLng position) {
-                        // TODO Auto-generated method stub
-                        Log.d(TAG, "onMapClick Position : " + position);
-
-                        // CameraPosition cameraPosition = new
-                        // CameraPosition.Builder().target(position).zoom(16).build();
-                        // CameraUpdate cameraUpdate =
-                        // CameraUpdateFactory.newCameraPosition(cameraPosition);
-                        // map.animateCamera(cameraUpdate);
-                }
-        };
-
-        /** 位置事件監聽 **/
-        private LocationListener mLocationListener = new LocationListener() {
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-                        // TODO Auto-generated method stub
-                        Log.d(TAG, "StatusChanged provider : " + provider + ", Status : " + status + ", extras : " + extras);
-
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-                        // TODO Auto-generated method stub
-                        Log.d(TAG, "Enabled provider : " + provider);
-
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-                        // TODO Auto-generated method stub
-                        Log.d(TAG, "Disabled provider : " + provider);
-
-                }
-
-                @Override
-                public void onLocationChanged(Location location) {
-                        // TODO Auto-generated method stub
-                        Log.d(TAG, "onLocationChanged Location : " + location);
-                }
-        };
-
         /**
          * 初始化地圖設定
          */
@@ -767,7 +714,7 @@ public class PositionFragment extends Fragment {
                 map = mySupportMapFragment.getMap();
                 map.setOnMarkerClickListener(new MapMarkerClickListener());
                 map.setOnInfoWindowClickListener(new MarkerInfoWindowClickListener());
-                map.setOnMapClickListener(new MyMapClickListener());
+
                 if (map != null) {
                         try {
                                 // 設置在地圖上顯示我的位置
@@ -791,120 +738,6 @@ public class PositionFragment extends Fragment {
                         }
                 }
         }
-
-        /** Location Manager **/
-        public void initialMyLocationFunction() {
-                gll = new gpsLocationListener();
-                wll = new wifiLocationListener();
-
-                /** 取得系統定位服務 **/
-                LocationManager status = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-                if (status.isProviderEnabled(LocationManager.GPS_PROVIDER) || status.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                        // 如果GPS和網路定位開啟，呼叫locationServiceInitial()更新位置
-                        getService = true; // 確認開啟定位服務
-                        locationServiceInitial();
-                } else {
-                        Log.e(TAG, "LocationProvider Disable");
-                        // 開啟設定頁面
-                        // Toast.makeText(this, "請開啟定位服務",
-                        // Toast.LENGTH_LONG).show();
-                        // startActivity(new
-                        // Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                }
-
-        }
-
-        private void locationServiceInitial() {
-                lms = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE); // 取得系統定位服務
-                gps_location = lms.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                wifi_location = lms.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                if (LocationManager.GPS_PROVIDER != null) {
-                        getGPSLocation(gps_location);
-                } else {
-                        Log.e(TAG, "LocationManager.GPS_PROVIDER == null");
-                }
-                if (LocationManager.NETWORK_PROVIDER != null) {
-                        getWiFiLLocation(wifi_location);
-                } else {
-                        Log.e(TAG, "LocationManager.NETWORK_PROVIDER == null");
-                }
-
-        }
-
-        private void getGPSLocation(Location gps_location) {
-                Log.v(TAG, "getGPSLocation");
-                if (gps_location != null) {
-                        gps_longitude = gps_location.getLongitude();
-                        gps_latitude = gps_location.getLatitude();
-                } else {
-                        Log.e(TAG, "GPSLocation == null");
-                }
-        }
-
-        private void getWiFiLLocation(Location wifi_location) {
-                Log.v(TAG, "getWiFiLLocation");
-                if (wifi_location != null) {
-                        wifi_longitude = wifi_location.getLongitude();
-                        wifi_latitude = wifi_location.getLatitude();
-                } else {
-                        Log.e(TAG, "WiFiLLocation == null");
-                }
-        }
-
-        class gpsLocationListener implements LocationListener {
-                @Override
-                public void onLocationChanged(Location gps_location) { // 當地點改變時
-                        // TODO Auto-generated method stub
-                        getGPSLocation(gps_location);
-                        Log.i(TAG, "GPS Location Change");
-                        Log.i(TAG, "gps_latitude : " + gps_latitude);
-                        Log.i(TAG, "gps_longitude : " + gps_longitude);
-                }
-
-                @Override
-                public void onProviderDisabled(String arg0) { // 當GPS定位功能關閉時
-                        // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void onProviderEnabled(String arg0) { // 當GPS定位功能開啟時
-                        // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void onStatusChanged(String arg0, int arg1, Bundle arg2) { // 定位狀態改變
-                        // TODO Auto-generated method stub
-                }
-        }
-
-        class wifiLocationListener implements LocationListener {
-
-                @Override
-                public void onLocationChanged(Location wifi_location) { // 當地點改變時
-                        // TODO Auto-generated method stub
-                        getWiFiLLocation(wifi_location);
-                        Log.i(TAG, "Wifi Location Change");
-                        Log.i(TAG, "wifi_latitude : " + wifi_latitude);
-                        Log.i(TAG, "wifi_longitude : " + wifi_longitude);
-                }
-
-                @Override
-                public void onProviderDisabled(String arg0) { // 當網路定位功能關閉時
-                        // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void onProviderEnabled(String arg0) { // 當網路定位功能開啟
-                        // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void onStatusChanged(String arg0, int arg1, Bundle arg2) { // 定位狀態改變
-                        // TODO Auto-generated method stub
-                }
-        }
-
-        /** End of Location Manager **/
 
         /** Preferences **/
 
@@ -933,11 +766,6 @@ public class PositionFragment extends Fragment {
         @Override
         public void onResume() {
                 super.onResume();
-                // 回到頁面時開啟監聽
-                if (getService) {
-                        lms.requestLocationUpdates(LocationManager.GPS_PROVIDER, updateTime, updateDst, gll);
-                        lms.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, updateTime, updateDst, wll);
-                }
         }
 
         @Override
@@ -953,16 +781,11 @@ public class PositionFragment extends Fragment {
         @Override
         public void onPause() {
                 super.onPause();
-                if (getService) {
-                        lms.removeUpdates(gll);// 離開頁面時GPS停止更新
-                        lms.removeUpdates(wll);// 離開頁面時WIFI停止更新
-                }
         }
 
         @Override
         public void onDestroy() {
                 super.onDestroy();
-
                 mPositionFragment = null;
         }
 }

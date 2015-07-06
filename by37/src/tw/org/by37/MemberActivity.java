@@ -2,7 +2,6 @@ package tw.org.by37;
 
 import static tw.org.by37.config.RequestCode.*;
 
-import tw.org.by37.data.UserData2;
 import tw.org.by37.member.LoginFragment;
 import tw.org.by37.member.MemberFragment;
 import tw.org.by37.member.SignupFragment;

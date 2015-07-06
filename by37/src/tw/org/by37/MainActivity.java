@@ -6,7 +6,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import tw.org.by37.config.SysConfig;
-import tw.org.by37.data.UserData2;
 import tw.org.by37.emergency.EmergencyFragment;
 import tw.org.by37.main.MainFragment;
 import tw.org.by37.member.LoginFragment;
@@ -20,6 +19,7 @@ import tw.org.by37.organization.OrganizationFragment;
 import tw.org.by37.position.PositionFragment;
 import tw.org.by37.productsell.MainProductSellFragment;
 import tw.org.by37.search.SearchFragment;
+import tw.org.by37.service.LocationService;
 import tw.org.by37.supplieshelp.SuppliesHelpFragment;
 import tw.org.by37.test.TestFragment;
 import tw.org.by37.test.TestPostFragment;
@@ -112,6 +112,7 @@ public class MainActivity extends SlidingFragmentActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
+                startService(new Intent(this, LocationService.class));
                 setContentView(R.layout.activity_main);
                 FunctionUtil.createFileRoot();
                 getDisplayMetrics();
@@ -303,7 +304,8 @@ public class MainActivity extends SlidingFragmentActivity {
                         gotoMemberActivity();
                         return true;
                 case R.id.action_search:
-                        switchSearchFragment();
+                        gotoSearchActivity();
+                        // switchSearchFragment();
                         return true;
                 }
                 return super.onOptionsItemSelected(item);
@@ -571,11 +573,18 @@ public class MainActivity extends SlidingFragmentActivity {
                 ft.commit();
         }
 
-        public void gotoMemberActivity() {
+        private void gotoMemberActivity() {
                 Intent intent = new Intent();
                 intent.setClass(mContext, MemberActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivityForResult(intent, MEMBER_ACTIVITY_CODE);
+        }
+
+        private void gotoSearchActivity() {
+                Intent intent = new Intent();
+                intent.setClass(mContext, SearchActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivityForResult(intent, SEARCH_ACTIVITY_CODE);
         }
 
         @Override
@@ -612,13 +621,19 @@ public class MainActivity extends SlidingFragmentActivity {
         protected void onResume() {
                 // TODO Auto-generated method stub
                 super.onResume();
-
         }
 
         @Override
         protected void onPause() {
+                // TODO Auto-generated method stub
                 super.onPause();
+        }
 
+        @Override
+        protected void onDestroy() {
+                // TODO Auto-generated method stub
+                super.onDestroy();
+                stopService(new Intent(this, LocationService.class));
         }
 
 }

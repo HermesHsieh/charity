@@ -26,7 +26,7 @@ public class SuppliesHelpActivity extends BackActivity {
 
         private Context mContext;
 
-        private final static String TAG = "OrganizationActivity";
+        private final static String TAG = SuppliesHelpActivity.class.getName();
 
         /** 滑動Menu **/
         private SlidingMenu mSlidingMenu;

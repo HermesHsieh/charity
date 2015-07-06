@@ -66,8 +66,6 @@ public class SysConfig {
         public static final String usersApi = ApiServer + "addUser";
         /** User 登入 **/
         public static final String usersLoginApi = ApiServer + "checkUser";
-        /** User 資料 **/
-        public static final String usersDataApi = ApiServer + "getUser/";
         /** 急難救助資料 **/
         public static final String emergenciesApi = ApiServer + "emergencies";
         public static final String emergencyAPI = ApiServer + "emergency/";

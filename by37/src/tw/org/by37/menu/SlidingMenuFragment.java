@@ -22,7 +22,7 @@ import android.widget.ListView;
 
 public class SlidingMenuFragment extends Fragment {
 
-        private final static String TAG = "SlidingMenuFragment";
+        private final static String TAG = SlidingMenuFragment.class.getName();
 
         private Context mContext;
 

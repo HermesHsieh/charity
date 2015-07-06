@@ -6,6 +6,7 @@ import tw.org.by37.R;
 import tw.org.by37.R.id;
 import tw.org.by37.R.layout;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -13,11 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class SlidingMenuAdapter extends BaseAdapter {
 
-        private final static String TAG = "SlidingMenuAdapter";
+        private final static String TAG = SlidingMenuAdapter.class.getName();
 
         private Context mContext;
 
@@ -64,6 +66,7 @@ public class SlidingMenuAdapter extends BaseAdapter {
                 return data.get(position).name;
         }
 
+        @SuppressLint("ResourceAsColor")
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
@@ -76,10 +79,17 @@ public class SlidingMenuAdapter extends BaseAdapter {
                         holder.tv_name = (TextView) convertView.findViewById(R.id.tv_name);
                         holder.img_icon = (ImageView) convertView.findViewById(R.id.img_icon);
                         holder.img_hint = (ImageView) convertView.findViewById(R.id.img_hint);
+                        holder.rl_layout = (RelativeLayout) convertView.findViewById(R.id.rl_layout);
+                        holder.item_click = (RelativeLayout) convertView.findViewById(R.id.item_click);
                         convertView.setTag(holder);
 
                 } else {
                         holder = (ViewHolder) convertView.getTag();
+                }
+
+                if (position == 0) {
+                        holder.rl_layout.setBackgroundColor(mContext.getResources().getColor(R.color.white));
+                        holder.tv_name.setTextColor(mContext.getResources().getColor(R.color.sliding_menu_background_2));
                 }
 
                 holder.tv_name.setText(data.get(position).name);
@@ -109,5 +119,7 @@ public class SlidingMenuAdapter extends BaseAdapter {
                 ImageView img_icon;
                 TextView tv_name;
                 ImageView img_hint;
+                RelativeLayout rl_layout;
+                RelativeLayout item_click;
         }
 }

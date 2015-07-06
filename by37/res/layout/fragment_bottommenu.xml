@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/item_click"
+        android:background="@drawable/item_click_white"
         android:visibility="visible" >
 
         <TextView
@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/item_click"
+        android:background="@drawable/item_click_white"
         android:paddingLeft="15dp"
         android:visibility="visible" >
 

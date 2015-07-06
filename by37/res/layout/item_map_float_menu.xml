@@ -11,7 +11,7 @@
         style="@style/map_button"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="@drawable/item_click"
+        android:background="@drawable/item_click_white"
         android:contentDescription="@string/app_name"
         android:src="@drawable/ic_action_directions" />
 
@@ -20,7 +20,7 @@
         style="@style/map_button"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="@drawable/item_click"
+        android:background="@drawable/item_click_white"
         android:contentDescription="@string/app_name"
         android:src="@drawable/ic_action_important" />
 
@@ -29,7 +29,7 @@
         style="@style/map_button"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="@drawable/item_click"
+        android:background="@drawable/item_click_white"
         android:contentDescription="@string/app_name"
         android:src="@drawable/ic_action_share" />
 

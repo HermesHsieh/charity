@@ -20,7 +20,7 @@ import android.util.Log;
 
 public class SuppliesApiService {
 
-        private final static String TAG = "SuppliesApi";
+        private final static String TAG = SuppliesApiService.class.getName();
 
         private static String uri = suppliesApi;
 

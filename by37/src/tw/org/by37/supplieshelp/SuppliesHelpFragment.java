@@ -4,10 +4,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import tw.org.by37.R;
 import tw.org.by37.OrganizationActivity;
@@ -15,13 +19,14 @@ import tw.org.by37.data.TypesData;
 import tw.org.by37.data.GoodsTypesText;
 import tw.org.by37.data.OrganizationTypesText;
 import tw.org.by37.data.SelectingData;
-import tw.org.by37.data.SupplyData;
 import tw.org.by37.organization.DBControlOrganization;
 import tw.org.by37.organization.OrganizationFragment;
 import tw.org.by37.productsell.NewProductActivity;
+import tw.org.by37.service.LocationService;
 import tw.org.by37.service.OrganizationApiService;
 import tw.org.by37.service.SuppliesApiService;
 import tw.org.by37.util.FunctionUtil;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -53,8 +58,7 @@ import static tw.org.by37.config.SysConfig.*;
 
 public class SuppliesHelpFragment extends Fragment {
 
-        private final static String TAG = "SuppliesHelpFragment";
-        private final static String pTAG = "Position";
+        private final static String TAG = SuppliesHelpFragment.class.getName();
 
         private Context mContext;
 
@@ -84,35 +88,10 @@ public class SuppliesHelpFragment extends Fragment {
 
         private float data_updateTime = 0;
         private long data_types_updateTime = 0;
-
         /** 物資需求更新資料的時間 **/
         private int update_hours = 2;
-
         /** 物資需求類別更新資料的時間 **/
         private int update_days = 1;
-
-        /** MyLocation Param **/
-        /** 預設值:台北車站 **/
-        public static double defult_latitude = 25.046521;
-        public static double defult_longitude = 121.517511;
-        public static double wifi_latitude = -1;
-        public static double wifi_longitude = -1;
-        public static double gps_latitude = -1;
-        public static double gps_longitude = -1;
-
-        private LocationManager lms;
-        private gpsLocationListener gll;
-        private wifiLocationListener wll;
-        private boolean getService = false;
-        private Location gps_location;
-        private Location wifi_location;
-
-        /** Location Position 更新的時間限制,單位:毫秒 (5秒) **/
-        private final static int gps_updateTime = 5000;
-        /** Location Position 更新的距離限制,單位:米 **/
-        private final static int gps_updateDst = 0;
-
-        /** End of MyLocation Param **/
 
         /** Organization Fragment **/
         private OrganizationFragment mOrganizationFragment;
@@ -137,28 +116,29 @@ public class SuppliesHelpFragment extends Fragment {
                 index_view = view;
         }
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-                mContext = getActivity();
+        /** 取得Bundle過來的機構名稱 **/
+        private void getBundleOrg_Name() {
                 try {
                         Bundle bundle = getActivity().getIntent().getExtras();
                         org_name = bundle.getString("org_name", null);
-                        Log.e(TAG, "Get org_name : " + org_name);
+                        Log.e(TAG, "getBundleOrg_Name : " + org_name);
                 } catch (Exception e) {
-                        Log.e(TAG, "Get org_name Exception");
+                        Log.e(TAG, "getBundleOrg_Name Exception");
                 }
+        }
 
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+                mContext = getActivity();
+                getBundleOrg_Name();
                 checkPreferStatus();
-
                 View view = inflater.inflate(R.layout.fragment_supplieshelp, container, false);
-
-                initLocationManager();
 
                 // getOrganizationTypesData();
 
-                getSuppliesHelpData();
-
                 findView(view);
+
+                getSuppliesHelpData();
 
                 getSuppliesTypesData();
 
@@ -185,30 +165,9 @@ public class SuppliesHelpFragment extends Fragment {
                 mListView.setOnItemClickListener(new OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> arg0, View v, int position, long id) {
-                                Log.i(TAG, "Click Supplies Item : " + position);
-
-                                // String suppliesId =
-                                // mSuppliesListAdapter.getSuppliesDataId(position);
                                 SelectingData.suppliesId = mSuppliesListAdapter.getSuppliesDataId(position);
-
-                                // String organizationId =
-                                // mSuppliesListAdapter.getSuppliesDataOrganizationId(position);
-
                                 SelectingData.organizationId = mSuppliesListAdapter.getSuppliesDataOrganizationId(position);
-
-                                // SupplyData mData =
-                                // DBControlSupplies.getForId(mContext,
-                                // suppliesId);
-
-                                SelectingData.mSupplyData = DBControlSupplies.getForId(mContext, SelectingData.suppliesId);
-
-                                // switchOrganizationFragment(mData);
-
                                 gotoOrganizationActivity();
-
-                                // Log.v(TAG, "Supplies ID : " + suppliesId);
-                                // Log.v(TAG, "Organizations ID : " +
-                                // suppliesId);
                         }
                 });
 
@@ -403,107 +362,33 @@ public class SuppliesHelpFragment extends Fragment {
                         super.onPostExecute(result);
 
                         if (result != null) {
+                                /** 儲存更新的時間 **/
+                                saveDataUpdateTimePreferences(mContext, System.currentTimeMillis());
+
                                 // 跟伺服器更新資料的結果
-                                try {
-                                        JSONArray mJsonArray = new JSONArray(result);
-                                        Log.i(TAG, "mJsonArray Length : " + mJsonArray.length());
+                                Gson gson = new Gson();
+                                List<SupportData> mList = gson.fromJson(result, new TypeToken<List<SupportData>>() {
+                                }.getType());
 
-                                        /** 儲存更新的時間 **/
-                                        saveDataUpdateTimePreferences(mContext, System.currentTimeMillis());
+                                DBControlSupplies mDB = new DBControlSupplies(mContext);
+                                /** 開啟資料庫 **/
+                                mDB.openDatabase();
 
-                                        DBControlSupplies mDB = new DBControlSupplies(mContext);
-                                        /** 開啟資料庫 **/
-                                        mDB.openDatabase();
-
-                                        for (int i = 0; i < mJsonArray.length(); i++) {
-                                                SupplyData mData = new SupplyData();
-                                                JSONObject mJsonObject = mJsonArray.getJSONObject(i);
-                                                try {
-                                                        mData.id = mJsonObject.getString("id");
-                                                } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                }
-                                                try {
-                                                        mData.name = mJsonObject.getString("name");
-                                                } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                }
-                                                try {
-                                                        mData.description = mJsonObject.getString("description");
-                                                } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                }
-                                                try {
-                                                        mData.organizationId = mJsonObject.getString("organizationId");
-                                                } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                }
-                                                try {
-                                                        mData.total = mJsonObject.getString("total");
-                                                } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                }
-                                                try {
-                                                        mData.created_at = mJsonObject.getString("created_at");
-                                                } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                }
-                                                try {
-                                                        mData.updated_at = mJsonObject.getString("updated_at");
-                                                } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                }
-                                                try {
-                                                        mData.category = mJsonObject.getString("goodsTypeId");
-                                                } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                }
-
-                                                Log.i(TAG, "Organization JSONArray length : " + mJsonObject.getJSONArray("organization").length());
-
-                                                for (int j = 0; j < mJsonObject.getJSONArray("organization").length(); j++) {
-                                                        try {
-                                                                mData.organization_id = mJsonObject.getJSONArray("organization").getJSONObject(j).getString("id");
-                                                        } catch (JSONException e) {
-                                                                e.printStackTrace();
-                                                        }
-                                                        try {
-                                                                mData.organization_name = mJsonObject.getJSONArray("organization").getJSONObject(j).getString("name");
-                                                        } catch (JSONException e) {
-                                                                e.printStackTrace();
-                                                        }
-                                                        try {
-                                                                mData.organization_longitude = mJsonObject.getJSONArray("organization").getJSONObject(j).getDouble("longitude");
-                                                        } catch (JSONException e) {
-                                                                e.printStackTrace();
-                                                        }
-                                                        try {
-                                                                mData.organization_latitude = mJsonObject.getJSONArray("organization").getJSONObject(j).getDouble("latitude");
-                                                        } catch (JSONException e) {
-                                                                e.printStackTrace();
-                                                        }
-                                                }
-
-                                                /** 將單一筆資料新增/更新至 supplies.db 中 **/
-                                                if (!mDB.searchIDResult(mData.id)) { // 比對db中是否已有此資料
-                                                        // 如果沒有這筆資料,則新增資料
-                                                        mDB.add(mData);
-                                                } else {
-                                                        // 如果已經有這筆資料,則更新資料
-                                                        mDB.update(mData.id, mData);
-                                                }
+                                for (int i = 0; i < mList.size(); i++) {
+                                        /** 將單一筆資料新增/更新至 supplies.db 中 **/
+                                        if (!mDB.searchIDResult(mList.get(i).getId())) { // 比對db中是否已有此資料
+                                                // 如果沒有這筆資料,則新增資料
+                                                mDB.add(mList.get(i));
+                                        } else {
+                                                // 如果已經有這筆資料,則更新資料
+                                                mDB.update(mList.get(i).getId(), mList.get(i));
                                         }
-
-                                        /** 關閉資料庫 **/
-                                        mDB.closeDatabase();
-
-                                } catch (JSONException e) {
-                                        e.printStackTrace();
-                                        Log.e(TAG, "The SuppliesData from Server == null !!");
                                 }
 
+                                /** 關閉資料庫 **/
+                                mDB.closeDatabase();
                         } else {
-                                Log.e(TAG, "SuppliesData Result == null, (getSuppliesDataAsyncTask) ");
+                                Log.e(TAG, "getSuppliesDataAsyncTask Result == null");
                         }
 
                         showSuppliesDataToListView();
@@ -627,23 +512,60 @@ public class SuppliesHelpFragment extends Fragment {
                 Log.i(TAG, SelectingData.getGoodsTypesListItemString());
         }
 
+        private void orderSuppliesData() {
+
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
+                /** 判別排序方式 **/
+                if (sp_order.getSelectedItemPosition() == 0) {
+                        // 依照距離排序
+                        while (!LocationService.checkLocationStatus()) {
+                                mList = DBControlSupplies.getSuppliesDataForDistance(mContext, LocationService.longitude, LocationService.latitude, false);
+                                try {
+                                        Thread.sleep(100);
+                                } catch (InterruptedException e) {
+                                        // TODO Auto-generated catch block
+                                        e.printStackTrace();
+                                }
+                        }
+                } else {
+                        // 依照時間排序
+                        mList = DBControlSupplies.getSuppliesDataForTime(mContext, false);
+                }
+
+                if (index_view) {
+                        /** 首頁顯示,最多三筆資料 **/
+                }
+
+                /** 判別篩選類別 **/
+                if (sp_category.getSelectedItemPosition() == 0) {
+                        // 顯示全部類別
+
+                        // 將ListView的資料設定到Adapter中
+                        if (mSuppliesListAdapter != null) {
+                                mSuppliesListAdapter.setListData(mList);
+                        }
+                } else {
+                        // 選擇某一類別
+                }
+        }
+
         /** 依照距離排序 **/
         private void orderSuppliesDataForDst() {
                 /**
                  * ListView 顯示用的資料,從db中取得資料(依距離)
                  **/
-                ArrayList<SupplyData> mList = DBControlSupplies.getSuppliesDataForDistance(mContext, wifi_longitude, wifi_latitude, false);
+                ArrayList<SupportData> mList = DBControlSupplies.getSuppliesDataForDistance(mContext, LocationService.longitude, LocationService.latitude, false);
 
-                ArrayList<SupplyData> mList_select = new ArrayList<SupplyData>();
+                ArrayList<SupportData> mList_select = new ArrayList<SupportData>();
 
-                ArrayList<SupplyData> mList_index = new ArrayList<SupplyData>();
+                ArrayList<SupportData> mList_index = new ArrayList<SupportData>();
 
-                /** 篩選類別代號!=0的物資 **/
+                /** 篩選類別代號!=0 的物資 **/
                 if (pref_category != 0) {
                         for (int i = 0; i < mList.size(); i++) {
-                                Log.i(TAG, "Category : " + mList.get(i).category + ", pref_category : " + pref_category);
+                                Log.i(TAG, "Category : " + mList.get(i).getGoodsTypeId() + ", pref_category : " + pref_category);
                                 /** 如果該物品的類別跟目前篩選的類別是一致的 **/
-                                if (mList.get(i).category.equals(String.valueOf(pref_category))) {
+                                if (mList.get(i).getGoodsTypeId() != null && mList.get(i).getGoodsTypeId().equals(String.valueOf(pref_category))) {
                                         Log.i(TAG, "mList_select Add !");
                                         mList_select.add(mList.get(i));
                                 }
@@ -658,7 +580,7 @@ public class SuppliesHelpFragment extends Fragment {
                 /** 顯示該機構的所有物資 **/
                 if (org_name != null) {
                         for (int i = 0; i < mList_select.size(); i++) {
-                                if (mList_select.get(i).organization_name.equals(org_name)) {
+                                if (mList_select.get(i).getOrganizationData()[0].getName().equals(org_name)) {
                                         mList_index.add(mList_select.get(i));
                                 }
                         }
@@ -670,14 +592,14 @@ public class SuppliesHelpFragment extends Fragment {
                                 mList.clear();
                                 mList_select.clear();
                                 mList_index.clear();
-                                mList = DBControlSupplies.getSuppliesDataForDistance(mContext, wifi_longitude, wifi_latitude, true);
+                                mList = DBControlSupplies.getSuppliesDataForDistance(mContext, LocationService.longitude, LocationService.latitude, true);
 
                                 /** 篩選類別代號!=0的物資 **/
                                 if (pref_category != 0) {
                                         for (int i = 0; i < mList.size(); i++) {
-                                                Log.i(TAG, "Category : " + mList.get(i).category + ", pref_category : " + pref_category);
+                                                Log.i(TAG, "Category : " + mList.get(i).getGoodsTypeId() + ", pref_category : " + pref_category);
                                                 /** 如果該物品的類別跟目前篩選的類別是一致的 **/
-                                                if (mList.get(i).category.equals(String.valueOf(pref_category))) {
+                                                if (mList.get(i).getGoodsTypeId() != null && mList.get(i).getGoodsTypeId().equals(String.valueOf(pref_category))) {
                                                         Log.i(TAG, "mList_select Add !");
                                                         mList_select.add(mList.get(i));
                                                 }
@@ -701,7 +623,7 @@ public class SuppliesHelpFragment extends Fragment {
 
                 /** 最後將ListView的資料設定到Adapter中 **/
                 if (mSuppliesListAdapter != null) {
-                        mSuppliesListAdapter.setListData(mList_select, wifi_longitude, wifi_latitude);
+                        mSuppliesListAdapter.setListData(mList_select);
                 }
         }
 
@@ -710,16 +632,16 @@ public class SuppliesHelpFragment extends Fragment {
                 /**
                  * ListView 顯示用的資料,從db中取得資料(依時間)
                  **/
-                ArrayList<SupplyData> mList = DBControlSupplies.getSuppliesDataForTime(mContext, false);
+                ArrayList<SupportData> mList = DBControlSupplies.getSuppliesDataForTime(mContext, false);
 
-                ArrayList<SupplyData> mList_select = new ArrayList<SupplyData>();
+                ArrayList<SupportData> mList_select = new ArrayList<SupportData>();
 
-                ArrayList<SupplyData> mList_index = new ArrayList<SupplyData>();
+                ArrayList<SupportData> mList_index = new ArrayList<SupportData>();
 
                 if (pref_category != 0) {
                         for (int i = 0; i < mList.size(); i++) {
-                                Log.i(TAG, "Category : " + mList.get(i).category + ", pref_category : " + pref_category);
-                                if (mList.get(i).category.equals(String.valueOf(pref_category))) {
+                                Log.i(TAG, "Category : " + mList.get(i).getGoodsTypeId() + ", pref_category : " + pref_category);
+                                if (mList.get(i).getGoodsTypeId() != null && mList.get(i).getGoodsTypeId().equals(String.valueOf(pref_category))) {
                                         Log.i(TAG, "mList_select Add !");
                                         mList_select.add(mList.get(i));
                                 }
@@ -733,7 +655,7 @@ public class SuppliesHelpFragment extends Fragment {
                 /** 以機構名稱篩選 **/
                 if (org_name != null) {
                         for (int i = 0; i < mList_select.size(); i++) {
-                                if (mList_select.get(i).organization_name.equals(org_name)) {
+                                if (mList_select.get(i).getOrganizationData()[0].getName().equals(org_name)) {
                                         mList_index.add(mList_select.get(i));
                                 }
                         }
@@ -750,9 +672,9 @@ public class SuppliesHelpFragment extends Fragment {
                                 /** 篩選類別代號!=0的物資 **/
                                 if (pref_category != 0) {
                                         for (int i = 0; i < mList.size(); i++) {
-                                                Log.i(TAG, "Category : " + mList.get(i).category + ", pref_category : " + pref_category);
+                                                Log.i(TAG, "Category : " + mList.get(i).getGoodsTypeId() + ", pref_category : " + pref_category);
                                                 /** 如果該物品的類別跟目前篩選的類別是一致的 **/
-                                                if (mList.get(i).category.equals(String.valueOf(pref_category))) {
+                                                if (mList.get(i).getGoodsTypeId() != null && mList.get(i).getGoodsTypeId().equals(String.valueOf(pref_category))) {
                                                         Log.i(TAG, "mList_select Add !");
                                                         mList_select.add(mList.get(i));
                                                 }
@@ -775,7 +697,7 @@ public class SuppliesHelpFragment extends Fragment {
                 Log.i(TAG, "mList_select : " + mList_select.size());
                 /** 最後將ListView的資料設定到Adapter中 **/
                 if (mSuppliesListAdapter != null) {
-                        mSuppliesListAdapter.setListData(mList_select, wifi_longitude, wifi_latitude);
+                        mSuppliesListAdapter.setListData(mList_select);
                 }
         }
 
@@ -965,119 +887,6 @@ public class SuppliesHelpFragment extends Fragment {
                 Log.i(TAG, "Result Code : " + resultCode);
         }
 
-        /** Location Manager **/
-        public void initLocationManager() {
-                gll = new gpsLocationListener();
-                wll = new wifiLocationListener();
-
-                /** 取得系統定位服務 **/
-                LocationManager status = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-                if (status.isProviderEnabled(LocationManager.GPS_PROVIDER) || status.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                        // 如果GPS和網路定位開啟，呼叫locationServiceInitial()更新位置
-                        getService = true; // 確認開啟定位服務
-                        locationServiceInitial();
-                } else {
-                        Log.e(TAG, "LocationProvider Disable");
-                        // 開啟設定頁面
-                        // Toast.makeText(this, "請開啟定位服務",
-                        // Toast.LENGTH_LONG).show();
-                        // startActivity(new
-                        // Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                }
-
-        }
-
-        private void locationServiceInitial() {
-                lms = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE); // 取得系統定位服務
-                gps_location = lms.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                wifi_location = lms.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                if (LocationManager.GPS_PROVIDER != null) {
-                        getGPSLocation(gps_location);
-                } else {
-                        Log.e(TAG, "LocationManager.GPS_PROVIDER == null");
-                }
-                if (LocationManager.NETWORK_PROVIDER != null) {
-                        getWiFiLLocation(wifi_location);
-                } else {
-                        Log.e(TAG, "LocationManager.NETWORK_PROVIDER == null");
-                }
-        }
-
-        private void getGPSLocation(Location gps_location) {
-                Log.v(TAG, "getGPSLocation");
-                if (gps_location != null) {
-                        gps_longitude = gps_location.getLongitude();
-                        gps_latitude = gps_location.getLatitude();
-                } else {
-                        Log.e(TAG, "GPSLocation == null");
-                }
-        }
-
-        private void getWiFiLLocation(Location wifi_location) {
-                Log.v(TAG, "getWiFiLLocation");
-                if (wifi_location != null) {
-                        wifi_longitude = wifi_location.getLongitude();
-                        wifi_latitude = wifi_location.getLatitude();
-                } else {
-                        Log.e(TAG, "WiFiLLocation == null");
-                }
-        }
-
-        class gpsLocationListener implements LocationListener {
-                @Override
-                public void onLocationChanged(Location gps_location) { // 當地點改變時
-                        // TODO Auto-generated method stub
-                        getGPSLocation(gps_location);
-                        Log.i(pTAG, "GPS Location Change");
-                        Log.i(pTAG, "gps_latitude : " + gps_latitude);
-                        Log.i(pTAG, "gps_longitude : " + gps_longitude);
-                }
-
-                @Override
-                public void onProviderDisabled(String arg0) { // 當GPS定位功能關閉時
-                        // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void onProviderEnabled(String arg0) { // 當GPS定位功能開啟時
-                        // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void onStatusChanged(String arg0, int arg1, Bundle arg2) { // 定位狀態改變
-                        // TODO Auto-generated method stub
-                }
-        }
-
-        class wifiLocationListener implements LocationListener {
-
-                @Override
-                public void onLocationChanged(Location wifi_location) { // 當地點改變時
-                        // TODO Auto-generated method stub
-                        getWiFiLLocation(wifi_location);
-                        Log.i(pTAG, "Wifi Location Change");
-                        Log.i(pTAG, "wifi_latitude : " + wifi_latitude);
-                        Log.i(pTAG, "wifi_longitude : " + wifi_longitude);
-                }
-
-                @Override
-                public void onProviderDisabled(String arg0) { // 當網路定位功能關閉時
-                        // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void onProviderEnabled(String arg0) { // 當網路定位功能開啟
-                        // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void onStatusChanged(String arg0, int arg1, Bundle arg2) { // 定位狀態改變
-                        // TODO Auto-generated method stub
-                }
-        }
-
-        /** End of Location Manager **/
-
         /** Preferences **/
         /** End of Preferences **/
 
@@ -1097,7 +906,7 @@ public class SuppliesHelpFragment extends Fragment {
         /**
          * switchOrganizationFragment 介面
          */
-        public void switchOrganizationFragment(SupplyData mData) {
+        public void switchOrganizationFragment() {
                 FragmentManager manager = getActivity().getSupportFragmentManager();
                 Fragment fragment = manager.findFragmentById(R.id.fragment_content);
 
@@ -1105,8 +914,6 @@ public class SuppliesHelpFragment extends Fragment {
 
                 if (mOrganizationFragment == null)
                         mOrganizationFragment = new OrganizationFragment();
-
-                mOrganizationFragment.setSupplyData(mData);
 
                 if (fragment == null) {
                         ft.add(R.id.fragment_content, mOrganizationFragment);
@@ -1227,13 +1034,6 @@ public class SuppliesHelpFragment extends Fragment {
         @Override
         public void onResume() {
                 super.onResume();
-
-                // 回到頁面時開啟監聽
-                if (getService) {
-                        lms.requestLocationUpdates(LocationManager.GPS_PROVIDER, gps_updateTime, gps_updateDst, gll);
-                        lms.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, gps_updateTime, gps_updateDst, wll);
-                }
-
                 if (getPreferences(mContext) != null) {
                         if (sp_order != null) {
                                 // 設定上次的選項

@@ -35,7 +35,7 @@ public class DialogUtil {
                 // 設定Dialog的內容
                 builder.setMessage(msg);
                 // 設定Positive按鈕資料
-                builder.setPositiveButton(mContext.getResources().getString(R.string.cancle), new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(mContext.getResources().getString(R.string.cancel), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                                 Log.d(TAG, "Positive+");

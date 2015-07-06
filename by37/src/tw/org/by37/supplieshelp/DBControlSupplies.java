@@ -5,7 +5,7 @@ import static tw.org.by37.supplieshelp.DBConstantsSupplies.*;
 
 import java.util.ArrayList;
 
-import tw.org.by37.data.SupplyData;
+import tw.org.by37.organization.OrganizationData;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -14,7 +14,7 @@ import android.util.Log;
 
 public class DBControlSupplies {
 
-        private final static String TAG = "dbSuppliesHelps";
+        private final static String TAG = DBControlSupplies.class.getName();
 
         private DBHelperSupplies mDBHelper = null;
 
@@ -43,99 +43,99 @@ public class DBControlSupplies {
         }
 
         /** 從伺服器下載的資料新增至db **/
-        public void add(SupplyData mData) {
-                Log.v(TAG, "add SupplyData mData");
+        public void add(SupportData mData) {
+                Log.v(TAG, "add SupportData mData");
                 SQLiteDatabase db = mDBHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
-                values.put(ID, mData.id);
-                values.put(NAME, mData.name);
-                values.put(DESCRIPTION, mData.description);
-                values.put(ORGANIZATIONID, mData.organizationId);
-                values.put(CATEGORY, mData.category);
-                values.put(TOTAL, mData.total);
-                values.put(CREATED_AT, mData.created_at);
-                values.put(UPDATED_AT, mData.updated_at);
-                values.put(ORGANIZATION_NAME, mData.organization_name);
-                values.put(ORGANIZATION_LONGITUDE, mData.organization_longitude);
-                values.put(ORGANIZATION_LATITUDE, mData.organization_latitude);
+                values.put(ID, mData.getId());
+                values.put(NAME, mData.getName());
+                values.put(DESCRIPTION, mData.getDescription());
+                values.put(ORGANIZATIONID, mData.getOrganizationId());
+                values.put(CATEGORY, mData.getGoodsTypeId());
+                values.put(TOTAL, mData.getTotal());
+                values.put(CREATED_AT, mData.getCreated_At());
+                values.put(UPDATED_AT, mData.getUpdated_At());
+                values.put(ORGANIZATION_NAME, mData.getOrganizationData()[0].getName());
+                values.put(ORGANIZATION_LONGITUDE, mData.getOrganizationData()[0].getLongitude());
+                values.put(ORGANIZATION_LATITUDE, mData.getOrganizationData()[0].getLatitude());
                 db.insert(TABLE_NAME, null, values);
         }
 
         /** 更新資料 **/
-        public void update(String id, SupplyData mData) {
+        public void update(String id, SupportData mData) {
                 Log.v(TAG, "update");
                 SQLiteDatabase db = mDBHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
-                values.put(ID, mData.id);
-                values.put(NAME, mData.name);
-                values.put(DESCRIPTION, mData.description);
-                values.put(ORGANIZATIONID, mData.organizationId);
-                values.put(CATEGORY, mData.category);
-                values.put(TOTAL, mData.total);
-                values.put(CREATED_AT, mData.created_at);
-                values.put(UPDATED_AT, mData.updated_at);
-                values.put(ORGANIZATION_NAME, mData.organization_name);
-                values.put(ORGANIZATION_LONGITUDE, mData.organization_longitude);
-                values.put(ORGANIZATION_LATITUDE, mData.organization_latitude);
+                values.put(ID, mData.getId());
+                values.put(NAME, mData.getName());
+                values.put(DESCRIPTION, mData.getDescription());
+                values.put(ORGANIZATIONID, mData.getOrganizationId());
+                values.put(CATEGORY, mData.getGoodsTypeId());
+                values.put(TOTAL, mData.getTotal());
+                values.put(CREATED_AT, mData.getCreated_At());
+                values.put(UPDATED_AT, mData.getUpdated_At());
+                values.put(ORGANIZATION_NAME, mData.getOrganizationData()[0].getName());
+                values.put(ORGANIZATION_LONGITUDE, mData.getOrganizationData()[0].getLongitude());
+                values.put(ORGANIZATION_LATITUDE, mData.getOrganizationData()[0].getLatitude());
                 db.update(TABLE_NAME, values, "id='" + id + "'", null);
         }
 
         /** 刪除資料 **/
         public void delete(String id) {
-                // Log.v(TAG, "delete");
                 SQLiteDatabase db = mDBHelper.getWritableDatabase();
                 db.delete(TABLE_NAME, _ID + "=" + id, null);
 
-                // Toast.makeText(mContext, "刪除完成",
-                // Toast.LENGTH_LONG).show();
                 Log.e(TAG, "delete ID = '" + id + "' data Success");
         }
 
-        private SupplyData createData(Cursor cursor) {
+        private SupportData createData(Cursor cursor) {
+                Log.i(TAG, "createData");
 
-                SupplyData data = new SupplyData();
+                SupportData mData = new SupportData();
+                OrganizationData oData = new OrganizationData();
+                OrganizationData[] oArray = new OrganizationData[1];
 
-                for (int i = 0; i < cursor.getColumnCount(); i++) {
+                try {
+                        int idIndex = cursor.getColumnIndexOrThrow("id");
+                        int nameIndex = cursor.getColumnIndexOrThrow("name");
+                        int descIndex = cursor.getColumnIndexOrThrow("description");
+                        int typeIndex = cursor.getColumnIndexOrThrow("category");
+                        int oIdIndex = cursor.getColumnIndexOrThrow("organizationId");
+                        int createIndex = cursor.getColumnIndexOrThrow("created_at");
+                        int oNameIndex = cursor.getColumnIndexOrThrow("organization_name");
+                        int oLngIndex = cursor.getColumnIndexOrThrow("organization_longitude");
+                        int oLatIndex = cursor.getColumnIndexOrThrow("organization_latitude");
 
-                        Log.v(TAG, i + ", " + cursor.getColumnName(i) + " = " + cursor.getString(i));
-                        if (cursor.getColumnName(i).equals("_id")) {
-                                data._id = cursor.getString(i);
-                        }
-                        if (cursor.getColumnName(i).equals("id")) {
-                                data.id = cursor.getString(i);
-                        }
-                        if (cursor.getColumnName(i).equals("name")) {
-                                data.name = cursor.getString(i);
-                        }
-                        if (cursor.getColumnName(i).equals("description")) {
-                                data.description = cursor.getString(i);
-                        }
-                        if (cursor.getColumnName(i).equals("organizationId")) {
-                                data.organizationId = cursor.getString(i);
-                        }
-                        if (cursor.getColumnName(i).equals("category")) {
-                                data.category = cursor.getString(i);
-                        }
-                        if (cursor.getColumnName(i).equals("total")) {
-                                data.total = cursor.getString(i);
-                        }
-                        if (cursor.getColumnName(i).equals("created_at")) {
-                                data.created_at = cursor.getString(i);
-                        }
-                        if (cursor.getColumnName(i).equals("updated_at")) {
-                                data.updated_at = cursor.getString(i);
-                        }
-                        if (cursor.getColumnName(i).equals("organization_name")) {
-                                data.organization_name = cursor.getString(i);
-                        }
-                        if (cursor.getColumnName(i).equals("organization_longitude")) {
-                                data.organization_longitude = cursor.getDouble(i);
-                        }
-                        if (cursor.getColumnName(i).equals("organization_latitude")) {
-                                data.organization_latitude = cursor.getDouble(i);
-                        }
+                        String id = cursor.getString(idIndex);
+                        String name = cursor.getString(nameIndex);
+                        String desc = cursor.getString(descIndex);
+                        String type = cursor.getString(typeIndex);
+                        String create = cursor.getString(createIndex);
+                        String oId = cursor.getString(oIdIndex);
+                        String oName = cursor.getString(oNameIndex);
+                        String oLng = cursor.getString(oLngIndex);
+                        String oLat = cursor.getString(oLatIndex);
+
+                        mData.setId(id);
+                        mData.setName(name);
+                        mData.setDescription(desc);
+                        mData.setGoodsTypeId(type);
+                        mData.setCreated_At(create);
+                        mData.setOrganizationId(oId);
+
+                        oData.setOrganization_Id(oId);
+                        oData.setName(oName);
+                        oData.setLatitude(oLat);
+                        oData.setLongitude(oLng);
+
+                        oArray[0] = oData;
+
+                        mData.setOrganizationData(oArray);
+
+                } catch (Exception e) {
+                        e.printStackTrace();
                 }
-                return data;
+                return mData;
         }
 
         public void resultAllData() {
@@ -181,7 +181,7 @@ public class DBControlSupplies {
         }
 
         /** 取得所有資料，以_id 遞減排序 **/
-        public ArrayList<SupplyData> getDataFor_id() {
+        public ArrayList<SupportData> getDataFor_id() {
                 Log.v(TAG, "getDataFor_id");
 
                 SQLiteDatabase db = mDBHelper.getReadableDatabase();
@@ -190,7 +190,7 @@ public class DBControlSupplies {
                 Log.v(TAG, "getCount : " + cursor.getCount());
                 Log.v(TAG, "getColumnCount : " + cursor.getColumnCount());
 
-                ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
 
                 while (cursor.moveToNext()) {
                         mList.add(createData(cursor));
@@ -201,7 +201,7 @@ public class DBControlSupplies {
         }
 
         /** 取得所有資料，以距離遞增排序 (orgSingle = 資料是否有重複機構) **/
-        public ArrayList<SupplyData> getDataForDistance(Double lng, Double lat, boolean orgSingle) {
+        public ArrayList<SupportData> getDataForDistance(Double lng, Double lat, boolean orgSingle) {
                 Log.v(TAG, "getDataForDistance , lng : " + lng + "lat : " + lat);
 
                 SQLiteDatabase db = mDBHelper.getReadableDatabase();
@@ -214,7 +214,7 @@ public class DBControlSupplies {
                 Log.v(TAG, "getCount : " + cursor.getCount());
                 Log.v(TAG, "getColumnCount : " + cursor.getColumnCount());
 
-                ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
 
                 while (cursor.moveToNext()) {
                         mList.add(createData(cursor));
@@ -225,7 +225,7 @@ public class DBControlSupplies {
         }
 
         /** 取得所有資料，以時間遞減排序 **/
-        public ArrayList<SupplyData> getDataForTime(boolean orgSingle) {
+        public ArrayList<SupportData> getDataForTime(boolean orgSingle) {
 
                 SQLiteDatabase db = mDBHelper.getReadableDatabase();
                 Cursor cursor = null;
@@ -237,7 +237,7 @@ public class DBControlSupplies {
                 Log.v(TAG, "getCount : " + cursor.getCount());
                 Log.v(TAG, "getColumnCount : " + cursor.getColumnCount());
 
-                ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
 
                 while (cursor.moveToNext()) {
                         mList.add(createData(cursor));
@@ -248,7 +248,7 @@ public class DBControlSupplies {
         }
 
         /** 取得待刪除的資料資料 **/
-        public ArrayList<SupplyData> getDeleteData() {
+        public ArrayList<SupportData> getDeleteData() {
                 Log.v(TAG, "getDeleteData");
 
                 SQLiteDatabase db = mDBHelper.getReadableDatabase();
@@ -257,7 +257,7 @@ public class DBControlSupplies {
                 Log.v(TAG, "getCount : " + cursor.getCount());
                 Log.v(TAG, "getColumnCount : " + cursor.getColumnCount());
 
-                ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
 
                 while (cursor.moveToNext()) {
                         mList.add(createData(cursor));
@@ -268,7 +268,7 @@ public class DBControlSupplies {
         }
 
         /** 搜尋最新的資料 **/
-        public ArrayList<SupplyData> getLatestData(String number) {
+        public ArrayList<SupportData> getLatestData(String number) {
                 Log.v(TAG, "getLatestData");
 
                 SQLiteDatabase db = mDBHelper.getReadableDatabase();
@@ -277,7 +277,7 @@ public class DBControlSupplies {
                 Log.v(TAG, "getCount : " + cursor.getCount());
                 Log.v(TAG, "getColumnCount : " + cursor.getColumnCount());
 
-                ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
 
                 while (cursor.moveToNext()) {
                         mList.add(createData(cursor));
@@ -288,7 +288,7 @@ public class DBControlSupplies {
         }
 
         /** 搜尋指定Id資料 **/
-        public SupplyData getDataForId(String id) {
+        public SupportData getDataForId(String id) {
                 Log.v(TAG, "getDataForId");
 
                 SQLiteDatabase db = mDBHelper.getReadableDatabase();
@@ -297,7 +297,7 @@ public class DBControlSupplies {
                 Log.v(TAG, "getCount : " + cursor.getCount());
                 Log.v(TAG, "getColumnCount : " + cursor.getColumnCount());
 
-                SupplyData mData = new SupplyData();
+                SupportData mData = new SupportData();
 
                 while (cursor.moveToNext()) {
                         mData = createData(cursor);
@@ -308,7 +308,7 @@ public class DBControlSupplies {
         }
 
         /** 搜尋指定Id資料,排除upload狀態 **/
-        public ArrayList<SupplyData> getDataForIdNoTag(String id) {
+        public ArrayList<SupportData> getDataForIdNoTag(String id) {
                 Log.v(TAG, "getDataForIdNoTag");
 
                 SQLiteDatabase db = mDBHelper.getReadableDatabase();
@@ -317,7 +317,7 @@ public class DBControlSupplies {
                 Log.v(TAG, "getCount : " + cursor.getCount());
                 Log.v(TAG, "getColumnCount : " + cursor.getColumnCount());
 
-                ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
 
                 while (cursor.moveToNext()) {
                         mList.add(createData(cursor));
@@ -328,7 +328,7 @@ public class DBControlSupplies {
         }
 
         /** 搜尋指定_Id資料 **/
-        public ArrayList<SupplyData> getDataFor_Id(String _id) {
+        public ArrayList<SupportData> getDataFor_Id(String _id) {
                 Log.v(TAG, "getDataFor_Id");
 
                 SQLiteDatabase db = mDBHelper.getReadableDatabase();
@@ -337,7 +337,7 @@ public class DBControlSupplies {
                 Log.v(TAG, "getCount : " + cursor.getCount());
                 Log.v(TAG, "getColumnCount : " + cursor.getColumnCount());
 
-                ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
 
                 while (cursor.moveToNext()) {
                         mList.add(createData(cursor));
@@ -358,8 +358,8 @@ public class DBControlSupplies {
         }
 
         /** 取得db中所有資料, 以_id 遞減排序 **/
-        public static ArrayList<SupplyData> getAllSuppliesData(Context context) {
-                ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
+        public static ArrayList<SupportData> getAllSuppliesData(Context context) {
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
                 DBControlSupplies db = new DBControlSupplies(context);
                 db.openDatabase();
                 mList = db.getDataFor_id();
@@ -368,8 +368,8 @@ public class DBControlSupplies {
         }
 
         /** 取得db中所有資料, 以距離(經緯度)遞增排序 **/
-        public static ArrayList<SupplyData> getSuppliesDataForDistance(Context context, Double lng, Double lat, boolean orgSingle) {
-                ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
+        public static ArrayList<SupportData> getSuppliesDataForDistance(Context context, Double lng, Double lat, boolean orgSingle) {
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
                 DBControlSupplies db = new DBControlSupplies(context);
                 db.openDatabase();
                 mList = db.getDataForDistance(lng, lat, orgSingle);
@@ -378,8 +378,8 @@ public class DBControlSupplies {
         }
 
         /** 取得db中所有資料, 以時間遞減排序 **/
-        public static ArrayList<SupplyData> getSuppliesDataForTime(Context context, boolean orgSingle) {
-                ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
+        public static ArrayList<SupportData> getSuppliesDataForTime(Context context, boolean orgSingle) {
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
                 DBControlSupplies db = new DBControlSupplies(context);
                 db.openDatabase();
                 mList = db.getDataForTime(orgSingle);
@@ -388,8 +388,8 @@ public class DBControlSupplies {
         }
 
         /** 取得db中最新幾筆資料 **/
-        public static ArrayList<SupplyData> getForLatest(Context context, String count) {
-                ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
+        public static ArrayList<SupportData> getForLatest(Context context, String count) {
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
                 DBControlSupplies db = new DBControlSupplies(context);
                 db.openDatabase();
                 mList = db.getLatestData(count);
@@ -398,8 +398,8 @@ public class DBControlSupplies {
         }
 
         /** 以Id取得db中資料 **/
-        public static SupplyData getForId(Context context, String id) {
-                SupplyData mData = new SupplyData();
+        public static SupportData getForId(Context context, String id) {
+                SupportData mData = new SupportData();
                 DBControlSupplies db = new DBControlSupplies(context);
                 db.openDatabase();
                 mData = db.getDataForId(id);
@@ -408,8 +408,8 @@ public class DBControlSupplies {
         }
 
         /** 以_Id取得db中資料,排除upload狀態 **/
-        public static ArrayList<SupplyData> getForIdNoTag(Context context, String id) {
-                ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
+        public static ArrayList<SupportData> getForIdNoTag(Context context, String id) {
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
                 DBControlSupplies db = new DBControlSupplies(context);
                 db.openDatabase();
                 mList = db.getDataForIdNoTag(id);
@@ -418,8 +418,8 @@ public class DBControlSupplies {
         }
 
         /** 以_Id取得db中資料 **/
-        public static ArrayList<SupplyData> getFor_Id(Context context, String _id) {
-                ArrayList<SupplyData> mList = new ArrayList<SupplyData>();
+        public static ArrayList<SupportData> getFor_Id(Context context, String _id) {
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
                 DBControlSupplies db = new DBControlSupplies(context);
                 db.openDatabase();
                 mList = db.getDataFor_Id(_id);
@@ -434,5 +434,44 @@ public class DBControlSupplies {
                 db.delete(_id);
                 db.closeDatabase();
         }
+
+        /** Test **/
+        public static ArrayList<SupportData> getSuppliesDataForDistanceTest(Context context, Double lng, Double lat, boolean orgSingle, int category) {
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
+                DBControlSupplies db = new DBControlSupplies(context);
+                db.openDatabase();
+                mList = db.getDataForDistanceTest(lng, lat, orgSingle, category);
+                db.closeDatabase();
+                return mList;
+        }
+
+        /** 取得所有資料，以距離遞增排序 (orgSingle = 資料是否有重複機構) **/
+        public ArrayList<SupportData> getDataForDistanceTest(Double lng, Double lat, boolean orgSingle, int category) {
+                Log.v(TAG, "getDataForDistance , lng : " + lng + "lat : " + lat);
+
+                SQLiteDatabase db = mDBHelper.getReadableDatabase();
+                Cursor cursor = null;
+                if (!orgSingle) {
+                        if (category > 0)
+                                cursor = db.rawQuery("SELECT * ,(((organization_longitude-" + lng + ")*(organization_longitude-" + lng + ") + (organization_latitude-" + lat + ")*(organization_latitude-" + lat + "))) AS distance FROM " + TABLE_NAME + " WHERE category = '" + category + "' ORDER BY distance ASC", null);
+                        else
+                                cursor = db.rawQuery("SELECT * ,(((organization_longitude-" + lng + ")*(organization_longitude-" + lng + ") + (organization_latitude-" + lat + ")*(organization_latitude-" + lat + "))) AS distance FROM " + TABLE_NAME + " ORDER BY distance ASC", null);
+                } else {
+                        cursor = db.rawQuery("SELECT * ,(((organization_longitude-" + lng + ")*(organization_longitude-" + lng + ") + (organization_latitude-" + lat + ")*(organization_latitude-" + lat + "))) AS distance FROM " + TABLE_NAME + " GROUP BY organizationId ORDER BY distance ASC", null);
+                }
+                Log.v(TAG, "getCount : " + cursor.getCount());
+                Log.v(TAG, "getColumnCount : " + cursor.getColumnCount());
+
+                ArrayList<SupportData> mList = new ArrayList<SupportData>();
+
+                while (cursor.moveToNext()) {
+                        mList.add(createData(cursor));
+                }
+                cursor.close();
+
+                return mList;
+        }
+
+        /** End of Test **/
 
 }
