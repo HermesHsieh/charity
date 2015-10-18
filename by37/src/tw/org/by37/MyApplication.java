@@ -25,7 +25,7 @@ import com.google.gson.Gson;
 
 public class MyApplication extends Application {
 
-        private final static String TAG = MyApplication.class.getName();
+        private final static String TAG = MyApplication.class.getSimpleName();
 
         public static MyApplication userApplication;
 
@@ -192,8 +192,7 @@ public class MyApplication extends Application {
         /** 記住我:獲取上次填寫之使用者帳號 **/
         public String getRememberMe() {
                 getUserLogin();
-                String account = user_account;
-                return account;
+                return user_account;
         }
 
         /** 使用者登出 **/

@@ -24,9 +24,11 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenListener;
 
 public class OrganizationActivity extends BackActivity {
 
-        private Context mContext;
+        private final static String TAG = OrganizationActivity.class.getSimpleName();
 
-        private final static String TAG = OrganizationActivity.class.getName();
+        private static OrganizationActivity mActivity = new OrganizationActivity();
+
+        private Context mContext;
 
         /** 滑動Menu **/
         private SlidingMenu mSlidingMenu;
@@ -50,6 +52,10 @@ public class OrganizationActivity extends BackActivity {
 
         /** Organization Fragment **/
         private OrganizationFragment mOrganizationFragment;
+
+        public static OrganizationActivity getInstance() {
+                return mActivity;
+        }
 
         @Override
         public void onCreate(Bundle savedInstanceState) {

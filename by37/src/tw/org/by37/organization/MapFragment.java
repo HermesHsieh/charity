@@ -101,6 +101,9 @@ public class MapFragment extends Fragment {
                 FragmentManager myFragmentManager = getActivity().getSupportFragmentManager();
                 SupportMapFragment mySupportMapFragment = (SupportMapFragment) myFragmentManager.findFragmentById(R.id.map);
                 map = mySupportMapFragment.getMap();
+                
+//                SupportMapFragment mySupportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+//                map = mySupportMapFragment.getMap();
 
                 if (map != null) {
                         try {
@@ -238,7 +241,8 @@ public class MapFragment extends Fragment {
                                                                 // 找下一個<value>值,從position+1的位置開始找
                                                                 pos3 = responseString.indexOf("<value>", pos3 + 1);
                                                                 // Log.i(TAG,
-                                                                // "INT POS3 2 : "
+                                                                // "INT POS3 2 :
+                                                                // "
                                                                 // +
                                                                 // pos3);
                                                                 if (pos3 < 0) {

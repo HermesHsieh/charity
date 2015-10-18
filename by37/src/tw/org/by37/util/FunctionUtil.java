@@ -23,36 +23,43 @@ import android.widget.Toast;
 
 public class FunctionUtil {
 
-        private final static String TAG = "FunctionUtil";
+        private final static String TAG = FunctionUtil.class.getName();
 
         public static void createFileRoot() {
+                /** App SD Database 內存路徑 **/
+                File mSDFile = new File(SD_DB_PATH);
+                Log.v(TAG, SD_DB_PATH + ", SD_DB_PATH Exist : " + mSDFile.exists());
+                if (!mSDFile.exists()) {
+                        mSDFile.mkdirs();
+                        Log.v(TAG, "create ---* : " + SD_DB_PATH);
+                }
                 /** App Database 內存路徑 **/
                 File mFile = new File(DB_PATH);
                 Log.v(TAG, DB_PATH + ", DB_PATH Exist : " + mFile.exists());
                 if (!mFile.exists()) {
                         mFile.mkdirs();
-                        Log.v(TAG, "-- create --");
+                        Log.v(TAG, "create ---* : " + DB_PATH);
                 }
                 /** App照片內存路徑 **/
                 File mPicFile = new File(PIC_PATH);
                 Log.v(TAG, PIC_PATH + ", PIC_PATH Exist : " + mFile.exists());
                 if (!mPicFile.exists()) {
                         mPicFile.mkdirs();
-                        Log.v(TAG, "-- create --");
+                        Log.v(TAG, "create ---* : " + PIC_PATH);
                 }
                 /** SD卡Picture路徑 **/
-                File mSDFile = new File(SD_PIC_PATH);
-                Log.v(TAG, SD_PIC_PATH + ", SD_PIC_PATH Exist : " + mSDFile.exists());
-                if (!mSDFile.exists()) {
-                        mSDFile.mkdirs();
-                        Log.v(TAG, "-- create --");
+                File mSDPicFile = new File(SD_PIC_PATH);
+                Log.v(TAG, SD_PIC_PATH + ", SD_PIC_PATH Exist : " + mSDPicFile.exists());
+                if (!mSDPicFile.exists()) {
+                        mSDPicFile.mkdirs();
+                        Log.v(TAG, "create ---* : " + SD_PIC_PATH);
                 }
                 /** temp Picture路徑 **/
                 File mTempFile = new File(SD_TEMP_PIC_PATH);
                 Log.v(TAG, SD_TEMP_PIC_PATH + ", TEMP_PIC_PATH Exist : " + mTempFile.exists());
                 if (!mTempFile.exists()) {
                         mTempFile.mkdirs();
-                        Log.v(TAG, "-- create --");
+                        Log.v(TAG, "create ---* : " + SD_TEMP_PIC_PATH);
                 }
         }
 

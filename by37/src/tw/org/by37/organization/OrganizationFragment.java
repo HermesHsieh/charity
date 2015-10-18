@@ -39,6 +39,8 @@ import com.google.gson.Gson;
 public class OrganizationFragment extends Fragment {
 
         private final static String TAG = OrganizationFragment.class.getName();
+        
+        private static OrganizationFragment mFragment = new OrganizationFragment();
 
         private Context mContext;
 
@@ -85,6 +87,10 @@ public class OrganizationFragment extends Fragment {
         private LinearLayout ll_org_content;
 
         private View mView;
+        
+        public static OrganizationFragment getInstance(){
+                return mFragment;
+        }
 
         public OrganizationFragment() {
                 super();

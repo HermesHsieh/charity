@@ -61,7 +61,9 @@ import com.google.android.gms.plus.model.people.Person;
 
 public class LoginFragment extends Fragment implements ConnectionCallbacks, OnConnectionFailedListener {
 
-        private final static String TAG = LoginFragment.class.getName();
+        private final static String TAG = LoginFragment.class.getSimpleName();
+        
+        private static LoginFragment mFragment = new LoginFragment();
 
         private Context mContext;
 
@@ -117,6 +119,10 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
         public static String g_name = null;
         public static String g_email = null;
         public static String g_image = null;
+        
+        public static LoginFragment getInstance(){
+                return mFragment;
+        }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -126,7 +132,7 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                 getUserRMAccount();
                 findView(view);
                 initGoogleSignInButton(view);
-                
+
                 return view;
         }
 
@@ -418,7 +424,7 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
                 });
 
                 // Initializing google plus api client
-                mGoogleApiClient = new GoogleApiClient.Builder(mContext).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(Plus.API, null).addScope(Plus.SCOPE_PLUS_LOGIN).build();
+                mGoogleApiClient = new GoogleApiClient.Builder(mContext).addConnectionCallbacks(this).addOnConnectionFailedListener(this).addApi(Plus.API, Plus.PlusOptions.builder().build()).addScope(Plus.SCOPE_PLUS_LOGIN).build();
 
         }
 
@@ -504,7 +510,7 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
 
         /**
          * Fetching user's information name, email, profile pic
-         * */
+         */
         private void getProfileInformation() {
                 try {
                         if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
@@ -568,7 +574,7 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
 
         /**
          * Sign-out from google
-         * */
+         */
         private void signOutFromGplus() {
                 Log.e(TAG, "Google+ User is disconnected!");
 
@@ -582,7 +588,7 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
 
         /**
          * Revoking access from google
-         * */
+         */
         @SuppressWarnings("unused")
         private void revokeGplusAccess() {
                 if (mGoogleApiClient.isConnected()) {
@@ -679,6 +685,7 @@ public class LoginFragment extends Fragment implements ConnectionCallbacks, OnCo
         @Override
         public void onStart() {
                 super.onStart();
+
                 mGoogleApiClient.connect();
         }
 

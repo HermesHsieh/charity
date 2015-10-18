@@ -14,7 +14,7 @@ import tw.org.by37.productsell.AllProductActivity;
 import tw.org.by37.productsell.MainProductSellFragment;
 import tw.org.by37.search.SearchFragment;
 import tw.org.by37.supplieshelp.SuppliesHelpFragment;
-import tw.org.by37.test.TestFragment;
+import tw.org.by37.test.TestGetFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -39,7 +39,9 @@ import android.widget.TextView;
 
 public class MainFragment extends Fragment {
 
-        private final static String TAG = MainFragment.class.getName();
+        private final static String TAG = MainFragment.class.getSimpleName();
+
+        private static MainFragment mFragment = new MainFragment();
 
         private ProgressDialog psDialog;
 
@@ -60,7 +62,7 @@ public class MainFragment extends Fragment {
         /** ProductSell Fragment **/
         private MainProductSellFragment mMainProductSellFragment;
 
-        private TestFragment mTestFragment;
+        private TestGetFragment mTestFragment;
 
         private NearOrganizationFragment mNearOrganizationFragment;
 
@@ -68,23 +70,22 @@ public class MainFragment extends Fragment {
 
         private TextView tv_organization_all;
 
-        private static MainFragment mMainFragment;
-
         /**
          * Static function that creates instance of Fragment
          * 
          * @return instance of MainFragment class
          */
         public static MainFragment getInstance() {
-                return mMainFragment;
+                return mFragment;
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-                Log.i(TAG, "onCreateView");
-                mMainFragment = this;
+                Log.v(TAG, "onCreateView --->");
+
                 mContext = getActivity();
-//                psDialog = ProgressDialog.show(mContext, "", getString(R.string.loading));
+                // psDialog = ProgressDialog.show(mContext, "",
+                // getString(R.string.loading));
 
                 View view = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -109,7 +110,7 @@ public class MainFragment extends Fragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
-                Log.i(TAG, "onCreate");
+                Log.v(TAG, "onCreate --->");
         }
 
         public void findView(View view) {
@@ -232,7 +233,7 @@ public class MainFragment extends Fragment {
                 FragmentTransaction ft = manager.beginTransaction();
 
                 if (mTestFragment == null)
-                        mTestFragment = new TestFragment();
+                        mTestFragment = new TestGetFragment();
 
                 if (fragment == null) {
                         ft.add(R.id.fragment_content, mTestFragment);
@@ -377,32 +378,31 @@ public class MainFragment extends Fragment {
         @Override
         public void onResume() {
                 super.onResume();
-                Log.i(TAG, "onResume");
+                Log.v(TAG, "onResume --->");
         }
 
         @Override
         public void onStart() {
                 super.onStart();
-                Log.i(TAG, "onStart");
+                Log.v(TAG, "onStart --->");
         }
 
         @Override
         public void onStop() {
                 super.onStop();
-                Log.i(TAG, "onStop");
+                Log.v(TAG, "onStop --->");
         }
 
         @Override
         public void onPause() {
                 super.onPause();
-                Log.i(TAG, "onPause");
+                Log.v(TAG, "onPause --->");
         }
 
         @Override
         public void onDestroy() {
                 super.onDestroy();
-                Log.i(TAG, "onDestroy");
-                mMainFragment = null;
+                Log.v(TAG, "onDestroy --->");
         }
 
 }

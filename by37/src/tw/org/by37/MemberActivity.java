@@ -31,9 +31,11 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
 public class MemberActivity extends SlidingFragmentActivity {
 
-        private Context mContext;
+        private final static String TAG = MemberActivity.class.getSimpleName();
 
-        private final static String TAG = MemberActivity.class.getName();
+        private static MemberActivity mActivity = new MemberActivity();
+
+        private Context mContext;
 
         /** 滑動Menu **/
         private SlidingMenu mSlidingMenu;
@@ -63,6 +65,10 @@ public class MemberActivity extends SlidingFragmentActivity {
 
         /** 加入會員按鈕 **/
         private Button btn_join;
+
+        public static MemberActivity getInstance() {
+                return mActivity;
+        }
 
         @Override
         public void onCreate(Bundle savedInstanceState) {

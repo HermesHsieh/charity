@@ -63,11 +63,11 @@ import com.google.gson.Gson;
  */
 public class PositionFragment extends Fragment {
 
-        private final static String TAG = PositionFragment.class.getName();
+        private final static String TAG = PositionFragment.class.getSimpleName();
+        
+        private static PositionFragment mFragment = new PositionFragment();
 
         private Context mContext;
-
-        private static PositionFragment mPositionFragment;
 
         private GoogleMap map;
 
@@ -113,7 +113,7 @@ public class PositionFragment extends Fragment {
         private Button btn_hint;
 
         public static PositionFragment getInstance() {
-                return mPositionFragment;
+                return mFragment;
         }
 
         /** 控制顯示確認我的位置的Button是否顯示 **/
@@ -141,8 +141,6 @@ public class PositionFragment extends Fragment {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
-
-                mPositionFragment = this;
 
                 mContext = getActivity();
 
@@ -712,6 +710,10 @@ public class PositionFragment extends Fragment {
                 FragmentManager myFragmentManager = getActivity().getSupportFragmentManager();
                 SupportMapFragment mySupportMapFragment = (SupportMapFragment) myFragmentManager.findFragmentById(R.id.map);
                 map = mySupportMapFragment.getMap();
+                
+//                SupportMapFragment mySupportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+//                map = mySupportMapFragment.getMap();
+                
                 map.setOnMarkerClickListener(new MapMarkerClickListener());
                 map.setOnInfoWindowClickListener(new MarkerInfoWindowClickListener());
 
@@ -786,6 +788,5 @@ public class PositionFragment extends Fragment {
         @Override
         public void onDestroy() {
                 super.onDestroy();
-                mPositionFragment = null;
         }
 }

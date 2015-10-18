@@ -1,38 +1,28 @@
 package tw.org.by37;
 
-import static tw.org.by37.config.RequestCode.*;
+import static tw.org.by37.config.RequestCode.LOGIN_SUCCESS_CODE;
+import static tw.org.by37.config.RequestCode.LOGOUT_SUCCESS_CODE;
+import static tw.org.by37.config.RequestCode.MEMBER_ACTIVITY_CODE;
+import static tw.org.by37.config.RequestCode.REGISTER_SUCCESS_CODE;
+import static tw.org.by37.config.RequestCode.SEARCH_ACTIVITY_CODE;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import tw.org.by37.config.SysConfig;
-import tw.org.by37.emergency.EmergencyFragment;
-import tw.org.by37.main.MainFragment;
-import tw.org.by37.member.LoginFragment;
-import tw.org.by37.member.UserData;
-import tw.org.by37.member.UserLoginAsyncTask;
-import tw.org.by37.menu.BottomMenuFragment;
-import tw.org.by37.menu.RightMenuFragment;
-import tw.org.by37.menu.SlidingMenuFragment;
-import tw.org.by37.organization.MapFragment;
-import tw.org.by37.organization.OrganizationFragment;
-import tw.org.by37.position.PositionFragment;
-import tw.org.by37.productsell.MainProductSellFragment;
-import tw.org.by37.search.SearchFragment;
-import tw.org.by37.service.LocationService;
-import tw.org.by37.supplieshelp.SuppliesHelpFragment;
-import tw.org.by37.test.TestFragment;
-import tw.org.by37.test.TestPostFragment;
-import tw.org.by37.util.FunctionUtil;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnCloseListener;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenListener;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.Signature;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -41,20 +31,30 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.FrameLayout;
 import android.widget.ListView;
-
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.google.gson.Gson;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnCloseListener;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenListener;
-import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import tw.org.by37.config.SysConfig;
+import tw.org.by37.emergency.EmergencyFragment;
+import tw.org.by37.main.MainFragment;
+import tw.org.by37.member.LoginFragment;
+import tw.org.by37.member.UserLoginAsyncTask;
+import tw.org.by37.menu.BottomMenuFragment;
+import tw.org.by37.menu.RightMenuFragment;
+import tw.org.by37.menu.SlidingMenuFragment;
+import tw.org.by37.organization.OrganizationFragment;
+import tw.org.by37.position.PositionFragment;
+import tw.org.by37.productsell.MainProductSellFragment;
+import tw.org.by37.search.SearchFragment;
+import tw.org.by37.service.LocationService;
+import tw.org.by37.supplieshelp.SuppliesHelpFragment;
+import tw.org.by37.test.TestGetFragment;
+import tw.org.by37.test.TestPostFragment;
+import tw.org.by37.util.FunctionUtil;
 
 public class MainActivity extends SlidingFragmentActivity {
 
-        private final static String TAG = MainActivity.class.getName();
+        private final static String TAG = MainActivity.class.getSimpleName();
+
+        private static MainActivity mActivity = new MainActivity();
 
         private Context mContext;
 
@@ -96,7 +96,7 @@ public class MainActivity extends SlidingFragmentActivity {
         /** Organization Fragment **/
         private OrganizationFragment mOrganizationFragment;
 
-        private TestFragment mTestFragment;
+        private TestGetFragment mTestFragment;
 
         private TestPostFragment mTestPostFragment;
 
@@ -109,10 +109,16 @@ public class MainActivity extends SlidingFragmentActivity {
 
         private PositionFragment mPositionFragment;
 
+        public static MainActivity getInstance() {
+                return mActivity;
+        }
+
         @Override
         public void onCreate(Bundle savedInstanceState) {
                 super.onCreate(savedInstanceState);
+
                 startService(new Intent(this, LocationService.class));
+
                 setContentView(R.layout.activity_main);
                 FunctionUtil.createFileRoot();
                 getDisplayMetrics();
@@ -481,7 +487,7 @@ public class MainActivity extends SlidingFragmentActivity {
                 FragmentTransaction ft = manager.beginTransaction();
 
                 if (mTestFragment == null)
-                        mTestFragment = new TestFragment();
+                        mTestFragment = new TestGetFragment();
 
                 if (fragment == null) {
                         ft.add(R.id.main_content, mTestFragment);

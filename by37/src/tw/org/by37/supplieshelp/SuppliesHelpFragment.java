@@ -56,9 +56,12 @@ import android.widget.Toast;
 import static tw.org.by37.config.RequestCode.*;
 import static tw.org.by37.config.SysConfig.*;
 
+@SuppressLint("NewApi")
 public class SuppliesHelpFragment extends Fragment {
 
         private final static String TAG = SuppliesHelpFragment.class.getName();
+
+        private static SuppliesHelpFragment mFragment = new SuppliesHelpFragment();
 
         private Context mContext;
 
@@ -106,6 +109,10 @@ public class SuppliesHelpFragment extends Fragment {
          * 目的:顯示該機構的物資需求資料. 從OrganizationFragment bundle過來的機構名稱資料,判別是否用機構名稱來篩選資料
          **/
         private String org_name;
+
+        public static SuppliesHelpFragment getInstance() {
+                return mFragment;
+        }
 
         public SuppliesHelpFragment() {
                 super();
@@ -228,6 +235,7 @@ public class SuppliesHelpFragment extends Fragment {
         /** 獲取物資需求類別資料 **/
         private void getSuppliesTypesData() {
                 Log.i(TAG, "getSuppliesTypesData");
+                Log.i(TAG, "GoodsTypesText.existFile() : " + GoodsTypesText.existFile());
 
                 // 假如檔案存在
                 if (GoodsTypesText.existFile()) {
@@ -247,6 +255,12 @@ public class SuppliesHelpFragment extends Fragment {
                                 new getGoodsTypesAsyncTask().execute();
                         }
                 } else {
+                        try {
+                                GoodsTypesText.copyGoodsTypesData(mContext);
+                        } catch (IOException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                        }
                         // 從伺服器取得資料
                         new getGoodsTypesAsyncTask().execute();
                 }

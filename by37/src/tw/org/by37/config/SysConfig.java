@@ -62,6 +62,8 @@ public class SysConfig {
         public final static String SD_TEMP_PIC_PATH = SD_PIC_PATH + "/temp";
 
         static final String ApiServer = "http://charity.gopagoda.io/";
+        // http://charity.gopagoda.io/
+        // http://www.by37.org/get_organization_by_address/25.06308990/121.51951340
         /** User 註冊 **/
         public static final String usersApi = ApiServer + "addUser";
         /** User 登入 **/
@@ -76,14 +78,14 @@ public class SysConfig {
         /** 基構資料 for Id **/
         public static final String organizationsIdApi = ApiServer + "getSupportsByOrganizationId/";
         /** 鄰近基構資料 **/
-        public static final String organizationsNearApi = ApiServer + "test/";
+//        public static final String organizationsNearApi = ApiServer + "test/";
+        public static final String organizationsNearApi = "http://www.by37.org/get_organization_by_address/";
         /** 物資需求資料, 包含物品資料及所在基構資料 **/
         public static final String suppliesApi = ApiServer + "getOrganizationsBySupport";
         /** 物資需求資料 for Id **/
         public static final String suppliesIdApi = ApiServer + "getSupportBySupportId/";
         /** 物資類別資料 **/
         public static final String goodsTypesApi = ApiServer + "goodsTypes";
-        
         /** 取的所有商品 **/
         public static final String getAllgoods = ApiServer+"getAllGoods";
 

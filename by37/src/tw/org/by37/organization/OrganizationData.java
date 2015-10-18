@@ -37,9 +37,9 @@ public class OrganizationData {
         /** 機構的物資需求資料 **/
         private SupportData[] supports;
 
-        private String organization_id;
+        private String type_id;
 
-        private String organizationType_id;
+        private String type_name;
 
         public void setId(String id) {
                 this.id = id;
@@ -161,20 +161,20 @@ public class OrganizationData {
                 return number;
         }
 
-        public void setOrganization_Id(String organization_id) {
-                this.organization_id = organization_id;
+        public void setType_Id(String type_id) {
+                this.type_id = type_id;
         }
 
-        public String getOrganization_Id() {
-                return organization_id;
+        public String getType_Id() {
+                return type_id;
         }
 
-        public void setOrganizationType_Id(String organizationType_id) {
-                this.organizationType_id = organizationType_id;
+        public void setType_Name(String type_name) {
+                this.type_name = type_name;
         }
 
-        public String getOrganizationType_Id() {
-                return organizationType_id;
+        public String getType_Name() {
+                return type_name;
         }
 
         public void setSupportData(SupportData[] supports) {
@@ -187,7 +187,7 @@ public class OrganizationData {
 
         @Override
         public String toString() {
-                return "OrganizationData = id : " + id + ", name : " + name + ", email : " + email + ", address : " + address + ", phone : " + phone + ", longitude : " + longitude + ", latitude : " + latitude + ", created_at : " + created_at + ", updated_at : " + updated_at + ", title : " + title + ", content : " + content + ", keyword : " + keyword + ", url : " + url + ", contact : " + contact + ", number : " + number + ", supports : [ " + supports.toString() + " ], organization_id : " + organization_id + ", organizationType_id : " + organizationType_id;
+                return "OrganizationData = id : " + id + ", name : " + name + ", email : " + email + ", address : " + address + ", phone : " + phone + ", longitude : " + longitude + ", latitude : " + latitude + ", created_at : " + created_at + ", updated_at : " + updated_at + ", title : " + title + ", content : " + content + ", keyword : " + keyword + ", url : " + url + ", contact : " + contact + ", number : " + number + ", supports : [ " + supports.toString() + " ], organization_id : " + type_id + ", organizationType_id : " + type_name;
         }
 
         // private Supports[] supports;
