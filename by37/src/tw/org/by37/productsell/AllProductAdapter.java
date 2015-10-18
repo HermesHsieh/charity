@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import tw.org.by37.R;
 import android.app.Activity;
 import android.content.Context;
@@ -138,6 +140,7 @@ public class AllProductAdapter extends ArrayAdapter<String> implements OnScrollL
 		});
 
         // 給圖片設置一個tag已保證在做非同步載入圖片時順序不會亂掉
+        
 
         photoView.setTag( url );
         setImageView( url, photoView );

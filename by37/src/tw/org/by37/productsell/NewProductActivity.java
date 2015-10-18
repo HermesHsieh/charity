@@ -24,11 +24,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import tw.org.by37.BackActivity;
-import tw.org.by37.MyApplication;
 import tw.org.by37.R;
 import tw.org.by37.data.GoodsTypesText;
 import tw.org.by37.data.SelectingData;
 import tw.org.by37.data.TypesData;
+import tw.org.by37.data.UserData2;
 import tw.org.by37.member.UserData;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -260,7 +260,8 @@ public class NewProductActivity extends BackActivity {
 			params.add(new BasicNameValuePair("name", productName));
 			params.add(new BasicNameValuePair("description", productDescription));
 			params.add(new BasicNameValuePair("quantity", productAmount));
-			params.add(new BasicNameValuePair("user_id", MyApplication.getInstance().userData.getUser().getId()));
+			params.add(new BasicNameValuePair("user_id", UserData2.user_id.toString()));
+//			 params.add(new BasicNameValuePair("user_id", "60"));
 			params.add(new BasicNameValuePair("type", productType));
 			for (int i = 0; i < imageList.size(); i++) {
 				params.add(new BasicNameValuePair("images[" + i + "]",imageList.get(i)));
@@ -410,8 +411,11 @@ public class NewProductActivity extends BackActivity {
 					// 由抽象資料接口轉換圖檔路徑為Bitmap
 					Bitmap bitmap = BitmapFactory.decodeStream(cr
 							.openInputStream(uri));
-					mCurrectImageView.setImageBitmap(getResizedBitmap(bitmap,640, 480));
-					saveResizeImage(bitmap, mCurrectImageView.getId());
+					
+					Log.d(TAG, "bitmap = "+bitmap);
+					mCurrectImageView.setImageBitmap(bitmap);
+//					mCurrectImageView.setImageBitmap(getResizedBitmap(bitmap,640, 480));
+//					saveResizeImage(bitmap, mCurrectImageView.getId());
 				} catch (FileNotFoundException e) {
 					Log.e("Exception", e.getMessage(), e);
 				}

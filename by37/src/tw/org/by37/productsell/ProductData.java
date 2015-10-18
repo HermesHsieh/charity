@@ -10,18 +10,20 @@ public class ProductData {
         private String quantity = "";
         private String type = "";
         private String user_id = "";
-        private String image = "";
-        private Bitmap bmp = null;
+        private String imageURL = "";
+        
+        
 
-        public Bitmap getBmp() {
-                return bmp;
-        }
 
-        public void setBmp(Bitmap bmp) {
-                this.bmp = bmp;
-        }
+        public String getImageURL() {
+			return imageURL;
+		}
 
-        public String getId() {
+		public void setImageURL(String imageURL) {
+			this.imageURL = imageURL;
+		}
+
+		public String getId() {
                 return id;
         }
 
@@ -69,12 +71,5 @@ public class ProductData {
                 this.user_id = user_id;
         }
 
-        public String getImage() {
-                return image;
-        }
-
-        public void setImage(String image) {
-                this.image = image;
-        }
 
 }

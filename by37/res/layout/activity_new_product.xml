@@ -87,14 +87,7 @@
                         android:text="@string/product_photo"
                         android:textSize="16sp" />
 
-                    <Button
-                        android:id="@+id/new_product_select_picture_btn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="30dp"
-                        android:background="@android:color/holo_green_light"
-                        android:text="@string/btn_select_pictrue"
-                        android:textSize="14sp"
-                        android:visibility="gone" />
+                   
 
                     <ImageView
                         android:id="@+id/new_product_picture_imageview0"

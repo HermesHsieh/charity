@@ -1,6 +1,10 @@
 package tw.org.by37;
 
-import static tw.org.by37.config.SysConfig.*;
+import static tw.org.by37.config.SysConfig.PIC_PATH;
+import static tw.org.by37.config.SysConfig.k_UserData_1;
+import static tw.org.by37.config.SysConfig.k_UserData_2;
+import static tw.org.by37.config.SysConfig.k_UserData_3;
+import static tw.org.by37.config.SysConfig.k_UserData_4;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -13,6 +17,7 @@ import java.net.URL;
 import tw.org.by37.data.RegisterData;
 import tw.org.by37.member.UserData;
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -22,6 +27,10 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 public class MyApplication extends Application {
 
@@ -52,6 +61,9 @@ public class MyApplication extends Application {
                                 updateUserResult();
                         }
                 }).start();
+                
+                //init UIL
+                initImageLoader(getApplicationContext());
         }
 
         /** 獲取使用者帳號資料 UserData **/
@@ -83,6 +95,8 @@ public class MyApplication extends Application {
                         // 沒有內存之前的資料
                         Log.d(TAG, "沒有內存使用者資料");
                 }
+                
+                
         }
 
         /** 設定使用者帳號 **/
@@ -287,6 +301,24 @@ public class MyApplication extends Application {
         @Override
         public void onConfigurationChanged(Configuration newConfig) {
                 super.onConfigurationChanged(newConfig);
+        }
+        
+
+        public static void initImageLoader(Context context) {
+            // This configuration tuning is custom. You can tune every option, you may tune some of them,
+            // or you can create default configuration by
+            //  ImageLoaderConfiguration.createDefault(this);
+            // method.
+            ImageLoaderConfiguration.Builder config = new ImageLoaderConfiguration.Builder(context);
+            config.threadPriority(Thread.NORM_PRIORITY - 2);
+            config.denyCacheImageMultipleSizesInMemory();
+            config.diskCacheFileNameGenerator(new Md5FileNameGenerator());
+            config.diskCacheSize(50 * 1024 * 1024); // 50 MiB
+            config.tasksProcessingOrder(QueueProcessingType.LIFO);
+            config.writeDebugLogs(); // Remove for release app
+
+            // Initialize ImageLoader with configuration.
+            ImageLoader.getInstance().init(config.build());
         }
 
 }

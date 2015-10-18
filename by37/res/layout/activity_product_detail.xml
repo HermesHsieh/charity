@@ -3,70 +3,204 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
-    <ScrollView 
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout 
+        android:layout_height="match_parent" >
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-            <RelativeLayout 
+            android:orientation="vertical" >
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="300dp">
-                <ImageView 
+                android:layout_height="300dp" >
+
+                <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_launcher"/>
-                <RelativeLayout 
+                    android:src="@drawable/ic_launcher" />
+
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_alignParentBottom="true"
-                    android:gravity="center_vertical"
-                    android:background="#70000000">
-                    
-                    <TextView 
+                    android:background="#70000000"
+                    android:gravity="center_vertical" >
+
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="40dp"
-                        android:text="八成新上掀式衣櫃"
-                        android:textSize="18sp"
+                        android:gravity="center_vertical|left"
                         android:paddingLeft="10dp"
+                        android:text="八成新上掀式衣櫃"
                         android:textColor="#FFFFFF"
-                        android:gravity="center_vertical|left"/>
-                    <ImageButton 
+                        android:textSize="18sp" />
+
+                    <ImageButton
                         android:id="@+id/product_detail_share_btn"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:scaleType="fitXY"
-                        android:layout_marginTop="5dp"
-                        android:background="#00000000"
                         android:layout_alignParentRight="true"
-                        android:src="@drawable/ic_action_share"/>
-                    
-                    <ImageButton 
+                        android:layout_marginTop="5dp"
+                        android:background="#00000000"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_action_share" />
+
+                    <ImageButton
                         android:id="@+id/product_detail_favorite_btn"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
                         android:layout_toLeftOf="@+id/product_detail_share_btn"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:scaleType="fitXY"
-                        android:layout_marginTop="5dp"
                         android:background="#00000000"
-                        android:src="@drawable/ic_action_important"/>
-                    
-                     <ImageButton 
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_action_important" />
+
+                    <ImageButton
                         android:id="@+id/product_detail_location_btn"
-                        android:layout_toLeftOf="@+id/product_detail_favorite_btn"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:scaleType="fitXY"
                         android:layout_marginTop="5dp"
+                        android:layout_toLeftOf="@+id/product_detail_favorite_btn"
                         android:background="#00000000"
-                        android:src="@drawable/ic_position"/>
-                    
+                        android:scaleType="fitXY"
+                        android:src="@drawable/ic_position" />
                 </RelativeLayout>
             </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="類別 : 大型傢俱 / 八成新上掀式鏡櫃" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingTop="10dp" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:gravity="center_vertical"
+                        android:text="愛心點數" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="15dp"
+                        android:text="300"
+                        android:textColor="@android:color/holo_red_light"
+                        android:textSize="20sp" />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginLeft="25dp"
+                        android:text="點數查詢"
+                        android:textSize="8sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:text="請選擇點數捐贈單位" />
+
+                    <ListView
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@android:color/darker_gray" >
+                    </ListView>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="產品說明" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@android:color/darker_gray" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="產品位置" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:text="中壢市" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="運送方式" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:text="自取" />
+                    </LinearLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp" >
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toLeftOf="@+id/product_detail_buy_point_btn"
+                            android:textSize="12sp"
+                            android:text="加入購物車" />
+
+                        <Button
+                            android:id="@+id/product_detail_buy_point_btn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:textSize="12sp"
+                            android:text="購買&amp;愛心捐點" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
-    
 
 </LinearLayout>

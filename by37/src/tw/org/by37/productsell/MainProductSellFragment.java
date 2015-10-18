@@ -15,6 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import tw.org.by37.MainActivity;
 import tw.org.by37.R;
 import tw.org.by37.config.SysConfig;
@@ -175,11 +177,9 @@ public class MainProductSellFragment extends Fragment {
                                                  imageUrl = imageObj.getString("image");
                                                  ProductData mProductData = new ProductData();
                                                  mProductData.setName(name);
-                                                 mProductData.setImage(imageUrl);
-
+                                                 mProductData.setImageURL(imageUrl);
+                                                 
                                                  if (!imageUrl.equals("null") && productList.size() < 2) {
-                                                         bmp = getBitmapFromURL(imageUrl);
-                                                         mProductData.setBmp(bmp);
                                                          productList.add(mProductData);
                                                  }
                                             }catch(Exception e){
@@ -209,16 +209,19 @@ public class MainProductSellFragment extends Fragment {
 
                                 mProductAmountTextView.setText(amount);
                                 mProductAmountTextView.setVisibility(View.VISIBLE);
+                                
+                                ImageLoader.getInstance().displayImage(productList.get(0).getImageURL(), mLeftImageView);
+                                ImageLoader.getInstance().displayImage(productList.get(1).getImageURL(), mRightImageView);
+
+                                mLeftTextView.setText(productList.get(0).getName());
+                                mRightTextView.setText(productList.get(1).getName());
 
                                 if (productList.size() > 0) {
                                         getActivity().runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
-                                                        mLeftImageView.setImageBitmap(productList.get(0).getBmp());
-                                                        mRightImageView.setImageBitmap(productList.get(1).getBmp());
-
-                                                        mLeftTextView.setText(productList.get(0).getName());
-                                                        mRightTextView.setText(productList.get(1).getName());
+                                                        
+                                                        
                                                 }
                                         });
                                 }
@@ -229,20 +232,6 @@ public class MainProductSellFragment extends Fragment {
 
         }
 
-        private Bitmap getBitmapFromURL(String imageUrl) {
-                try {
-                        URL url = new URL(imageUrl);
-                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                        connection.setDoInput(true);
-                        connection.connect();
-                        InputStream input = connection.getInputStream();
-                        Bitmap bitmap = BitmapFactory.decodeStream(input);
-                        return bitmap;
-                } catch (IOException e) {
-                        Log.d(TAG, e.toString());
-                        return null;
-                }
-        }
 
 		@Override
 		public void onResume() {

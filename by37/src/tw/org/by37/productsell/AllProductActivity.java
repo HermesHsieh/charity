@@ -109,7 +109,7 @@ public class AllProductActivity extends BackActivity {
 							imageUrl = imageObj.getString("image");
 							ProductData mProductData = new ProductData();
 							mProductData.setName(name);
-							mProductData.setImage(imageUrl);
+							mProductData.setImageURL(imageUrl);
 							dataList.add(mProductData);
 							imageList.add(imageUrl);
 
@@ -137,6 +137,7 @@ public class AllProductActivity extends BackActivity {
 				mAllProductGridview = (GridView) findViewById(R.id.all_product_gridview);
 				adapter = new AllProductAdapter(AllProductActivity.this,
 						imageList, mAllProductGridview, dataList);
+				
 				mAllProductGridview.setAdapter(adapter);
 			}
 			progDailog.dismiss();
