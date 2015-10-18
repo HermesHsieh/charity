@@ -87,22 +87,24 @@ public class NearOrganizationListAdapter extends BaseAdapter {
                         mText.width = (MainActivity.myScreenWidth) * 4 / 10;
                         holder.tv_type.setLayoutParams(mText);
 
+                        
                         /** 動態設定類別欄位的Margin **/
                         MarginLayoutParams marginParams = (MarginLayoutParams) holder.tv_type.getLayoutParams();
                         if (index_view) {
-                                marginParams.leftMargin = ((MainActivity.myScreenWidth) / 2) * 75 / 100;
+                                marginParams.leftMargin = ((MainActivity.myScreenWidth) * 48) / 100;
                         } else {
-                                marginParams.leftMargin = ((MainActivity.myScreenWidth) / 2) * 4 / 5;
+                                marginParams.leftMargin = ((MainActivity.myScreenWidth) * 50) / 100;
                         }
                         holder.tv_type.setLayoutParams(marginParams);
 
                         view.setTag(holder);
+                        
                 } else {
                         holder = (ViewHolder) view.getTag();
                 }
 
                 holder.tv_name.setText(data.get(position).getName());
-                holder.tv_type.setText(data.get(position).getTitle());
+                holder.tv_type.setText(data.get(position).getType_Name());
 
                 double lat = Double.valueOf(data.get(position).getLatitude());
                 double lng = Double.valueOf(data.get(position).getLongitude());
@@ -173,7 +175,7 @@ public class NearOrganizationListAdapter extends BaseAdapter {
 
         /** 取得鄰近機構ListView 對應 Position 的資料OrganizationId **/
         public String getOrganizationId(int position) {
-                return data.get(position).getOrganization_Id();
+                return data.get(position).getType_Id();
         }
 
         public class ViewHolder {

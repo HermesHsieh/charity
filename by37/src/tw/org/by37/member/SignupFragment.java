@@ -61,7 +61,9 @@ import android.widget.TextView;
 
 public class SignupFragment extends Fragment {
 
-        private final static String TAG = SignupFragment.class.getName();
+        private final static String TAG = SignupFragment.class.getSimpleName();
+
+        private static SignupFragment mFragment = new SignupFragment();
 
         private Context mContext;
 
@@ -87,6 +89,10 @@ public class SignupFragment extends Fragment {
 
         /** 是否為編輯會員進入的 **/
         private boolean isEdit = false;
+
+        public static SignupFragment getInstance() {
+                return mFragment;
+        }
 
         /** 是否為編輯會員進入 **/
         public void isEdit(boolean status) {

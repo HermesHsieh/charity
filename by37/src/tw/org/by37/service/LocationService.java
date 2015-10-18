@@ -12,7 +12,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class LocationService extends Service {
-        private final static String TAG = LocationService.class.getName();
+        private final static String TAG = LocationService.class.getSimpleName();
 
         public static final String BROADCAST_ACTION = "LocationService";
         private static final int TWO_MINUTES = 1000 * 60 * 2;
@@ -41,6 +41,7 @@ public class LocationService extends Service {
 
         /**
          * 確認Service的經緯度是否正常可以使用
+         * 
          * @return ture(可以使用), false(不可使用)
          */
         public static boolean checkLocationStatus() {
@@ -53,13 +54,13 @@ public class LocationService extends Service {
         @Override
         public void onCreate() {
                 super.onCreate();
-                Log.i(TAG, "LocationService onCreate");
+                Log.v(TAG, "onCreate --->");
                 intent = new Intent(BROADCAST_ACTION);
         }
 
         @Override
         public void onStart(Intent intent, int startId) {
-                Log.i(TAG, "LocationService onStart");
+                Log.v(TAG, "onStart --->");
                 locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 listener = new MyLocationListener();
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, updateTime, updateDst, listener);
@@ -125,9 +126,9 @@ public class LocationService extends Service {
 
         @Override
         public void onDestroy() {
-                // handler.removeCallbacks(sendUpdatesToUI);
                 super.onDestroy();
-                Log.i(TAG, "LocationService onDestroy");
+                // handler.removeCallbacks(sendUpdatesToUI);
+                Log.v(TAG, "onDestroy --->");
                 locationManager.removeUpdates(listener);
         }
 
@@ -152,8 +153,8 @@ public class LocationService extends Service {
                         if (isBetterLocation(loc, previousBestLocation)) {
                                 latitude = loc.getLatitude();
                                 longitude = loc.getLongitude();
-                                Log.d(TAG, "getLatitude" + latitude);
-                                Log.d(TAG, "getLongitude" + longitude);
+                                Log.d(TAG, "get Latitude : " + latitude);
+                                Log.d(TAG, "get Longitude : " + longitude);
                                 intent.putExtra("Latitude", loc.getLatitude());
                                 intent.putExtra("Longitude", loc.getLongitude());
                                 intent.putExtra("Provider", loc.getProvider());
@@ -162,11 +163,13 @@ public class LocationService extends Service {
                 }
 
                 public void onProviderDisabled(String provider) {
-                        Toast.makeText(getApplicationContext(), "Gps Disabled", Toast.LENGTH_SHORT).show();
+                        // Toast.makeText(getApplicationContext(), "Gps
+                        // Disabled", Toast.LENGTH_SHORT).show();
                 }
 
                 public void onProviderEnabled(String provider) {
-                        Toast.makeText(getApplicationContext(), "Gps Enabled", Toast.LENGTH_SHORT).show();
+                        // Toast.makeText(getApplicationContext(), "Gps
+                        // Enabled", Toast.LENGTH_SHORT).show();
                 }
 
                 public void onStatusChanged(String provider, int status, Bundle extras) {

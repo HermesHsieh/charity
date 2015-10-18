@@ -31,7 +31,10 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class NearOrganizationFragment extends Fragment {
-        private final static String TAG = NearOrganizationFragment.class.getName();
+        
+        private final static String TAG = NearOrganizationFragment.class.getSimpleName();
+        
+        private static NearOrganizationFragment mFragment = new NearOrganizationFragment();
 
         private Context mContext;
 
@@ -57,6 +60,10 @@ public class NearOrganizationFragment extends Fragment {
          * 控制鄰近機構輪迴的Tag, 有GPS位置才去抓資料
          */
         private boolean isGpsAvailable = false;
+        
+        public static NearOrganizationFragment getInstance(){
+                return mFragment;
+        }
 
         public NearOrganizationFragment() {
                 super();
@@ -98,7 +105,7 @@ public class NearOrganizationFragment extends Fragment {
                                         isGpsAvailable = true;
                                 }
                                 try {
-                                        Thread.sleep(100);
+                                        Thread.sleep(500);
                                 } catch (InterruptedException e) {
                                         e.printStackTrace();
                                 }
@@ -126,7 +133,6 @@ public class NearOrganizationFragment extends Fragment {
         private void setNearOrganizationData() {
                 Log.i(TAG, "setNearOrganizationData");
                 mNearOrganizationData = SelectingData.mNearOrganizationData;
-                SelectingData.mNearOrganizationData = null;
 
                 tv_organization_total.setText(String.valueOf(mNearOrganizationData.size()));
 

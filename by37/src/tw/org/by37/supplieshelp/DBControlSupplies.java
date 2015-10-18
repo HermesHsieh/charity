@@ -123,7 +123,7 @@ public class DBControlSupplies {
                         mData.setCreated_At(create);
                         mData.setOrganizationId(oId);
 
-                        oData.setOrganization_Id(oId);
+                        oData.setType_Id(oId);
                         oData.setName(oName);
                         oData.setLatitude(oLat);
                         oData.setLongitude(oLng);

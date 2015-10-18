@@ -34,8 +34,10 @@ import android.widget.TextView;
 
 public class MemberFragment extends Fragment {
 
-        private final static String TAG = MemberFragment.class.getName();
-
+        private final static String TAG = MemberFragment.class.getSimpleName();
+        
+        private static MemberFragment mFragment = new MemberFragment();
+        
         private Context mContext;
 
         private ProgressDialog psDialog;
@@ -56,6 +58,10 @@ public class MemberFragment extends Fragment {
         private Button btn_edit_member;
         private Button btn_edit_favorite_org;
         private Button btn_edit_position;
+        
+        public static MemberFragment getInstance(){
+                return mFragment;
+        }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

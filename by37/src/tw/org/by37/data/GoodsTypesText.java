@@ -5,11 +5,16 @@ import static tw.org.by37.config.SysConfig.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 
+import tw.org.by37.R;
+
+import android.content.Context;
 import android.util.Log;
 
 /**
@@ -19,7 +24,7 @@ import android.util.Log;
  * 
  */
 public class GoodsTypesText {
-        private final static String TAG = "GoodsTypesText";
+        private final static String TAG = GoodsTypesText.class.getName();
 
         public final static String fileName = "goods_types.txt";
 
@@ -31,10 +36,11 @@ public class GoodsTypesText {
         /** 檔案是否存在 **/
         public static boolean existFile() {
                 File dbf = new File(filePath + fileName);
-                if (dbf.exists())
+                if (dbf.exists()) {
                         return true;
-                else
+                } else {
                         return false;
+                }
         }
 
         public static String getDBPath() {
@@ -129,6 +135,26 @@ public class GoodsTypesText {
                 }
 
                 return sb.toString();
+        }
+
+        public static void copyGoodsTypesData(Context mContext) throws IOException {
+                Log.i(TAG, "copyGoodsTypesData ---*");
+                // Open your local db as the input stream
+                InputStream myInput = mContext.getResources().openRawResource(R.raw.goods_types);
+                // Path to the just created empty db
+                String outFileName = filePath + fileName;
+                // Open the empty db as the output stream
+                OutputStream myOutput = new FileOutputStream(outFileName);
+                // transfer bytes from the inputfile to the outputfile
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = myInput.read(buffer)) > 0) {
+                        myOutput.write(buffer, 0, length);
+                }
+                // Close the streams
+                myOutput.flush();
+                myOutput.close();
+                myInput.close();
         }
 
 }

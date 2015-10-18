@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class UserLoginAsyncTask extends AsyncTask<Void, Void, String> {
 
-        private final static String TAG = "UserLoginAsyncTask";
+        private final static String TAG = UserLoginAsyncTask.class.getSimpleName();
 
         @Override
         protected String doInBackground(Void... param) {

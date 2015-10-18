@@ -17,11 +17,17 @@ import android.view.MotionEvent;
 
 public class PositionActivity extends FragmentActivity {
 
-        private final static String TAG = PositionActivity.class.getName();
+        private final static String TAG = PositionActivity.class.getSimpleName();
+        
+        private static PositionActivity mActivtiy = new PositionActivity();
 
         private Context mContext;
 
         private PositionFragment mPositionFragment;
+        
+        public static PositionActivity getInstance(){
+                return mActivtiy;
+        }
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
