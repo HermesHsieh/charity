@@ -9,13 +9,22 @@ import static tw.org.by37.config.RequestCode.SEARCH_ACTIVITY_CODE;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnCloseListener;
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenListener;
-import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
-
+import tw.org.by37.config.SysConfig;
+import tw.org.by37.emergency.EmergencyFragment;
+import tw.org.by37.main.MainFragment;
+import tw.org.by37.member.LoginFragment;
+import tw.org.by37.member.UserLoginAsyncTask;
+import tw.org.by37.menu.BottomMenuFragment;
+import tw.org.by37.menu.RightMenuFragment;
+import tw.org.by37.menu.SlidingMenuFragment;
+import tw.org.by37.organization.OrganizationFragment;
+import tw.org.by37.position.PositionFragment;
+import tw.org.by37.productsell.MainProductSellFragment;
+import tw.org.by37.search.SearchFragment;
+import tw.org.by37.service.LocationService;
+import tw.org.by37.supplieshelp.SuppliesHelpFragment;
+import tw.org.by37.test.TestPostFragment;
+import tw.org.by37.util.FunctionUtil;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -32,23 +41,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import tw.org.by37.config.SysConfig;
-import tw.org.by37.emergency.EmergencyFragment;
-import tw.org.by37.main.MainFragment;
-import tw.org.by37.member.LoginFragment;
-import tw.org.by37.member.UserLoginAsyncTask;
-import tw.org.by37.menu.BottomMenuFragment;
-import tw.org.by37.menu.RightMenuFragment;
-import tw.org.by37.menu.SlidingMenuFragment;
-import tw.org.by37.organization.OrganizationFragment;
-import tw.org.by37.position.PositionFragment;
-import tw.org.by37.productsell.MainProductSellFragment;
-import tw.org.by37.search.SearchFragment;
-import tw.org.by37.service.LocationService;
-import tw.org.by37.supplieshelp.SuppliesHelpFragment;
-import tw.org.by37.test.TestGetFragment;
-import tw.org.by37.test.TestPostFragment;
-import tw.org.by37.util.FunctionUtil;
+
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnCloseListener;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenListener;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 
 public class MainActivity extends SlidingFragmentActivity {
 
@@ -96,7 +95,6 @@ public class MainActivity extends SlidingFragmentActivity {
         /** Organization Fragment **/
         private OrganizationFragment mOrganizationFragment;
 
-        private TestGetFragment mTestFragment;
 
         private TestPostFragment mTestPostFragment;
 
@@ -235,7 +233,7 @@ public class MainActivity extends SlidingFragmentActivity {
 
                         switch (position) {
                         case 1:
-                                switchTestFragment();
+//                                switchTestFragment();
                                 break;
                         case 2:
                                 switchTestPostFragment();
@@ -477,25 +475,6 @@ public class MainActivity extends SlidingFragmentActivity {
                 ft.commit();
         }
 
-        /**
-         * switchTestFragment 介面
-         */
-        public void switchTestFragment() {
-                FragmentManager manager = getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.main_content);
-
-                FragmentTransaction ft = manager.beginTransaction();
-
-                if (mTestFragment == null)
-                        mTestFragment = new TestGetFragment();
-
-                if (fragment == null) {
-                        ft.add(R.id.main_content, mTestFragment);
-                } else {
-                        ft.replace(R.id.main_content, mTestFragment);
-                }
-                ft.commit();
-        }
 
         /**
          * switchTestPostFragment 介面

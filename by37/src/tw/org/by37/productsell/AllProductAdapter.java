@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -123,7 +124,7 @@ public class AllProductAdapter extends ArrayAdapter<String> implements OnScrollL
             // 從cache載入的圖
             view = convertView;
 
-        ProductData data = dataList.get(position);
+        final ProductData data = dataList.get(position);
         ImageView photoView = (ImageView) view.findViewById( R.id.item_all_product_photo_imageview );
         TextView name_tv = (TextView)view.findViewById(R.id.item_all_product_name_tv);
         name_tv.setText(data.getName());
@@ -134,6 +135,9 @@ public class AllProductAdapter extends ArrayAdapter<String> implements OnScrollL
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent i = new Intent();
+				Bundle b= new Bundle();
+				b.putString("PRODUCT_KEY", data.getId());
+				i.putExtras(b);
 				i.setClass((Activity)mContext, ProductDetailActivity.class);
 				((Activity)mContext).startActivity(i);
 			}

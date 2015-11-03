@@ -14,7 +14,6 @@ import tw.org.by37.productsell.AllProductActivity;
 import tw.org.by37.productsell.MainProductSellFragment;
 import tw.org.by37.search.SearchFragment;
 import tw.org.by37.supplieshelp.SuppliesHelpFragment;
-import tw.org.by37.test.TestGetFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -62,7 +61,6 @@ public class MainFragment extends Fragment {
         /** ProductSell Fragment **/
         private MainProductSellFragment mMainProductSellFragment;
 
-        private TestGetFragment mTestFragment;
 
         private NearOrganizationFragment mNearOrganizationFragment;
 
@@ -223,25 +221,6 @@ public class MainFragment extends Fragment {
                 ft.commit();
         }
 
-        /**
-         * switchTestFragment 介面
-         */
-        public void switchTestFragment() {
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                Fragment fragment = manager.findFragmentById(R.id.fragment_content);
-
-                FragmentTransaction ft = manager.beginTransaction();
-
-                if (mTestFragment == null)
-                        mTestFragment = new TestGetFragment();
-
-                if (fragment == null) {
-                        ft.add(R.id.fragment_content, mTestFragment);
-                } else {
-                        ft.replace(R.id.fragment_content, mTestFragment);
-                }
-                ft.commit();
-        }
 
         /**
          * switchEmergencyFragment 介面

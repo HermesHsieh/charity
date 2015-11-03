@@ -10,6 +10,7 @@ public class ProductData {
         private String quantity = "";
         private String type = "";
         private String user_id = "";
+        private String cash = "";
         private String imageURL = "";
         
         
@@ -70,6 +71,16 @@ public class ProductData {
         public void setUser_id(String user_id) {
                 this.user_id = user_id;
         }
+
+		public String getCash() {
+			return cash;
+		}
+
+		public void setCash(String cash) {
+			this.cash = cash;
+		}
+        
+        
 
 
 }

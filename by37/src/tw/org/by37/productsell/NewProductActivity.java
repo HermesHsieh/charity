@@ -23,14 +23,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.google.gson.JsonObject;
+
 import tw.org.by37.BackActivity;
+import tw.org.by37.MyApplication;
 import tw.org.by37.R;
+import tw.org.by37.config.SysConfig;
 import tw.org.by37.data.GoodsTypesText;
 import tw.org.by37.data.SelectingData;
 import tw.org.by37.data.TypesData;
-import tw.org.by37.data.UserData2;
 import tw.org.by37.member.UserData;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
@@ -69,10 +71,7 @@ public class NewProductActivity extends BackActivity {
 	private ImageView mCurrectImageView;
 	private Button mUploadProductBtn;
 
-	private int serverResponseCode = 0;
 	private ProgressDialog dialog = null;
-
-	private String upLoadServerUri = null;
 
 	private EditText mProductNameEdittext;
 	private EditText mProductAmountEdittext;
@@ -194,11 +193,10 @@ public class NewProductActivity extends BackActivity {
 				productDescription = mProductDiscriptionEdittext.getText()
 						.toString();
 
-				new UpdateProductTask().execute();
+//				new UpdateProductTask().execute();
+				new UploadProductImageTask().execute();
 			}
 		});
-
-		upLoadServerUri = "http://charity.gopagoda.io/upload";
 	}
 
 	public String getPath(Uri uri) {
@@ -211,8 +209,68 @@ public class NewProductActivity extends BackActivity {
 		Log.d(TAG, "path:" + cursor.getString(column_index));
 		return cursor.getString(column_index);
 	}
+	
+	class UploadProductImageTask extends AsyncTask<Void, String, String>{
 
-	class UpdateProductTask extends AsyncTask<Void, Boolean, Boolean> {
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+		
+		@Override
+		protected String doInBackground(Void... params) {
+			// TODO Auto-generated method stub
+			
+			String result = "";
+			String imagePath = imageList.get(0);
+			Log.d(TAG, "imagePath = "+imagePath);
+			HttpClient client = new DefaultHttpClient();
+			HttpPost post = new HttpPost(SysConfig.uploadImageApi);
+			Log.d(TAG, SysConfig.uploadImageApi);
+			List<NameValuePair> postParams = new ArrayList<NameValuePair>();
+			postParams.add(new BasicNameValuePair("image", imagePath));
+			
+			try {
+				// setup multipart entity
+				MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+				entity.addPart(postParams.get(0).getName(), new FileBody(new File(postParams.get(0).getValue())));
+				post.setEntity(entity);
+
+				try {
+					// execute and get response
+					result = new String(client.execute(post,new BasicResponseHandler()).getBytes(), HTTP.UTF_8);
+					try{
+						JSONObject obj = new JSONObject(result);
+						result = obj.getString("filename");
+						Log.d(TAG, "result = "+result);
+					}catch(Exception e){
+						
+					}
+					
+					return result;
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+			if(result!=null){
+				new UpdateProductTask().execute(result);
+			}
+		}
+	}
+
+	class UpdateProductTask extends AsyncTask<String, Boolean, Boolean> {
 
 		private ProgressDialog progDailog;
 
@@ -244,39 +302,41 @@ public class NewProductActivity extends BackActivity {
 		}
 
 		@Override
-		protected Boolean doInBackground(Void... paramsss) {
+		protected Boolean doInBackground(String... params) {
 			// TODO Auto-generated method stub
+			
+			String imageName = params[0];
+			
 			boolean flag =false;
 			String result = null;
 			
 			HttpClient client = new DefaultHttpClient();
 
-			HttpPost post = new HttpPost("http://charity.gopagoda.io/addGoods");
+			HttpPost post = new HttpPost(SysConfig.uploadNewPorduct);
 
 			/*
 			 * Post運作傳送變數必須用NameValuePair[]陣列儲存
 			 */
-			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair("name", productName));
-			params.add(new BasicNameValuePair("description", productDescription));
-			params.add(new BasicNameValuePair("quantity", productAmount));
-			params.add(new BasicNameValuePair("user_id", UserData2.user_id.toString()));
-//			 params.add(new BasicNameValuePair("user_id", "60"));
-			params.add(new BasicNameValuePair("type", productType));
-			for (int i = 0; i < imageList.size(); i++) {
-				params.add(new BasicNameValuePair("images[" + i + "]",imageList.get(i)));
-			}
+			List<NameValuePair>postParams = new ArrayList<NameValuePair>();
+			postParams.add(new BasicNameValuePair("name", productName));
+			postParams.add(new BasicNameValuePair("description", productDescription));
+			postParams.add(new BasicNameValuePair("quantity", productAmount));
+			postParams.add(new BasicNameValuePair("user_id",MyApplication.getInstance().getUserData().getUser().getId()));
+			postParams.add(new BasicNameValuePair("merchandise_type_id", productType));
+			postParams.add(new BasicNameValuePair("cash", productType));
+			postParams.add(new BasicNameValuePair("image", imageName));
+
 
 			try {
 				// setup multipart entity
 				MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
 
-				for (int i = 0; i < params.size(); i++) {
+				for (int i = 0; i < postParams.size(); i++) {
 					// identify param type by Key
-					if (params.get(i).getName().contains("images")) {
-						entity.addPart(params.get(i).getName(), new FileBody(new File(params.get(i).getValue())));
+					if (postParams.get(i).getName().contains("images")) {
+						entity.addPart(postParams.get(i).getName(), new FileBody(new File(postParams.get(i).getValue())));
 					} else {
-						entity.addPart(params.get(i).getName(),new StringBody(params.get(i).getValue(),Charset.forName("UTF-8")));
+						entity.addPart(postParams.get(i).getName(),new StringBody(postParams.get(i).getValue(),Charset.forName("UTF-8")));
 					}
 				}
 

@@ -1,6 +1,8 @@
 package tw.org.by37.config;
 
-import android.os.Environment;
+import java.util.HashMap;
+
+import tw.org.by37.productsell.ProductData;
 
 /** 專案的全域共同參數設定 **/
 public class SysConfig {
@@ -61,7 +63,7 @@ public class SysConfig {
         /** SD的Temp Pictures路徑 **/
         public final static String SD_TEMP_PIC_PATH = SD_PIC_PATH + "/temp";
 
-        static final String ApiServer = "http://charity.gopagoda.io/";
+        static final String ApiServer = "http://www.by37.org/";
         // http://charity.gopagoda.io/
         // http://www.by37.org/get_organization_by_address/25.06308990/121.51951340
         /** User 註冊 **/
@@ -86,8 +88,22 @@ public class SysConfig {
         public static final String suppliesIdApi = ApiServer + "getSupportBySupportId/";
         /** 物資類別資料 **/
         public static final String goodsTypesApi = ApiServer + "goodsTypes";
-        /** 取的所有商品 **/
-        public static final String getAllgoods = ApiServer+"getAllGoods";
+        /** 取得所有商品 **/
+        public static final String getAllgoods = ApiServer+"get_all_merchandise";
+        
+        /** 上傳圖片 **/
+        public static final String uploadImageApi = ApiServer + "file";
+        
+        /** 上傳商品**/
+        public static final String uploadNewPorduct = ApiServer + "add_merchandise";
+        
+        /** 圖片網址**/
+        public static final String imagePathApi(String imageName){
+        	return ApiServer + "upload/" + imageName;
+        }
+        
+        /** 商品暫存 **/
+        public static final HashMap<String,ProductData> productMap = new HashMap<String, ProductData>();
 
         /** 廣播參數 **/
         public static final String MAIN_BROADCAST_STRING = "MainBroadcast";

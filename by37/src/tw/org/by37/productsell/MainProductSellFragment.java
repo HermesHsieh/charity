@@ -57,6 +57,7 @@ public class MainProductSellFragment extends Fragment {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
                 // TODO Auto-generated method stub
+        		Log.d(TAG, "onCreateView");
                 View v = inflater.inflate(R.layout.fragment_main_productsell, container, false);
                 setView(v);
                 init();
@@ -65,6 +66,7 @@ public class MainProductSellFragment extends Fragment {
         }
 
         private void setView(View v) {
+        		Log.d(TAG, "setView");
                 mTabScrollView = (HorizontalScrollView) v.findViewById(R.id.productsell_tab_scrollview);
                 mProductAmountTextView = (TextView) v.findViewById(R.id.main_product_count_tv);
 
@@ -171,20 +173,15 @@ public class MainProductSellFragment extends Fragment {
                                         	
                                         	JSONObject obj = newArray.getJSONObject(i-1);
                                             name = obj.getString("name");
-                                            try{
-                                            	 JSONArray imageArray = obj.getJSONArray("images");
-                                                 JSONObject imageObj = imageArray.getJSONObject(0);
-                                                 imageUrl = imageObj.getString("image");
-                                                 ProductData mProductData = new ProductData();
-                                                 mProductData.setName(name);
-                                                 mProductData.setImageURL(imageUrl);
-                                                 
-                                                 if (!imageUrl.equals("null") && productList.size() < 2) {
-                                                         productList.add(mProductData);
-                                                 }
-                                            }catch(Exception e){
-                                            	Log.e(TAG, e.toString());
-                                            }
+                                            imageUrl = obj.getString("image");
+                                            ProductData mProductData = new ProductData();
+                                            mProductData.setName(name);
+                                            mProductData.setImageURL(SysConfig.imagePathApi(imageUrl));
+                                            
+                                            if (!imageUrl.equals("null") && productList.size() < 2) {
+                                                productList.add(mProductData);
+                                        }
+                                          
                                             i--;
                                         }
                                         
@@ -210,21 +207,26 @@ public class MainProductSellFragment extends Fragment {
                                 mProductAmountTextView.setText(amount);
                                 mProductAmountTextView.setVisibility(View.VISIBLE);
                                 
-                                ImageLoader.getInstance().displayImage(productList.get(0).getImageURL(), mLeftImageView);
-                                ImageLoader.getInstance().displayImage(productList.get(1).getImageURL(), mRightImageView);
-
-                                mLeftTextView.setText(productList.get(0).getName());
-                                mRightTextView.setText(productList.get(1).getName());
-
-                                if (productList.size() > 0) {
-                                        getActivity().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                        
-                                                        
-                                                }
-                                        });
+                                int count = productList.size();
+                                ImageView[] IMGS = {mLeftImageView,mRightImageView};
+                                TextView[] TEXTVIEWS = {mLeftTextView,mRightTextView};
+                                
+                                if(count == 0 ){
+                                	
+                                }else{
+                                	for(int i = 0 ; i< count ; i++){
+                                		String imageURL = productList.get(i).getImageURL();
+                                		Log.d(TAG, "imageURL = "+imageURL);
+                                		ImageView imageview = IMGS[i];
+                                		String imageName = productList.get(i).getName();
+                                		TextView textview = TEXTVIEWS[i];
+                                		
+                                		ImageLoader.getInstance().displayImage(imageURL, imageview);
+                                		textview.setText(imageName);
+                                		
+                                	}
                                 }
+                                
                         }
 
                         MainFragment.getInstance().closeProgressDialog();

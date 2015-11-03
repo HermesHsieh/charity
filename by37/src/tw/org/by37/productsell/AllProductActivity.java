@@ -96,29 +96,38 @@ public class AllProductActivity extends BackActivity {
 			}
 
 			if (flag) {
+				String id = "";
 				String name = "";
+				String description = "";
+				String quantity = "";
+				String merchandise_type_id = "";
+				String cash = "";
 				String imageUrl = "";
 				try {
 					JSONArray newArray = new JSONArray(strResult);
 					for (int i = 0; i < newArray.length(); i++) {
 						JSONObject obj = newArray.getJSONObject(i);
+						id = obj.getString("id");
 						name = obj.getString("name");
-						try {
-							JSONArray imageArray = obj.getJSONArray("images");
-							JSONObject imageObj = imageArray.getJSONObject(0);
-							imageUrl = imageObj.getString("image");
-							ProductData mProductData = new ProductData();
-							mProductData.setName(name);
-							mProductData.setImageURL(imageUrl);
-							dataList.add(mProductData);
-							imageList.add(imageUrl);
-
-						} catch (Exception e) {
-
-						}
-
+						description = obj.getString("description");
+						quantity = obj.getString("quantity");
+						merchandise_type_id = obj.getString("merchandise_type_id");
+						cash = obj.getString("cash");
+						imageUrl = obj.getString("image");
+						ProductData mProductData = new ProductData();
+						mProductData.setId(id);
+						mProductData.setName(name);
+						mProductData.setDescription(description);
+						mProductData.setQuantity(quantity);
+						mProductData.setType(merchandise_type_id);
+						mProductData.setCash(cash);
+						mProductData.setImageURL(SysConfig.imagePathApi(imageUrl));
+						SysConfig.productMap.put(id, mProductData);
+						dataList.add(mProductData);
+						imageList.add(SysConfig.imagePathApi(imageUrl));
+						Log.d(TAG, "count = " + imageList.size());
 					}
-					Log.d(TAG, "count = " + imageList.size());
+					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
