@@ -61,7 +61,7 @@ public class SysConfig {
         /** SD的Temp Pictures路徑 **/
         public final static String SD_TEMP_PIC_PATH = SD_PIC_PATH + "/temp";
 
-        static final String ApiServer = "http://www.by37.org/";
+        static final String ApiServer = "http://charity.gopagoda.io/";
         // http://charity.gopagoda.io/
         // http://www.by37.org/get_organization_by_address/25.06308990/121.51951340
         /** User 註冊 **/
